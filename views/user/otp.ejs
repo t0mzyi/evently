@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter OTP — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: {
+                            primary: '#1C2A3A',
+                            secondary: '#4A6A78',
+                            accent: '#D4AF37',
+                            surface: '#F9F7F5',
+                        },
+                        apple: {
+                            bg: '#EAE0CF',
+                        }
+                    },
+                    fontFamily: {
+                        heading: ['Italiana', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #EAE0CF;
+            color: #1C2A3A;
+        }
+
+        .auth-card {
+            background-color: #1C2A3A;
+            box-shadow: 0 35px 60px -15px rgba(28, 42, 58, 0.6), 0 10px 20px -10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .input-clean {
+            background-color: #F1F5F9;
+            border: 1px solid transparent;
+            color: #1C2A3A;
+            transition: all 0.2s ease;
+        }
+
+        .input-clean:focus {
+            background-color: #FFFFFF;
+            outline: none;
+            box-shadow: 0 0 0 2px #5C7C8A;
+        }
+
+        .input-clean::placeholder {
+            color: #94A3B8;
+            font-size: 0.8em;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-primary {
+            background-color: #5C7C8A;
+            color: #FFFFFF;
+            transition: all 0.2s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .btn-primary:hover {
+            background-color: #4A6A78;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+        }
+        #resendBtn:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen p-6 font-sans relative overflow-hidden">
+
+    <!-- Background Icons -->
+    <div class="absolute inset-0 pointer-events-none select-none overflow-hidden">
+        <svg class="absolute top-[10%] left-[5%] w-24 h-24 text-theme-primary/10 animate-float" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M9 18V5l12-2v13" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="6" cy="18" r="3" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="18" cy="16" r="3" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <svg class="absolute top-[15%] right-[8%] w-20 h-20 text-theme-primary/10 animate-float-delayed"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M4 10h16v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10z" />
+            <path d="M4 10l2-4 3 2 3-2 3 2 3-2 2 4" />
+        </svg>
+        <svg class="absolute bottom-[15%] left-[10%] w-28 h-28 text-theme-primary/10 animate-float-delayed"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <circle cx="12" cy="5" r="2" />
+            <path d="M9 20l3-5 3 5" />
+            <path d="M6 13l6-3 6 3" />
+            <path d="M12 10v7" />
+        </svg>
+        <svg class="absolute bottom-[10%] right-[10%] w-24 h-24 text-theme-primary/10 animate-float" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+        </svg>
+        <div
+            class="absolute top-1/2 left-1/4 w-96 h-96 bg-theme-primary/5 rounded-full blur-3xl -translate-y-1/2 -z-10">
+        </div>
+        <div
+            class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-theme-accent/5 rounded-full blur-3xl -z-10">
+        </div>
+    </div>
+
+    <div class="w-full max-w-[550px] relative z-10 flex flex-col items-center">
+        <!-- Brand/Logo -->
+        <div class="mb-8 text-center transform hover:scale-105 transition-transform duration-500">
+            <a href="/"
+                class="text-7xl font-heading text-theme-primary tracking-tight hover:opacity-80 transition-opacity drop-shadow-sm">evently</a>
+        </div>
+
+        <!-- Auth Card -->
+        <div class="auth-card rounded-[2rem] p-12 w-full relative overflow-hidden">
+            <div class="mb-10 text-center">
+                <h1 class="text-4xl font-heading text-white mb-2">Enter OTP</h1>
+                <p class="text-gray-400 text-xs font-sans tracking-wide">The otp has been sent to your registered email
+                </p>
+            </div>
+
+            <form class="space-y-6" id="otpForm">
+                <div class="space-y-2">
+                    <input id="otpInput" type="text" placeholder="●●●●●●"
+                        class="w-full h-12 px-4 rounded-xl input-clean text-sm font-sans text-center tracking-[0.5em]"
+                        maxlength="6" required>
+                    <div class="text-right">
+                       <button type="button" id="resendBtn" 
+                            class="text-[10px] text-theme-primary bg-white/10 px-2 py-1 rounded hover:bg-white/20 transition-colors uppercase tracking-wider disabled:opacity-50">
+                            Resend OTP
+                        </button>
+                        <span id="timerDisplay" class="text-[10px] text-gray-400 ml-2"></span> </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full h-12 rounded-xl font-sans font-medium text-sm btn-primary mt-2 uppercase">
+                    Verify
+                </button>
+                <div id="errorMsgBox"
+                    class="hidden mt-3 text-red-400 text-center text-[10px] tracking-widest uppercase font-semibold">
+                </div>
+            </form>
+        </div>
+
+        <!-- Back Link -->
+        <div class="mt-8 text-center">
+            <a href="/forgot-password"
+                class="text-[10px] text-theme-primary/60 hover:text-theme-primary transition-colors flex items-center justify-center space-x-2 font-bold tracking-widest uppercase">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10 19l-7-7m0 0l-7-7m7-7H3"></path>
+                </svg>
+                <span>Back</span>
+            </a>
+        </div>
+    </div>
+</body>
+<script>
+   
+    const otpForm = document.getElementById('otpForm');
+    const otpInput = document.getElementById('otpInput');
+    const errorBox = document.getElementById('errorMsgBox');
+    const resendBtn = document.getElementById('resendBtn');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    function startResendTimer() {
+        let timerLeft = 10;
+        resendBtn.disabled = true;
+        timerDisplay.textContent = `(${timerLeft}s)`;
+
+        const interval = setInterval(() => {
+            timerLeft--;
+            timerDisplay.textContent = `(${timerLeft}s)`;
+
+            if (timerLeft <= 0) {
+                clearInterval(interval);
+                resendBtn.disabled = false;
+                timerDisplay.textContent = "";
+            }
+        }, 1000);
+    }
+
+    resendBtn.addEventListener('click', async () => {
+        startResendTimer();
+        try {
+            const response = await fetch('/resend-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const result = await response.json();
+
+            errorBox.classList.remove('hidden');
+            if (response.ok) {
+                errorBox.textContent = result.message;
+                errorBox.style.color = "#4ade80"; // Green for success
+            } else {
+                errorBox.textContent = result.message;
+                errorBox.style.color = "#f87171"; // Red for error
+            }
+        } catch (err) {
+            console.error('Resend Error:', err);
+            errorBox.classList.remove('hidden');
+            errorBox.style.color = "#f87171";
+            errorBox.textContent = "Network error. Try again.";
+        }
+    });
+
+    otpForm.addEventListener('submit', async (e) => {
+        e.preventDefault()
+
+        errorBox.classList.add('hidden');
+        const otpValue = otpInput.value;
+
+        // Visual feedback
+        const submitBtn = otpForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "VERIFYING...";
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ otp: otpValue })
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                window.location.href = result.redirectUrl;
+            } else {
+                errorBox.classList.remove('hidden');
+                errorBox.style.color = "#f87171";
+                errorBox.textContent = result.message || "Invalid OTP";
+                
+                // Re-enable button on failure
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        } catch (err) {
+            console.log('error in otppage', err);
+            errorBox.classList.remove('hidden');
+            errorBox.style.color = "#f87171";
+            errorBox.textContent = "Network error";
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+</script>
+
+</html>
