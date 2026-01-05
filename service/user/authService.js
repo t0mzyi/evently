@@ -1,54 +1,41 @@
 import userDb from "../../model/userDb.js"
 import otpDb from "../../model/otpDb.js"
-import otpGenerator from 'otp-generator'
 import bcrypt from 'bcrypt'
+import { otpCreator } from '../../utils/otpGenerator.js'
 
 
 export const signUpVerify = async (data) => {
-    const {firstName, lastName , emailAddress, password} = data
+    const {emailAddress} = data
     
     const existingUser = await userDb.findOne({emailAddress})
 
     if(existingUser){
         throw new Error("User already registered")
     }
-
-    let otp = otpGenerator.generate(6,{
-        upperCaseAlphabets : false,
-        lowerCaseAlphabets : false,
-        specialChars : false,
-    })
-    await otpDb.create({emailAddress,otp})
+    await otpCreator(emailAddress)
     return {message : "OTP SENT SUCESSFULYYY"}
 }
 
-export const verifyAndCreateAccount = async (userData,otp) => {
+export const verifyOtp = async (emailAddress,otp) => {
     
-        const recentOtp = await otpDb.findOne({emailAddress : userData.emailAddress}).sort({createdAt : -1})
+        const recentOtp = await otpDb.findOne({emailAddress}).sort({createdAt : -1})
         if(!recentOtp){
             throw new Error("Otp sending failed")
         }
         if(recentOtp.otp != otp ){
             throw new Error("Worng Otp")
-        }
-        
-        const newUser = await userDb.create(userData)
-        return newUser
-    
+        }     
+}
+
+export const createUser = async (userData) => {
+    const newUser = await userDb.create(userData)
+    console.log('New user created',newUser.firstName)
+    return newUser
 }
 
 export const resendOtpService = async (emailAddress) => {
-    const newOtp = otpGenerator.generate(6,
-        {upperCaseAlphabets : false,
-            lowerCaseAlphabets : false,
-            specialChars : false
-        }
-    )
-
-    await otpDb.create({emailAddress , otp : newOtp})
-
+    await otpCreator(emailAddress)
     return {message : "New otp sent sucessfully"}
-
 }
 
 export const signInVerify = async (data) => {
@@ -59,7 +46,7 @@ export const signInVerify = async (data) => {
         throw new Error("Invalid email or password (e)")
     }
     if(!user.password){
-        throw new Error
+        throw new Error("emailID is registered through google please login using google")
     }
     
     if(user.isBlocked){
@@ -74,3 +61,36 @@ export const signInVerify = async (data) => {
     return user
 
 }
+
+export const forgotPassVerify = async(emailAddress) => {
+    const emailExist = await  userDb.findOne({emailAddress})
+    if(!emailExist){
+        throw new Error("User doesnt exists")
+    }
+    if(!emailExist.password){
+        throw new Error("This account is linked with Google. Please sign in using Google    ")
+    }   
+
+    await otpCreator(emailAddress)
+    return true
+}
+
+
+export const updatePassword = async (emailAddress,newPassword) => {
+    
+    const password = await bcrypt.hash(newPassword,10)
+
+    const updatedUser = await userDb.findOneAndUpdate(
+        {emailAddress : emailAddress },
+        {password : password},
+        {new : true}
+    )
+    if(!updatedUser){
+        throw new Error("Update failed / User doesnt found")
+    }
+    return true
+}
+
+
+
+

@@ -142,14 +142,14 @@
                 </p>
             </div>
 
-            <form class="space-y-6" id="otpForm">
+            <form class="space-y-6" id="otpForm" novalidate>
                 <div class="space-y-2">
                     <input id="otpInput" type="text" placeholder="●●●●●●"
                         class="w-full h-12 px-4 rounded-xl input-clean text-sm font-sans text-center tracking-[0.5em]"
                         maxlength="6" required>
                     <div class="text-right">
                        <button type="button" id="resendBtn" 
-                            class="text-[10px] text-theme-primary bg-white/10 px-2 py-1 rounded hover:bg-white/20 transition-colors uppercase tracking-wider disabled:opacity-50">
+                            class="text-[10px] text-theme-primary bg-white/50 px-2 py-1 rounded hover:bg-white/20 transition-colors uppercase tracking-wider disabled:opacity-50">
                             Resend OTP
                         </button>
                         <span id="timerDisplay" class="text-[10px] text-gray-400 ml-2"></span> </div>
@@ -189,6 +189,7 @@
     function startResendTimer() {
         let timerLeft = 10;
         resendBtn.disabled = true;
+        resendBtn.textContent = "RESEND OTP";
         timerDisplay.textContent = `(${timerLeft}s)`;
 
         const interval = setInterval(() => {
@@ -204,28 +205,38 @@
     }
 
     resendBtn.addEventListener('click', async () => {
-        startResendTimer();
+        const originalText = resendBtn.textContent;
+        resendBtn.textContent = "RESENDING...";
+        resendBtn.disabled = true;
+        errorBox.classList.add('hidden');
         try {
             const response = await fetch('/resend-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
-
+            
             const result = await response.json();
-
+            
             errorBox.classList.remove('hidden');
             if (response.ok) {
                 errorBox.textContent = result.message;
+                resendBtn.textContent = "Resend OTP";
                 errorBox.style.color = "#4ade80"; // Green for success
+                startResendTimer();
             } else {
+                errorBox.classList.remove('hidden');
                 errorBox.textContent = result.message;
-                errorBox.style.color = "#f87171"; // Red for error
+                errorBox.style.color = "#f87171"; // Error Red
+                resendBtn.textContent = originalText;
+                resendBtn.disabled = false;
             }
         } catch (err) {
             console.error('Resend Error:', err);
             errorBox.classList.remove('hidden');
             errorBox.style.color = "#f87171";
             errorBox.textContent = "Network error. Try again.";
+            resendBtn.textContent = originalText;
+            resendBtn.disabled = false;
         }
     });
 

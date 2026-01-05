@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: { primary: '#1C2A3A', highlight: '#2C3E50', secondary: '#1C2A3A', accent: '#ED8842', surface: '#F9F7F5' },
+                    },
+                    fontFamily: { heading: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-2xl">
+        <!-- Back Button -->
+        <a href="/dashboard"
+            class="inline-flex items-center gap-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors mb-8 font-medium">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+                </path>
+            </svg>
+            <span>Back to Dashboard</span>
+        </a>
+
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 shadow-sm border border-white/40">
+            <h1 class="text-3xl font-heading text-[#1C2A3A] mb-8">Edit Profile</h1>
+
+            <form action="/profile/update" method="POST" class="space-y-8">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-6">
+                        <div class="w-24 h-24 bg-[#1C2A3A] rounded-full relative overflow-hidden group shadow-lg">
+                            <img id="avatarPreview" src="<%= user.avatarUrl %>" class="w-full h-full object-cover">
+                            
+                            <label for="avatarInput" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <span class="text-white text-xs font-bold">Upload</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <input type="file" id="avatarInput" name="avatar" accept="image/*" class="hidden">
+                            
+                            <button type="button" onclick="document.getElementById('avatarInput').click()"
+                                class="px-5 py-2 rounded-xl bg-[#1C2A3A] text-white text-sm font-bold hover:bg-[#2C3E50] transition-colors">
+                                Change Photo
+                            </button>
+                            <p class="text-xs text-[#1C2A3A]/50 mt-2">Square images work best.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">First Name</label>
+                        <input type="text" name="firstName" value="<%= user.firstName %>"
+                            class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Last Name</label>
+                        <input type="text" name="lastName" value="<%= user.lastName %>"
+                            class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Email Address</label>
+                        <div class="flex h-[48px]">
+                            <input type="email" value="<%= user.emailAddress %>" readonly
+                                class="flex-grow bg-[#1C2A3A]/5 border border-[#1C2A3A]/10 rounded-l-xl px-4 py-3 text-[#1C2A3A]/50 font-medium cursor-not-allowed border-r-0 focus:outline-none">
+                            <button type="button" onclick="window.location.href='/request-email-change'"
+                                class="bg-[#1C2A3A] hover:bg-[#2C3E50] text-white px-6 rounded-r-xl transition-colors border border-[#1C2A3A] text-[10px] font-bold uppercase tracking-widest">
+                                Change
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Security</label>
+                        <div class="flex h-[48px]">
+                            <div class="flex-grow bg-[#1C2A3A]/5 border border-[#1C2A3A]/10 rounded-l-xl px-4 py-3 text-[#1C2A3A]/50 font-medium border-r-0 flex items-center">
+                                ••••••••••••
+                            </div>
+                            <a href="/forgot-password"
+                                class="bg-[#1C2A3A] hover:bg-[#2C3E50] text-white px-6 rounded-r-xl transition-colors border border-[#1C2A3A] text-[10px] font-bold uppercase tracking-widest flex items-center">
+                                Reset Password
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Bio</label>
+                        <textarea name="bio" rows="4"
+                            class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all resize-none"><%= user.bio %></textarea>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-[#1C2A3A]/10">
+                    <a href="/dashboard" class="px-6 py-3 rounded-xl text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-colors">Cancel</a>
+                    <button type="submit" class="px-8 py-3 rounded-xl bg-[#ED8842] text-white text-sm font-bold shadow-lg hover:bg-[#d67332] transition-colors">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html

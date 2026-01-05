@@ -17,15 +17,17 @@ const otpSchema = new mongoose.Schema({
     }
 })
 
+otpSchema.index({ emailAddress: 1, createdAt: -1 })
+
 const sentVerificationMail = async (emailAddress,otp) => {
     try{
-        const mailResponse = await mailSender(
+        await mailSender(
             emailAddress,
             "Verification email",
             `<h1>Please confirm your OTP</h1>
             <p>Here is your OTP code: ${otp}</p>`
         )
-        console.log(`otp recived in otpDb and sented`)
+        console.log("OTP stored and verification email sent")
     }catch(err){
         console.log(`error in sentVerificationMail on otpDb`,err)
         throw err
