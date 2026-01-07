@@ -231,20 +231,30 @@
                 <td class="px-6 py-4 text-sm text-[#1C2A3A]">
                   <%= userDb.users[i].emailAddress %>
                 </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= userDb.users[i].createdAt %></td>
+                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= userDb.users[i].createdAt.toLocaleDateString() %></td>
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-4 text-sm">
-                    <span class="text-[#1C2A3A]">12 attended</span>
+                    <span class="text-[#1C2A3A]"><%= userDb.users[i].attentedCount %> attented</span>
                     <span class="text-[#1C2A3A]/40">•</span>
-                    <span class="text-[#ED8842]">2 hosted</span>
+                    <span class="text-[#ED8842]"><%= userDb.users[i].hostCount %> hosted</span>
                   </div>
                 </td>
-                <td class="px-6 py-4">
-                  <span
+               <td class="px-6 py-4">
+                <% if (!userDb.users[i].isBlocked) { %>
+                    <span
                     class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >Active</span
-                  >
+                    >
+                    Active
+                    </span>
+                <% } else { %>
+                    <span
+                    class="px-3 py-1 bg-red-500/10 text-red-700 rounded-full text-xs font-bold uppercase tracking-wider"
+                    >
+                    Blocked
+                    </span>
+                <% } %>
                 </td>
+
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <button
