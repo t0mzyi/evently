@@ -68,11 +68,17 @@ export const forgotPassVerify = async(emailAddress) => {
         throw new Error("User doesnt exists")
     }
     if(!emailExist.password){
-        throw new Error("This account is linked with Google. Please sign in using Google    ")
+        throw new Error("This account is linked with Google. Please sign in using Google  / login and then set a passwords")
     }   
 
     await otpCreator(emailAddress)
     return true
+}
+
+export const forgotPassSessionExists = async(userId) => {
+    const user = await userDb.findById(userId)
+    await otpCreator(user.emailAddress)
+    return user
 }
 
 

@@ -1,0 +1,49 @@
+<div id="toast" class="fixed left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out" 
+     style="top: -100px; z-index: 9999;">
+    <div id="toastContent" class="bg-[#1C2A3A] text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+        <div id="toastIcon"></div>
+        <span id="toastMessage" class="text-sm font-bold tracking-wide"></span>
+    </div>
+</div>
+
+<script>
+    // 1. Define variables at the top level of the script
+    const urlParams = new URLSearchParams(window.location.search);
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const msgEl = document.getElementById('toastMessage');
+        const iconEl = document.getElementById('toastIcon');
+        
+        if(!toast || !msgEl || !iconEl) return;
+
+        msgEl.textContent = message;
+        iconEl.className = type === 'success' ? 'bg-green-500 rounded-full p-1' : 'bg-red-500 rounded-full p-1';
+        
+        iconEl.innerHTML = type === 'success' 
+            ? '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>'
+            : '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+        // Slide down
+        setTimeout(() => { toast.style.top = '100px'; }, 100);
+
+        // Slide up and clean URL
+        setTimeout(() => { 
+            toast.style.top = '-100px';
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }, 3500);
+    }
+
+    // 2. Check the global urlParams variable
+    if (urlParams.has('status')) {
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+
+        if (status === 'error') {
+            showToast(message || 'An error occurred', 'error');
+        } else {
+            showToast(message || 'Success!');
+        }
+    }
+</script>

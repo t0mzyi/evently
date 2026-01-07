@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 
-
 const userSchema = new mongoose.Schema(
   {
-    
     firstName: {
       type: String,
       required: true,
@@ -27,30 +25,38 @@ const userSchema = new mongoose.Schema(
     },
     avatarUrl: {
       type: String,
-      default: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
+      default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
     },
     bio: {
-        type: String,
-        default : null,
+      type: String,
+      default: null,
     },
-    isBlocked : {
-        type : Boolean,
-        default : false
+    isBlocked: {
+      type: Boolean,
+      default: false,
     },
-    lastLoginAt : {
-        type : Date,
-        default : Date.now()
+    lastLoginAt: {
+      type: Date,
+      default: Date.now(),
     },
-    googleId : {
-      type :String,
-      default : null
-    }
+    googleId: {
+      type: String,
+      default: null,
+    },
+    isHost: {
+      type: Boolean,
+      default: false,
+    },
+    hostCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
 
-const userDb = mongoose.model("user", userSchema)
+userSchema.index({ firstName: 1 });
 
+const userDb = mongoose.model("user", userSchema);
 
-
-export default userDb
+export default userDb;

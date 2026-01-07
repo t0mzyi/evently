@@ -7,7 +7,7 @@ passport.use(new GoogleStrategy({
     clientID : process.env.CLIENT_ID,
     clientSecret : process.env.CLIENT_SECRET,
     callbackURL : "http://localhost:3000/auth/google/callback"
-},  async (accessToken,refreshTOken,profile,done) => {
+},  async (accessToken,refreshToken,profile,done) => {
         try{
             let user = await userDb.findOne({emailAddress : profile.emails[0].value})
 
@@ -24,11 +24,15 @@ passport.use(new GoogleStrategy({
             const photo = profile.photos && profile.photos.length > 0 
                   ? profile.photos[0].value 
                   : null;
+            let lastName = "\u200B"
+            if(profile.name.familyName){
+                lastName = profile.name.familyName
+            }
             user = await userDb.create({
                 googleId : profile.id,
                 emailAddress : profile.emails[0].value,
                 firstName: profile.name.givenName,
-                lastName : profile.name.familyName,
+                lastName,
                 avatarUrl : photo
             })
             return done(null,user)

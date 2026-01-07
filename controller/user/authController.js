@@ -1,4 +1,4 @@
-import {signUpVerify,signInVerify,resendOtpService, forgotPassVerify, verifyOtp, createUser, updatePassword} from '../../service/user/authService.js'
+import {signUpVerify,signInVerify,resendOtpService, forgotPassVerify, verifyOtp, createUser, updatePassword, forgotPassSessionExists} from '../../service/user/authService.js'
 import bcrypt from 'bcrypt'
 
 export const signUp = (req,res) => {
@@ -7,10 +7,19 @@ export const signUp = (req,res) => {
 export const signIn = (req,res) => {
     return res.render('user/auth',{mode : "login"})
 }
-export const forgotPassword = (req,res) => {
+export const forgotPassword = async (req,res) => {
+    if(req.session.user){
+            const user = await forgotPassSessionExists(req.session.user)
+            req.session.otpRequested = true
+            req.session.forgotPassEmail = user.emailAddress
+            return res.redirect('/otp')
+        }
     return res.render('user/forgot-password')
 }
 export const otpPage = (req,res) => {
+    if(req.session.user){
+        return res.render('user/otp',{user : req.session.user})
+    }
     return res.render('user/otp')
 }
 export const resetPassword = (req,res) => {
@@ -23,7 +32,6 @@ export const forgotPasswordPost = async (req,res) => {
 
         req.session.tempUserData = null
         req.session.forgotPassEmail = emailAddress 
-
         await forgotPassVerify(emailAddress)
 
         req.session.otpRequested = true

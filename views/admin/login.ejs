@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: { primary: '#1C2A3A', highlight: '#2C3E50', accent: '#ED8842', surface: '#F9F7F5' },
+                    },
+                    fontFamily: { heading: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        .error-text { color: #f87171; font-size: 10px; letter-spacing: 0.08em; margin-top: 4px; padding-left: 4px; }
+    </style>
+</head>
+
+<body class="bg-[#EAE0CF] min-h-screen flex items-center justify-center p-6">
+
+    <div class="w-full max-w-md">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-heading font-bold text-[#1C2A3A] mb-2">evently</h1>
+            <p class="text-[#1C2A3A]/60 text-sm">Admin Portal</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 md:p-10 shadow-lg border border-white/40">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Admin Sign In</h2>
+                <p class="text-[#1C2A3A]/60 text-sm">Enter your credentials to access the admin panel</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6" novalidate>
+                <!-- Email -->
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Email
+                        Address</label>
+                    <input type="email" id="emailInput"
+                        class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all"
+                        placeholder="admin@evently.com">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label
+                        class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Password</label>
+                    <input type="password" id="passInput"
+                        class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all"
+                        placeholder="••••••••">
+                        <p id="errorEl" class="error-text hidden"></p>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"id="submitBtn" class="w-full bg-[#1C2A3A] text-white rounded-xl py-3 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:bg-gray-400">
+                    Sign In to Admin Panel
+                </button>
+            </form>
+
+            <!-- Back to Site -->
+            <div class="mt-8 pt-6 border-t border-[#1C2A3A]/10 text-center">
+                <a href="/"
+                    class="text-sm text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors inline-flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Main Site
+                </a>
+            </div>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="mt-6 text-center">
+            <p class="text-xs text-[#1C2A3A]/40">
+                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                    </path>
+                </svg>
+                Secure admin access only
+            </p>
+        </div>
+    </div>
+
+</body>
+
+<script>
+const form = document.getElementById('loginForm')
+const emailInput = document.getElementById('emailInput')
+const passInput = document.getElementById('passInput')
+const submitBtn  = document.getElementById('submitBtn')
+const errorEl = document.getElementById('errorEl')
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault()
+    errorEl.classList.add('hidden')
+
+    const emailValue = emailInput.value.trim()
+    const passValue = passInput.value.trim()
+
+    if (!emailValue || !passValue) {
+        errorEl.textContent = "INVALID CREDENTIALS"
+        errorEl.classList.remove('hidden')
+        return
+    }
+
+    submitBtn.disabled = true
+
+    try {
+        const response = await fetch('/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                emailAddress: emailValue,
+                password: passValue
+            })
+        })
+
+        const result = await response.json()
+
+        if (response.ok && result.success) {
+            window.location.href = result.redirectUrl
+        } else {
+            throw new Error(result.message || "INVALID CREDENTIALS")
+        }
+    } catch (err) {
+        errorEl.textContent = err.message
+        errorEl.classList.remove('hidden')
+        submitBtn.disabled = false
+    }
+})
+</script>
+
+
+</html>
