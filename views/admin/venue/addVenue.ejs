@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Venue — Evently Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .input-error {
+        border: 1px solid #af3131ff !important;
+      }
+      .error-text {
+        color: #f87171;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        margin-top: 4px;
+        padding-left: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .preview-card {
+        animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              theme: {
+                primary: "#1C2A3A",
+                highlight: "#2C3E50",
+                accent: "#ED8842",
+                surface: "#F9F7F5",
+              },
+            },
+            fontFamily: {
+              heading: ["Fraunces", "serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans">
+    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+      <nav
+        class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl"
+      >
+        <div class="flex items-center gap-6">
+          <span class="text-xl font-bold tracking-tight text-white font-heading"
+            >evently admin</span
+          >
+          <div
+            class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80"
+          >
+            <a
+              href="/admin/dashboard"
+              class="hover:text-white transition-colors"
+              >Dashboard</a
+            >
+            <a href="/admin/events" class="hover:text-white transition-colors"
+              >Events</a
+            >
+            <a href="/admin/users" class="hover:text-white transition-colors"
+              >Users</a
+            >
+            <a href="/admin/venues" class="text-white border-b border-white/20"
+              >Venues</a
+            >
+            <a
+              href="/admin/categories"
+              class="hover:text-white transition-colors"
+              >Categories</a
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-white/70 text-sm">Admin</span>
+          <a
+            href="/"
+            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              ></path>
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <main class="pt-32 pb-16 px-6 max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <a
+            href="/admin/venues"
+            class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors mb-4"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              ></path>
+            </svg>
+            Back to Venues
+          </a>
+          <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">
+            Add New Venue
+          </h1>
+          <p class="text-[#1C2A3A]/60">Create a new location for events.</p>
+        </div>
+      </div>
+
+      <div
+        class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-white/40"
+      >
+        <form id="venueForm" class="space-y-8" novalidate>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="col-span-2">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+                >Venue Name</label
+              >
+              <input
+                type="text"
+                name="name"
+                id="name"
+                placeholder="e.g. Grand Central Hall"
+                class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+              />
+              <p class="error-text hidden">Venue name is required</p>
+            </div>
+            <div>
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+                >Venue Type</label
+              >
+              <select
+                name="type"
+                id="type"
+                class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all appearance-none cursor-pointer"
+              >
+                <option value="">Select Type</option>
+                <option>Indoor</option>
+                <option>Outdoor</option>
+                <option>Rooftop</option>
+                <option>Stadium</option>
+                <option>Other</option>
+              </select>
+              <p class="error-text hidden">Please select a venue type</p>
+            </div>
+            <div>
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+                >Capacity</label
+              >
+              <input
+                type="number"
+                name="capacity"
+                id="capacity"
+                placeholder="Total Guests"
+                class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+              />
+              <p class="error-text hidden">Please enter a valid capacity</p>
+            </div>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-[#1C2A3A]/5"
+          >
+            <div class="col-span-2">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+                >Address / Location</label
+              >
+              <input
+                type="text"
+                name="address"
+                id="address"
+                placeholder="e.g. 123 Broadway, New York, NY"
+                class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+              />
+              <p class="error-text hidden">Address is required</p>
+            </div>
+            <div class="col-span-2">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+                >Google Maps URL</label
+              >
+              <input
+                type="url"
+                name="maps_url"
+                id="maps_url"
+                placeholder="https://maps.google.com/..."
+                class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+              />
+              <p class="error-text hidden">
+                Please enter a valid Google Maps URL
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-[#1C2A3A]/5">
+            <label
+              class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3"
+              >Description</label
+            >
+            <textarea
+              name="description"
+              id="description"
+              rows="4"
+              placeholder="Describe the venue..."
+              class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all mb-1"
+            ></textarea>
+            <p class="error-text hidden">Description cannot be empty</p>
+          </div>
+
+          <div class="pt-4 border-t border-[#1C2A3A]/5">
+            <div class="flex justify-between items-end mb-3">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40"
+                >Venue Images</label
+              >
+              <span
+                class="text-[9px] font-black uppercase tracking-tighter text-accent bg-accent/10 px-2 py-0.5 rounded"
+                >The first image will be your cover</span
+              >
+            </div>
+
+            <div
+              class="grid grid-cols-2 md:grid-cols-4 gap-4"
+              id="image-upload-wrapper"
+            >
+              <div
+                onclick="document.getElementById('venue_images').click()"
+                class="aspect-square border-2 border-dashed border-[#1C2A3A]/10 rounded-2xl flex flex-col items-center justify-center hover:bg-white/50 transition-colors cursor-pointer group order-last"
+              >
+                <div
+                  class="w-8 h-8 rounded-full bg-[#1C2A3A]/5 group-hover:bg-[#1C2A3A]/10 flex items-center justify-center mb-2 transition-colors"
+                >
+                  <svg
+                    class="w-4 h-4 text-[#1C2A3A]/40 group-hover:text-[#1C2A3A]/60"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    ></path>
+                  </svg>
+                </div>
+                <p
+                  class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40"
+                >
+                  Add Photo
+                </p>
+                <input
+                  type="file"
+                  id="venue_images"
+                  multiple
+                  accept="image/*"
+                  class="hidden"
+                />
+              </div>
+            </div>
+            <p id="image-error" class="error-text hidden">
+              Please upload at least one image
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-[#1C2A3A]/5">
+            <div class="flex items-center justify-between mb-4">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40"
+                >Amenities</label
+              >
+              <div class="flex flex-col items-end">
+                <button
+                  type="button"
+                  onclick="addAmenity()"
+                  class="text-xs font-bold text-[#1C2A3A] hover:opacity-70 flex items-center gap-1"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    ></path>
+                  </svg>
+                  Add Amenity
+                </button>
+                <p id="amenity-error" class="error-text hidden">
+                  Complete the current field first
+                </p>
+              </div>
+            </div>
+            <div id="amenities-container" class="space-y-3 mb-8">
+              <div
+                class="grid grid-cols-[1fr_1fr_40px] gap-4 items-center amenity-row"
+              >
+                <input
+                  type="text"
+                  name="amenity_key[]"
+                  placeholder="Key (e.g. Wifi)"
+                  class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+                />
+                <input
+                  type="text"
+                  name="amenity_value[]"
+                  placeholder="Value (e.g. Free)"
+                  class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all"
+                />
+                <div class="w-10"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-8 flex justify-end">
+            <button
+              type="submit"
+              id="submitBtn"
+              class="px-8 py-4 bg-[#1C2A3A] text-white rounded-2xl font-heading text-lg tracking-wide hover:bg-[#2C3E50] transition-transform hover:scale-[1.02] shadow-xl"
+            >
+              Create Venue
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      let selectedFiles = [];
+      const imageInput = document.getElementById("venue_images");
+      const uploadWrapper = document.getElementById("image-upload-wrapper");
+
+      imageInput.addEventListener("change", (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach((file) => {
+          const fileId = Math.random().toString(36).substring(2, 9);
+          file.customId = fileId;
+          selectedFiles.push(file);
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const div = document.createElement("div");
+            div.className =
+              "preview-card relative aspect-square rounded-2xl overflow-hidden border border-[#1C2A3A]/10 bg-white group";
+            div.id = `preview-${fileId}`;
+            div.innerHTML = `
+              <img src="${event.target.result}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <button type="button" onclick="removeImage('${fileId}')" class="bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+              </div>
+              <div class="cover-badge absolute top-2 left-2 bg-theme-accent text-white text-[8px] font-bold px-1.5 py-0.5 rounded opacity-0 transition-opacity">COVER</div>
+            `;
+            uploadWrapper.insertBefore(div, uploadWrapper.lastElementChild);
+            updateCoverBadge();
+          };
+          reader.readAsDataURL(file);
+        });
+        imageInput.value = "";
+      });
+
+      function removeImage(id) {
+        selectedFiles = selectedFiles.filter((f) => f.customId !== id);
+        const element = document.getElementById(`preview-${id}`);
+        if (element) element.remove();
+        updateCoverBadge();
+      }
+
+      function updateCoverBadge() {
+        const previews = uploadWrapper.querySelectorAll(".preview-card");
+        previews.forEach((el, idx) => {
+          const badge = el.querySelector(".cover-badge");
+          if (idx === 0) badge.classList.remove("opacity-0");
+          else badge.classList.add("opacity-0");
+        });
+      }
+
+      function addAmenity() {
+        const container = document.getElementById("amenities-container");
+        const rows = container.querySelectorAll(".amenity-row");
+        const lastRow = rows[rows.length - 1];
+        const inputs = lastRow.querySelectorAll("input");
+        const errorMsg = document.getElementById("amenity-error");
+        let allFilled = true;
+        inputs.forEach((input) => {
+          if (input.value.trim() === "") {
+            allFilled = false;
+            input.classList.add("input-error");
+          } else {
+            input.classList.remove("input-error");
+          }
+        });
+        if (!allFilled) {
+          errorMsg.classList.remove("hidden");
+          return;
+        }
+        errorMsg.classList.add("hidden");
+        const newRow = document.createElement("div");
+        newRow.className =
+          "grid grid-cols-[1fr_1fr_40px] gap-4 items-center mt-3 amenity-row";
+        newRow.innerHTML = `
+          <input type="text" name="amenity_key[]" placeholder="Key" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all">
+          <input type="text" name="amenity_value[]" placeholder="Value" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all">
+          <button type="button" onclick="this.parentElement.remove()" class="text-red-400 hover:text-red-600 transition-colors flex justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          </button>`;
+        container.appendChild(newRow);
+      }
+
+      document
+        .getElementById("venueForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const btn = document.getElementById("submitBtn");
+          let isValid = true;
+          const check = (id, condition) => {
+            const el = document.getElementById(id);
+            const err =
+              el.tagName === "TEXTAREA"
+                ? el.nextElementSibling
+                : el.closest("div").querySelector(".error-text");
+            if (condition) {
+              el.classList.remove("input-error");
+              if (err) err.classList.add("hidden");
+            } else {
+              el.classList.add("input-error");
+              if (err) err.classList.remove("hidden");
+              isValid = false;
+            }
+          };
+          check("name", document.getElementById("name").value.trim() !== "");
+          check("type", document.getElementById("type").value !== "");
+          check("capacity", document.getElementById("capacity").value > 0);
+          check(
+            "address",
+            document.getElementById("address").value.trim() !== ""
+          );
+          check(
+            "maps_url",
+            document.getElementById("maps_url").value.trim() !== ""
+          );
+          check(
+            "description",
+            document.getElementById("description").value.trim() !== ""
+          );
+          const amenityRows = document.querySelectorAll(".amenity-row");
+          const amenityErr = document.getElementById("amenity-error");
+          let amenitiesValid = true;
+          amenityRows.forEach((row) => {
+            row.querySelectorAll("input").forEach((input) => {
+              if (!input.value.trim()) {
+                input.classList.add("input-error");
+                amenitiesValid = false;
+              } else {
+                input.classList.remove("input-error");
+              }
+            });
+          });
+          if (!amenitiesValid) {
+            amenityErr.classList.remove("hidden");
+            isValid = false;
+          }
+          const imgErr = document.getElementById("image-error");
+          if (selectedFiles.length === 0) {
+            imgErr.classList.remove("hidden");
+            isValid = false;
+          } else {
+            imgErr.classList.add("hidden");
+          }
+          if (!isValid) return;
+          btn.disabled = true;
+          btn.innerText = "Processing...";
+          try {
+            const formData = new FormData(this);
+            formData.delete("images[]");
+            selectedFiles.forEach((file) => {
+              formData.append("images[]", file);
+            });
+            const response = await fetch("/admin/venues/add", {
+              method: "POST",
+              body: formData,
+            });
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+              window.location.href = "/admin/venues?msg=created";
+            } else {
+              alert(data.error || "Server error occurred.");
+            }
+          } catch (err) {
+            alert("Network error.");
+          } finally {
+            btn.disabled = false;
+            btn.innerText = "Create Venue";
+          }
+        });
+    </script>
+  </body>
+</html>

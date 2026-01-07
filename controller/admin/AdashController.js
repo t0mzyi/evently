@@ -7,6 +7,7 @@ import {
 
 export const getDash = async (req, res) => {
   const users = await userDetails();
+  const events = await eventDetails();
   res.render("admin/dash", { users, events });
 };
 
@@ -43,8 +44,9 @@ export const toggleBlockUser = async (req, res) => {
 };
 
 export const singleUser = async (req, res) => {
+  const userId = req.params.userId;
   try {
-    const user = await userProfile(req.query.userId);
+    const user = await userProfile(userId);
     res.render("admin/viewUser", { user });
   } catch (Err) {
     console.log(Err.message);
