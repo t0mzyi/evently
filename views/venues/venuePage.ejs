@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Discover Venues — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              theme: {
+                primary: "#1C2A3A",
+                highlight: "#2C3E50",
+                accent: "#ED8842",
+                surface: "#F9F7F5",
+              },
+            },
+            fontFamily: {
+              heading: ["Fraunces", "serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+    <!-- Global Navigation -->
+    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+      <nav
+        class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl relative"
+      >
+        <div class="flex items-center">
+          <a
+            href="/"
+            class="text-xl font-bold tracking-tight text-white font-heading"
+            >evently</a
+          >
+        </div>
+
+        <!-- Center: Links -->
+        <div
+          class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-x-8 text-xs font-bold tracking-widest text-white/80 uppercase font-sans"
+        >
+          <a href="/" class="hover:text-white transition-colors">For You</a>
+          <a href="/events" class="hover:text-white transition-colors"
+            >Events</a
+          >
+          <a href="/venues" class="text-white">Venues</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <a
+            href="/dashboard"
+            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors border border-white shadow-md"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              ></path>
+            </svg>
+          </a>
+        </div>
+      </nav>
+    </div>
+
+    <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-16 max-w-2xl mx-auto">
+        <h1
+          class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-6 text-[#1C2A3A]"
+        >
+          Iconic Venues <br /><span class="text-[#1C2A3A]/40"
+            >Unforgettable Moments</span
+          >
+        </h1>
+        <p class="text-lg text-[#1C2A3A]/60 font-sans leading-relaxed">
+          Explore our curated collection of premium event spaces. From rooftop
+          lofts to grand halls, find the perfect backdrop for your next
+          experience.
+        </p>
+      </div>
+
+      <!-- Venue Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <% if (typeof venues !== 'undefined' && venues.length > 0) { %> <%
+        for(let i=0; i < venues.length; i++) { %>
+        <div
+          class="group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5"
+        >
+          <div class="h-64 overflow-hidden relative">
+            <a href="/venues/<%= venues[i]._id %>">
+              <img
+                src="<%= venues[i].image_url[0] %>"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                alt="<%= venues[i].name %>"
+              />
+            </a>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A]/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+          </div>
+
+          <div class="p-8">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1">
+                  <%= venues[i].name %>
+                </h3>
+                <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1">
+                  <%= venues[i].address %>
+                </p>
+              </div>
+              <div
+                class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm"
+              >
+                <%= venues[i].type %>
+              </div>
+            </div>
+
+            <div class="space-y-3 mb-6">
+              <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+                <svg
+                  class="w-5 h-5 opacity-70"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path>
+                </svg>
+                <span
+                  >Up to <%= venues[i].capacity.toLocaleString() %> Guests</span
+                >
+              </div>
+
+              <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+                <svg
+                  class="w-5 h-5 opacity-70"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7"
+                  ></path>
+                </svg>
+                <a
+                  href="<%= venues[i].map_url %>"
+                  target="_blank"
+                  class="hover:text-[#1C2A3A] transition-colors underline decoration-[#1C2A3A]/30"
+                >
+                  View on Map
+                </a>
+              </div>
+            </div>
+
+            <a
+              href="/venues/<%= venues[i]._id %>"
+              class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest text-[#1C2A3A]"
+            >
+              Check Details
+            </a>
+          </div>
+        </div>
+        <% } %> <% } else { %>
+        <div class="col-span-full text-center py-20">
+          <p class="text-xl text-[#1C2A3A]/40 font-heading">
+            No venues found at the moment.
+          </p>
+        </div>
+        <% } %>
+      </div>
+    </main>
+  </body>
+</html>

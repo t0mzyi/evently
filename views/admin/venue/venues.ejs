@@ -136,7 +136,9 @@
         <div
           class="bg-white/60 backdrop-blur-xl rounded-xl p-4 border border-white/40"
         >
-          <p class="text-2xl font-heading font-bold text-[#1C2A3A]">12</p>
+          <p class="text-2xl font-heading font-bold text-[#1C2A3A]">
+            <%= totalVenues %>
+          </p>
           <p class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider">
             Total Venues
           </p>
@@ -144,7 +146,7 @@
         <div
           class="bg-green-500/10 backdrop-blur-xl rounded-xl p-4 border border-green-500/20"
         >
-          <p class="text-2xl font-heading font-bold text-green-700">8</p>
+          <p class="text-2xl font-heading font-bold text-green-700"><%= activeVenues %></p>
           <p class="text-xs text-green-700/80 uppercase tracking-wider">
             Available Now
           </p>
@@ -208,6 +210,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-[#1C2A3A]/5">
+            <% for(let i=0;i<totalVenues ;i++){ %>
               <tr class="hover:bg-white/50 transition-colors">
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
@@ -215,138 +218,82 @@
                       class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden"
                     >
                       <img
-                        src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=100&auto=format&fit=crop"
+                        src="<%= venues[i].image_url[0] %>"
                         class="w-full h-full object-cover"
                       />
                     </div>
                     <div>
-                      <p class="font-medium text-[#1C2A3A]">Grand Hall</p>
-                      <p class="text-xs text-[#1C2A3A]/60">Indoor • Luxury</p>
+                      <p class="font-medium text-[#1C2A3A]"><%= venues[i].name %></p>
+                      <p class="text-xs text-[#1C2A3A]/60"><%= venues[i].type %></p>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]">Downtown, NY</td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60">500 - 1000</td>
+                <td class="px-6 py-4 text-sm text-[#1C2A3A]"><%= venues[i].type %></td>
+                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venues[i].capacity %></td>
                 <td class="px-6 py-4">
-                  <span class="text-[#1C2A3A] text-sm font-medium">24</span>
+                  <span class="text-[#1C2A3A] text-sm font-medium">no did</span>
                 </td>
                 <td class="px-6 py-4">
+                  <% if(venues[i].isActive){ %>
                   <span
                     class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider"
                     >Active</span
                   >
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button
-                      class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <tr class="hover:bg-white/50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden"
-                    >
-                      <img
-                        src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=80&w=100&auto=format&fit=crop"
-                        class="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p class="font-medium text-[#1C2A3A]">
-                        Central Park Lawn
-                      </p>
-                      <p class="text-xs text-[#1C2A3A]/60">Outdoor • Nature</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]">Manhattan, NY</td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60">5000+</td>
-                <td class="px-6 py-4">
-                  <span class="text-[#1C2A3A] text-sm font-medium">12</span>
-                </td>
-                <td class="px-6 py-4">
-                  <span
-                    class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >Active</span
+                  <% }else{ %>
+                    <span
+                    class="px-3 py-1 bg-orange-500/10 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider"
+                    >Maintainace</span
                   >
+                  <% } %>
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
                     <button
                       class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors"
                     >
-                      Edit
+                      <a href="/admin/venues/<%= venues[i]._id %>/edit">Edit</a>
                     </button>
                   </div>
                 </td>
               </tr>
-
-              <tr class="hover:bg-white/50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden"
-                    >
-                      <img
-                        src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=100&auto=format&fit=crop"
-                        class="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p class="font-medium text-[#1C2A3A]">Skyline Loft</p>
-                      <p class="text-xs text-[#1C2A3A]/60">Rooftop • Modern</p>
-                    </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]">Brooklyn, NY</td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60">50 - 200</td>
-                <td class="px-6 py-4">
-                  <span class="text-[#1C2A3A] text-sm font-medium">8</span>
-                </td>
-                <td class="px-6 py-4">
-                  <span
-                    class="px-3 py-1 bg-yellow-500/10 text-yellow-700 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >Maintenance</span
-                  >
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button
-                      class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors"
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </td>
-              </tr>
+              <% } %>
             </tbody>
           </table>
         </div>
 
         <!-- Pagination -->
         <div
-          class="px-6 py-4 border-t border-[#1C2A3A]/10 flex items-center justify-between"
+          class="px-6 py-6 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-4"
         >
-          <p class="text-sm text-[#1C2A3A]/60">Showing 1-10 of 12 venues</p>
-          <div class="flex gap-2">
-            <button
-              class="px-3 py-1 rounded-lg bg-[#1C2A3A] text-white text-sm font-medium"
+          <p class="text-sm text-[#1C2A3A]/60">
+            Showing <%= venues.length %> of <%= totalVenues %> users
+          </p>
+
+          <div class="flex gap-1">
+            <a
+              href="/admin/venues?p=<%= currentPage - 1 %>"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-[#1C2A3A]/10 text-sm hover:bg-white transition-colors <%= currentPage <= 1 ? 'pointer-events-none opacity-50' : '' %>"
             >
-              1
-            </button>
-            <button
-              class="px-3 py-1 rounded-lg border border-[#1C2A3A]/10 text-sm font-medium hover:bg-white transition-colors"
+              &laquo;
+            </a>
+
+            <% for(let i = 1; i <= totalPages; i++) { %>
+            <a
+              href="/admin/venues?p=<%= i %>"
+              class="w-8 h-8 flex items-center justify-center rounded-lg text-sm font-medium transition-colors <%= i === currentPage ? 'bg-[#1C2A3A] text-white' : 'border border-[#1C2A3A]/10 hover:bg-white' %>"
             >
-              2
-            </button>
+              <%= i %>
+            </a>
+            <% } %>
+
+            <a
+              href="/admin/venues?p=<%= currentPage + 1 %>"
+              class="w-8 h-8 flex items-center justify-center rounded-lg border border-[#1C2A3A]/10 text-sm hover:bg-white transition-colors <%= currentPage >= totalPages ? 'pointer-events-none opacity-50' : '' %>"
+            >
+              &raquo;
+            </a>
           </div>
+        </div>
         </div>
       </div>
     </main>

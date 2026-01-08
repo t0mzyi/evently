@@ -1,0 +1,31 @@
+import mongoose from "mongoose";
+
+const categorySchema = new mongoose.Schema(
+  {
+    //     _id objectId
+    //   name string
+    //   description string
+    //   iconUrl string
+    //   colorHex string
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    iconUrl: {
+      type: String,
+      required: true,
+    },
+    colorHex: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const categoryDb = mongoose.model("categories", categorySchema);
+export default categoryDb;

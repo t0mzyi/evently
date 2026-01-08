@@ -8,10 +8,13 @@ import {
 } from "../controller/admin/AdashController.js";
 import {
   addVenue,
+  editVenue,
   showAddVenue,
+  showEditVenue,
   showVenues,
 } from "../controller/admin/AvenueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
+
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/admin/login"));
@@ -25,6 +28,12 @@ router.get("/users/:userId", singleUser);
 router.get("/venues", showVenues);
 router.get("/venues/add", showAddVenue);
 router.post("/venues/add", uploadVenue.array("images[]", 10), addVenue);
+router.get("/venues/:venueId/edit", showEditVenue);
+router.patch(
+  "/venues/:venueId/edit",
+  uploadVenue.array("images[]", 10),
+  editVenue
+);
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 

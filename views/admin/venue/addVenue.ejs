@@ -532,10 +532,10 @@
             if (response.ok && data.success) {
               window.location.href = "/admin/venues?msg=created";
             } else {
-              alert(data.error || "Server error occurred.");
+              console.log(result.error);
             }
           } catch (err) {
-            alert("Network error.");
+            console.log(err);
           } finally {
             btn.disabled = false;
             btn.innerText = "Create Venue";
