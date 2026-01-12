@@ -1,26 +1,40 @@
 import eventsDb from "../../model/eventsDb.js";
 import userDb from "../../model/userDb.js";
 
-export const userDetails = async (page = 1) => {
-  const blockedUsers = await userDb.countDocuments({ isBlocked: true });
-  const activeUsers = await userDb.countDocuments({ isBlocked: false });
-  const hosts = await userDb.countDocuments({ isHost: true });
-  const users = await userDb
-    .find()
-    .sort({ createdAt: -1 })
-    .skip((page - 1) * 3)
-    .limit(3);
-  const totalUsers = activeUsers + blockedUsers;
-  const totalPages = Math.ceil(totalUsers / 3);
+export const userDetails = async (page, searchQuery) => {
+  const limits = 1;
+
+  const filter = {};
+  if (searchQuery) {
+    filter.$or = [
+      { firstName: { $regex: searchQuery, $options: "i" } },
+      { lastName: { $regex: searchQuery, $options: "i" } },
+    ];
+  }
+  const [blockedUsers, activeUsers, hosts, users, totalFilteredUser] =
+    await Promise.all([
+      userDb.countDocuments({ isBlocked: true }),
+      userDb.countDocuments({ isBlocked: false }),
+      userDb.countDocuments({ isHost: true }),
+      userDb
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limits)
+        .limit(limits),
+      userDb.countDocuments(filter),
+    ]);
+
+  const totalPages = Math.ceil(totalFilteredUser / limits);
 
   return {
     blockedUsers,
     activeUsers,
-    totalUsers,
+    totalUsers: activeUsers + blockedUsers,
     hosts,
     users,
     totalPages,
     currentPage: parseInt(page),
+    searchQuery,
   };
 };
 

@@ -84,7 +84,7 @@
 
     <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
       <!-- Header -->
-      <div class="text-center mb-16 max-w-2xl mx-auto">
+      <div class="text-center mb-10 max-w-2xl mx-auto">
         <h1
           class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-6 text-[#1C2A3A]"
         >
@@ -99,12 +99,82 @@
         </p>
       </div>
 
+      <!-- Search, Filter & Sort Controls -->
+      <div class="mb-12 max-w-4xl mx-auto">
+        <!-- Search Bar -->
+        <div class="relative mb-6">
+          <input
+            type="text"
+            id="venue-search"
+            placeholder="Search venues by name or location…"
+            class="w-full py-3 px-6 pr-12 rounded-full bg-[#F9F7F5] border border-[#1C2A3A]/10 text-[#1C2A3A] placeholder-[#1C2A3A]/40 focus:outline-none focus:ring-2 focus:ring-[#ED8842] font-sans"
+          />
+          <svg
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#1C2A3A]/50"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+        </div>
+
+        <!-- Filter & Sort Row -->
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center"
+        >
+          <!-- Filter by Type -->
+          <div class="flex items-center gap-2">
+            <span
+              class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60 whitespace-nowrap"
+              >Type:</span
+            >
+            <select
+              id="venue-type-filter"
+              class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2 text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842] min-w-[130px]"
+            >
+              <option value="all">All Types</option>
+              <option value="rooftop">Rooftop</option>
+              <option value="hall">Grand Hall</option>
+              <option value="loft">Loft</option>
+              <option value="garden">Garden</option>
+            </select>
+          </div>
+
+          <!-- Sort By -->
+          <div class="flex items-center gap-2">
+            <span
+              class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60 whitespace-nowrap"
+              >Sort:</span
+            >
+            <select
+              id="venue-sort"
+              class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2 text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842] min-w-[150px]"
+            >
+              <option value="name-asc">Name A–Z</option>
+              <option value="name-desc">Name Z–A</option>
+              <option value="capacity-desc">Largest Capacity</option>
+              <option value="capacity-asc">Smallest Capacity</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
       <!-- Venue Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <% if (typeof venues !== 'undefined' && venues.length > 0) { %> <%
         for(let i=0; i < venues.length; i++) { %>
         <div
-          class="group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5"
+          class="venue-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5"
+          data-name="<%= venues[i].name.toLowerCase() %>"
+          data-address="<%= venues[i].address.toLowerCase() %>"
+          data-type="<%= venues[i].type.toLowerCase() %>"
+          data-capacity="<%= venues[i].capacity %>"
         >
           <div class="h-64 overflow-hidden relative">
             <a href="/venues/<%= venues[i]._id %>">

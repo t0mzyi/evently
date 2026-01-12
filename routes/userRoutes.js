@@ -12,6 +12,8 @@ import {
   resetPassPatch,
   resetPassword,
   logout,
+  emailChange,
+  emailChanger,
 } from "../controller/user/authController.js";
 import {
   googleAuth,
@@ -59,6 +61,10 @@ router.post("/resend-otp", resentOtp);
 //forgotpassword flowwwwee
 router.get("/forgot-password", forgotPassword);
 router.post("/forgot-password", forgotPasswordPost);
+
+//emailChange
+router.get("/emailChange", emailChange);
+router.patch("/emailChange", emailChanger);
 
 //resetpassword flow
 router.get("/reset-password", resetPasswordGuard, resetPassword);

@@ -8,6 +8,7 @@ export const venueList = async (page) => {
     .sort({ createdAt: -1 })
     .skip((page - 1) * 3)
     .limit(3);
+  console.log(venues);
   const totalPages = Math.ceil(totalVenues / 3);
   return {
     venues,

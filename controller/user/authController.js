@@ -1,3 +1,4 @@
+import { render } from "ejs";
 import {
   signUpVerify,
   signInVerify,
@@ -7,15 +8,19 @@ import {
   createUser,
   updatePassword,
   forgotPassSessionExists,
+  updateEmail,
 } from "../../service/user/authService.js";
 import bcrypt from "bcrypt";
+import { otpCreator } from "../../utils/otpGenerator.js";
 
 export const signUp = (req, res) => {
   res.render("user/auth", { mode: "register" });
 };
+
 export const signIn = (req, res) => {
   return res.render("user/auth", { mode: "login" });
 };
+
 export const forgotPassword = async (req, res) => {
   if (req.session.user) {
     const user = await forgotPassSessionExists(req.session.user);
@@ -25,6 +30,36 @@ export const forgotPassword = async (req, res) => {
   }
   return res.render("user/forgot-password");
 };
+
+export const emailChange = async (req, res) => {
+  res.render("user/emailChange");
+};
+
+export const emailChanger = async (req, res) => {
+  try {
+    const { emailAddress } = req.body;
+
+    if (!emailAddress) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email is required" });
+    }
+    req.session.newEmail = emailAddress;
+    req.session.otpRequested = true;
+    await otpCreator(emailAddress);
+    return res.status(200).json({
+      success: true,
+      redirectUrl: "/otp",
+    });
+  } catch (err) {
+    console.error("Error in emailChanger:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Could not send OTP.",
+    });
+  }
+};
+
 export const otpPage = (req, res) => {
   if (req.session.user) {
     return res.render("user/otp", { user: req.session.user });
@@ -32,7 +67,7 @@ export const otpPage = (req, res) => {
   return res.render("user/otp");
 };
 export const resetPassword = (req, res) => {
-  return res.render("user/reset-password");
+  return res.render("user/reset-password", { user: req.session.user });
 };
 
 export const forgotPasswordPost = async (req, res) => {
@@ -91,11 +126,10 @@ export const resetPassPatch = async (req, res) => {
 export const otpHandler = async (req, res) => {
   try {
     const { otp } = req.body;
-    const { tempUserData, forgotPassEmail } = req.session;
+    const { tempUserData, forgotPassEmail, newEmail } = req.session;
 
-    const targetEmail = tempUserData
-      ? tempUserData.emailAddress
-      : forgotPassEmail;
+    const targetEmail =
+      tempUserData?.emailAddress || forgotPassEmail || newEmail;
     if (!targetEmail) {
       return res.status(400).json({
         success: false,
@@ -117,20 +151,26 @@ export const otpHandler = async (req, res) => {
       return res
         .status(200)
         .json({ success: true, redirectUrl: "/reset-password" });
+    } else if (newEmail) {
+      await updateEmail(req.session.newEmail, req.session.user);
+      req.session.newEmail = null;
+      return res.status(200).json({
+        success: true,
+        redirectUrl: "/dashboard?status=success&message= email update done",
+      });
     }
     return res
       .status(400)
       .json({ success: false, message: "Invalid session state" });
   } catch (err) {
     console.log(`err in otpHandler`, err.message);
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: err.message || "OTP verification failed",
-      });
+    return res.status(400).json({
+      success: false,
+      message: err.message || "OTP verification failed",
+    });
   }
 };
+
 export const signInPost = async (req, res) => {
   try {
     const user = await signInVerify(req.body);
@@ -176,7 +216,9 @@ export const signUpPost = async (req, res) => {
 export const resentOtp = async (req, res) => {
   try {
     const email =
-      req.session.tempUserData?.emailAddress || req.session.forgotPassEmail;
+      req.session.tempUserData?.emailAddress ||
+      req.session.forgotPassEmail ||
+      req.session.newEmail;
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -187,12 +229,10 @@ export const resentOtp = async (req, res) => {
     return res.status(200).json({ success: true, message: result.message });
   } catch (err) {
     console.log("err in resentOtp", err.message);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to resnt otp please try again",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Failed to resnt otp please try again",
+    });
   }
 };
 

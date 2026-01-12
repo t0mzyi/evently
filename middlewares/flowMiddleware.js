@@ -33,3 +33,18 @@ export const ifAuth = (req, res, next) => {
   }
   return next();
 };
+
+export const isAdmin = (req, res, next) => {
+  // if (req.session.isAdmin) {
+  //   return next();
+  // }
+  // return res.redirect("/admin");
+  next();
+};
+
+export const ifAdmin = (req, res, next) => {
+  if (req.session.isAdmin) {
+    return res.redirect("/admin/dash");
+  }
+  return next();
+};

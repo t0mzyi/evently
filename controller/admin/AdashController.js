@@ -12,8 +12,9 @@ export const getDash = async (req, res) => {
 };
 
 export const users = async (req, res) => {
-  const page = req.query.p;
-  const userDb = await userDetails(page);
+  const page = req.query.p || 1;
+  const filter = req.query.n || "";
+  const userDb = await userDetails(page, filter);
   console.log;
   res.render("admin/users", { userDb });
 };

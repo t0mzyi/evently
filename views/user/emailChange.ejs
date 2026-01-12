@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Enter OTP — Evently</title>
+    <title>Forgot Password — Evently</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/assets/css/styles.css" />
     <link
@@ -87,9 +87,16 @@
         transform: translateY(-1px);
         box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
       }
-      #resendBtn:disabled {
-        cursor: not-allowed !important;
-        opacity: 0.6;
+      .input-error {
+        border: 1px solid #ef4444 !important;
+        background-color: #fff5f5;
+      }
+      .error-text {
+        color: #f87171;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        margin-top: 4px;
+        padding-left: 4px;
       }
     </style>
   </head>
@@ -187,150 +194,120 @@
         class="auth-card rounded-[2rem] p-12 w-full relative overflow-hidden"
       >
         <div class="mb-10 text-center">
-          <h1 class="text-4xl font-heading text-white mb-2">Enter OTP</h1>
+          <h1 class="text-4xl font-heading text-white mb-2">Email change?</h1>
           <p class="text-gray-400 text-xs font-sans tracking-wide">
-            The otp has been sent to your registered email
+            Enter your new email
           </p>
         </div>
 
-        <form class="space-y-6" id="otpForm" novalidate>
-          <div class="space-y-2">
+        <form class="space-y-6" id="emailChangeForm" novalidate>
+          <div class="space-y-1.5">
             <input
-              id="otpInput"
-              type="text"
-              placeholder="●●●●●●"
-              class="w-full h-12 px-4 rounded-xl input-clean text-sm font-sans text-center tracking-[0.5em]"
-              maxlength="6"
-              required
+              type="email"
+              id="emailInput"
+              placeholder="name@company.com"
+              class="w-full h-12 px-4 rounded-xl input-clean text-sm font-sans"
             />
-            <div class="text-right">
-              <button
-                type="button"
-                id="resendBtn"
-                class="text-[10px] text-theme-primary bg-white/50 px-2 py-1 rounded hover:bg-white/20 transition-colors uppercase tracking-wider disabled:opacity-50"
-              >
-                Resend OTP
-              </button>
-              <span
-                id="timerDisplay"
-                class="text-[10px] text-gray-400 ml-2"
-              ></span>
-            </div>
+            <p id="errorEl" class="error-text hidden"></p>
           </div>
 
           <button
+            id="verifyBtn"
             type="submit"
-            class="w-full h-12 rounded-xl font-sans font-medium text-sm btn-primary mt-2 uppercase"
+            class="w-full h-12 rounded-xl font-sans font-medium text-sm btn-primary mt-4 uppercase"
           >
             Verify
           </button>
-          <div
-            id="errorMsgBox"
-            class="hidden mt-3 text-red-400 text-center text-[10px] tracking-widest uppercase font-semibold"
-          ></div>
         </form>
+      </div>
+
+      <!-- Back Link -->
+      <div class="mt-8 text-center">
+        <a
+          href="/dashboard"
+          class="text-[10px] text-theme-primary/60 hover:text-theme-primary transition-colors flex items-center justify-center space-x-2 font-bold tracking-widest uppercase"
+        >
+          <svg
+            class="w-3 h-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l-7-7m7-7H3"
+            ></path>
+          </svg>
+          <span>Back to Profile</span>
+        </a>
       </div>
     </div>
   </body>
+
   <script>
-    const otpForm = document.getElementById("otpForm");
-    const otpInput = document.getElementById("otpInput");
-    const errorBox = document.getElementById("errorMsgBox");
-    const resendBtn = document.getElementById("resendBtn");
-    const timerDisplay = document.getElementById("timerDisplay");
+    const emailChangeForm = document.getElementById("emailChangeForm");
+    const emailInput = document.getElementById("emailInput");
+    const errorEl = document.getElementById("errorEl");
+    const verifyBtn = document.getElementById("verifyBtn");
 
-    function startResendTimer() {
-      let timerLeft = 10;
-      resendBtn.disabled = true;
-      resendBtn.textContent = "RESEND OTP";
-      timerDisplay.textContent = `(${timerLeft}s)`;
-
-      const interval = setInterval(() => {
-        timerLeft--;
-        timerDisplay.textContent = `(${timerLeft}s)`;
-
-        if (timerLeft <= 0) {
-          clearInterval(interval);
-          resendBtn.disabled = false;
-          timerDisplay.textContent = "";
-        }
-      }, 1000);
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    resendBtn.addEventListener("click", async () => {
-      const originalText = resendBtn.textContent;
-      resendBtn.textContent = "RESENDING...";
-      resendBtn.disabled = true;
-      errorBox.classList.add("hidden");
-      try {
-        const response = await fetch("/resend-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        const result = await response.json();
-
-        errorBox.classList.remove("hidden");
-        if (response.ok) {
-          errorBox.textContent = result.message;
-          resendBtn.textContent = "Resend OTP";
-          errorBox.style.color = "#4ade80"; // Green for success
-          startResendTimer();
-        } else {
-          errorBox.classList.remove("hidden");
-          errorBox.textContent = result.message;
-          errorBox.style.color = "#f87171"; // Error Red
-          resendBtn.textContent = originalText;
-          resendBtn.disabled = false;
-        }
-      } catch (err) {
-        console.error("Resend Error:", err);
-        errorBox.classList.remove("hidden");
-        errorBox.style.color = "#f87171";
-        errorBox.textContent = "Network error. Try again.";
-        resendBtn.textContent = originalText;
-        resendBtn.disabled = false;
-      }
-    });
-
-    otpForm.addEventListener("submit", async (e) => {
+    emailChangeForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      emailInput.classList.remove("input-error");
+      errorEl.classList.add("hidden");
 
-      errorBox.classList.add("hidden");
-      const otpValue = otpInput.value;
+      const emailValue = emailInput.value.trim();
+      let valid = true;
 
-      // Visual feedback
-      const submitBtn = otpForm.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = "VERIFYING...";
-      submitBtn.disabled = true;
+      if (!emailValue || !isValidEmail(emailValue)) {
+        errorEl.classList.remove("hidden");
+        emailInput.classList.add("input-error");
+        errorEl.textContent = "Enter valid email";
+        valid = false;
+      }
 
-      try {
-        const response = await fetch("/otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ otp: otpValue }),
-        });
-        const result = await response.json();
+      if (valid) {
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = "Checking...";
+        verifyBtn.classList.add("opacity-50", "cursor-not-allowed");
 
-        if (response.ok && result.success) {
-          window.location.href = result.redirectUrl;
-        } else {
-          errorBox.classList.remove("hidden");
-          errorBox.style.color = "#f87171";
-          errorBox.textContent = result.message || "Invalid OTP";
+        try {
+          const response = await fetch("/emailChange", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              emailAddress: emailValue,
+            }),
+          });
+          if (response.ok) {
+            verifyBtn.textContent = "Sending OTP..";
+          }
 
-          // Re-enable button on failure
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
+          const result = await response.json();
+
+          if (result.success) {
+            window.location.href = result.redirectUrl;
+          } else {
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = "verify";
+            verifyBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            errorEl.textContent = result.message;
+            errorEl.classList.remove("hidden");
+            emailInput.classList.add("input-error");
+          }
+        } catch (Err) {
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = "verify";
+          verifyBtn.classList.remove("opacity-50", "cursor-not-allowed");
+          errorEl.textContent = result.message;
+          errorEl.classList.remove("hidden");
+          emailInput.classList.add("input-error");
         }
-      } catch (err) {
-        console.log("error in otppage", err);
-        errorBox.classList.remove("hidden");
-        errorBox.style.color = "#f87171";
-        errorBox.textContent = "Network error";
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
       }
     });
   </script>

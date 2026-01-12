@@ -14,21 +14,22 @@ import {
   showVenues,
 } from "../controller/admin/AvenueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
+import { ifAdmin, isAdmin } from "../middlewares/flowMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/admin/login"));
-router.get("/login", AloginGet);
+router.get("/login", ifAdmin, AloginGet);
 router.post("/login", AloginPost);
 
-router.get("/users", users);
+router.get("/users", isAdmin, users);
 router.get("/users/:userId", singleUser);
 
 //venueSide
-router.get("/venues", showVenues);
-router.get("/venues/add", showAddVenue);
+router.get("/venues", isAdmin, showVenues);
+router.get("/venues/add", isAdmin, showAddVenue);
 router.post("/venues/add", uploadVenue.array("images[]", 10), addVenue);
-router.get("/venues/:venueId/edit", showEditVenue);
+router.get("/venues/:venueId/edit", isAdmin, showEditVenue);
 router.patch(
   "/venues/:venueId/edit",
   uploadVenue.array("images[]", 10),
@@ -37,6 +38,6 @@ router.patch(
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 
-router.get("/dash", getDash);
+router.get("/dash", isAdmin, getDash);
 
 export default router;

@@ -26,359 +26,243 @@
         },
       };
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>
 
-  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <body
+    class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans selection:bg-[#ED8842] selection:text-white"
+  >
     <%- include('../partials/navbar') %>
 
-    <div class="relative h-[60vh] md:h-[70vh]">
+    <div class="relative h-[45vh] md:h-[50vh] overflow-hidden">
       <img
         src="<%= venue.image_url[0] %>"
         class="absolute inset-0 w-full h-full object-cover"
         alt="<%= venue.name %>"
       />
-      <div class="absolute inset-0 bg-[#EAE0CF]/90 mix-blend-multiply"></div>
       <div
-        class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A]/80 via-transparent to-transparent"
+        class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A] via-[#1C2A3A]/40 to-transparent"
       ></div>
 
-      <div class="absolute bottom-0 w-full pb-16 px-6">
-        <div
-          class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-8"
-        >
-          <div>
-            <a
-              href="/venues"
-              class="inline-flex items-center gap-2 text-white/60 hover:text-white text-xs font-bold uppercase tracking-widest mb-4 transition-colors"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                ></path>
-              </svg>
-              Back to Venues
-            </a>
-            <h1 class="text-5xl md:text-7xl font-heading text-white mb-4">
-              <%= venue.name %>
-            </h1>
-            <div
-              class="flex flex-wrap items-center gap-6 text-white/80 text-sm font-medium"
-            >
-              <span class="flex items-center gap-2">
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  ></path>
-                </svg>
-                <%= venue.address %>
-              </span>
-              <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
-              <span class="flex items-center gap-2">
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v11m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                  ></path>
-                </svg>
-                <%= venue.type %> Venue
-              </span>
-            </div>
-          </div>
-          <div class="flex gap-4">
-            <button
-              class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white hover:bg-white hover:text-[#1C2A3A] transition-all"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                ></path>
-              </svg>
-            </button>
-            <button
-              onclick="openAvailabilityModal()"
-              class="px-8 py-3 bg-white text-[#1C2A3A] rounded-full font-bold uppercase tracking-widest text-sm hover:bg-[#EAE0CF] transition-colors shadow-lg"
-            >
-              Book Venue
-            </button>
-          </div>
+      <div class="absolute bottom-0 w-full pb-10 px-6">
+        <div class="max-w-7xl mx-auto">
+          <span
+            class="px-3 py-1 bg-[#ED8842] text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block"
+          >
+            <%= venue.type %> Venue
+          </span>
+          <h1
+            class="text-4xl md:text-6xl font-heading text-white leading-tight"
+          >
+            <%= venue.name %>
+          </h1>
         </div>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-6 py-16">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-16">
-        <div class="lg:col-span-2 space-y-12">
+    <main class="max-w-7xl mx-auto px-6 py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        <div class="lg:col-span-8 space-y-16">
           <section>
-            <h2 class="text-2xl font-heading text-[#1C2A3A] mb-4">
-              About the Venue
-            </h2>
+            <h2 class="text-2xl font-heading mb-6">About the Space</h2>
             <p
-              class="text-[#1C2A3A]/70 leading-relaxed text-lg whitespace-pre-line"
+              class="text-lg text-[#1C2A3A]/70 leading-relaxed font-light whitespace-pre-line"
             >
               <%= venue.description %>
             </p>
           </section>
 
-          <section class="grid grid-cols-2 md:grid-cols-3 gap-6">
-            <div class="bg-[#F9F7F5] p-6 rounded-2xl border border-[#1C2A3A]/5">
+          <section class="grid grid-cols-2 gap-4">
+            <div class="bg-white/40 p-6 rounded-3xl border border-white/60">
               <p
-                class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
+                class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest mb-1"
               >
-                Capacity
+                Max Capacity
               </p>
-              <p class="text-2xl font-heading text-[#1C2A3A]">
-                <%= venue.capacity.toLocaleString() %>
+              <p class="text-2xl font-heading">
+                <%= venue.capacity.toLocaleString() %> Guests
               </p>
             </div>
-            <div class="bg-[#F9F7F5] p-6 rounded-2xl border border-[#1C2A3A]/5">
+            <div class="bg-white/40 p-6 rounded-3xl border border-white/60">
               <p
-                class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
+                class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest mb-1"
               >
-                Status
+                Environment
               </p>
-              <p class="text-2xl font-heading text-[#1C2A3A]">
-                <%= venue.isActive ? 'Available' : 'Maintenance' %>
-              </p>
+              <p class="text-2xl font-heading"><%= venue.type %></p>
             </div>
           </section>
 
           <section>
-            <h2 class="text-2xl font-heading text-[#1C2A3A] mb-6">Amenities</h2>
-            <div class="grid grid-cols-2 gap-y-4">
-              <% if (venue.amenities && venue.amenities.length > 0) { %> <%
-              venue.amenities.forEach(item => { %>
-              <div class="flex items-center gap-3 text-[#1C2A3A]/80">
-                <svg
-                  class="w-5 h-5 text-green-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  ></path>
-                </svg>
-                <span class="font-bold"><%= item.key %>:</span> <%= item.value
-                %>
+            <h2
+              class="text-xs font-bold mb-8 uppercase tracking-[0.2em] text-[#1C2A3A]/40"
+            >
+              Venue Amenities
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <% venue.amenities.forEach(item => { %>
+              <div
+                class="flex items-center gap-4 bg-white/30 p-4 rounded-2xl border border-white/40"
+              >
+                <div class="w-2 h-2 rounded-full bg-[#ED8842]"></div>
+                <p class="text-sm">
+                  <span
+                    class="font-bold text-[#1C2A3A] uppercase text-[10px] tracking-wide"
+                    ><%= item.key %>:</span
+                  >
+                  <span class="text-[#1C2A3A]/70"><%= item.value %></span>
+                </p>
               </div>
-              <% }) %> <% } else { %>
-              <p class="text-sm text-[#1C2A3A]/40">
-                No specific amenities listed.
-              </p>
-              <% } %>
+              <% }) %>
             </div>
           </section>
 
           <section>
-            <h2 class="text-2xl font-heading text-[#1C2A3A] mb-6">Gallery</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <% venue.image_url.forEach((url, index) => { %>
+            <h2
+              class="text-xs font-bold mb-8 uppercase tracking-[0.2em] text-[#1C2A3A]/40"
+            >
+              Gallery Portfolio
+            </h2>
+            <div class="columns-2 md:columns-3 gap-4 space-y-4">
+              <% venue.image_url.forEach((url, i) => { %>
               <img
                 src="<%= url %>"
-                class="rounded-2xl w-full h-48 object-cover hover:opacity-90 transition-opacity cursor-pointer shadow-sm"
-                alt="<%= venue.name %> Gallery <%= index + 1 %>"
+                class="w-full rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-500"
+                alt="Venue view"
               />
               <% }) %>
             </div>
           </section>
         </div>
 
-        <div class="space-y-8">
-          <div
-            class="bg-white/60 p-8 rounded-[2.5rem] shadow-sm border border-white/40 sticky top-32"
-          >
-            <h3 class="text-xl font-heading text-[#1C2A3A] mb-6">Location</h3>
-
+        <div class="lg:col-span-4 space-y-8">
+          <div class="sticky top-32 space-y-6">
             <div
-              class="w-full h-48 bg-[#EAE0CF] rounded-2xl mb-6 relative overflow-hidden"
+              class="bg-white/80 p-4 rounded-[2.5rem] shadow-sm border border-white/40"
             >
-              <div
-                class="absolute inset-0 flex items-center justify-center bg-[#1C2A3A]/5"
+              <h3
+                class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4 px-2"
               >
-                <svg
-                  class="w-12 h-12 text-[#1C2A3A]/20"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 7m0 13V7"
-                  ></path>
-                </svg>
-              </div>
-              <a
-                href="<%= venue.map_url %>"
-                target="_blank"
-                class="absolute inset-0 flex items-center justify-center bg-black/10 hover:bg-black/20 transition-colors group"
-              >
-                <span
-                  class="px-4 py-2 bg-white rounded-full text-xs font-bold uppercase tracking-wider shadow-lg group-hover:scale-105 transition-transform"
-                >
-                  Open in Google Maps
-                </span>
-              </a>
-            </div>
+                Location
+              </h3>
 
-            <div class="space-y-4 mb-8">
-              <div>
-                <p
-                  class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
+              <div
+                class="w-full h-64 rounded-[1.5rem] overflow-hidden grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+              >
+                <iframe
+                  width="100%"
+                  height="100%"
+                  frameborder="0"
+                  scrolling="no"
+                  marginheight="0"
+                  marginwidth="0"
+                  src="https://maps.google.com/maps?q=<%= encodeURIComponent(venue.address) %>&t=&z=13&ie=UTF8&iwloc=&output=embed"
                 >
-                  Address
+                </iframe>
+              </div>
+
+              <div class="mt-4 px-2">
+                <p class="text-sm font-medium text-[#1C2A3A] mb-2">
+                  <%= venue.address %>
                 </p>
-                <p class="text-[#1C2A3A]"><%= venue.address %></p>
+                <a
+                  href="<%= venue.map_url %>"
+                  target="_blank"
+                  class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline flex items-center gap-2"
+                >
+                  Get Directions
+                  <svg
+                    class="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    ></path>
+                  </svg>
+                </a>
               </div>
             </div>
 
             <button
               onclick="openAvailabilityModal()"
-              class="block w-full py-4 bg-[#1C2A3A] text-white text-center rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#2C3E50] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              class="w-full py-6 bg-[#1C2A3A] text-white rounded-[2rem] font-bold uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:bg-[#ED8842] transition-all transform hover:-translate-y-1"
             >
-              Book Venue
+              Check Availability
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <div id="availabilityModal" class="fixed inset-0 z-[100] hidden">
       <div
-        class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm"
         onclick="closeAvailabilityModal()"
       ></div>
       <div
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl transform transition-all"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#F9F7F5] rounded-[3rem] p-10 shadow-2xl"
       >
-        <h3 class="text-2xl font-heading text-[#1C2A3A] mb-6">
-          Check Availability
-        </h3>
-        <div class="space-y-4">
-          <div>
-            <label
-              class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2"
-              >Select Date</label
-            >
-            <input
-              type="date"
-              id="checkDate"
-              class="w-full px-4 py-3 bg-[#F9F7F5] border-none rounded-xl text-[#1C2A3A] focus:ring-2 focus:ring-[#1C2A3A]/20 outline-none"
-            />
-          </div>
-          <div
-            id="availabilityResult"
-            class="hidden p-4 rounded-xl text-center text-sm font-medium"
-          ></div>
-          <button
-            onclick="checkDateAvailability()"
-            class="w-full py-4 bg-[#1C2A3A] text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-[#2C3E50] transition-colors"
-          >
-            Check Date
-          </button>
-        </div>
+        <h3 class="text-3xl font-heading mb-8">Select Date</h3>
+        <input
+          type="date"
+          id="checkDate"
+          class="w-full px-6 py-4 bg-white rounded-2xl border-none outline-none mb-6 font-bold text-sm"
+        />
+        <div
+          id="availabilityResult"
+          class="hidden p-4 rounded-2xl text-center text-[10px] font-bold uppercase tracking-widest mb-6"
+        ></div>
         <button
-          onclick="closeAvailabilityModal()"
-          class="absolute top-6 right-6 text-[#1C2A3A]/40 hover:text-[#1C2A3A]"
+          onclick="checkDateAvailability()"
+          class="w-full py-5 bg-[#ED8842] text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg"
         >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path>
-          </svg>
+          Verify & Proceed
         </button>
       </div>
     </div>
 
     <script>
+      window.onload = () => {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("checkDate").setAttribute("min", today);
+      };
+
       function openAvailabilityModal() {
         document.getElementById("availabilityModal").classList.remove("hidden");
       }
-
       function closeAvailabilityModal() {
         document.getElementById("availabilityModal").classList.add("hidden");
-        document.getElementById("availabilityResult").classList.add("hidden");
       }
 
       function checkDateAvailability() {
         const date = document.getElementById("checkDate").value;
         const resultDiv = document.getElementById("availabilityResult");
+        if (!date) return;
 
-        if (!date) {
-          resultDiv.textContent = "Please select a date";
-          resultDiv.className =
-            "p-4 rounded-xl text-center text-sm font-medium bg-red-50 text-red-600 block";
-          return;
-        }
-
-        // Mock logic: Passing parameters to creation page
+        // DB Data for the redirect
         const venueName = "<%= encodeURIComponent(venue.name) %>";
         const venueId = "<%= venue._id %>";
 
-        // Simulating availability
-        const isAvailable = Math.random() > 0.3;
-
+        const isAvailable = Math.random() > 0.2; // Simulated check
         if (isAvailable) {
-          window.location.href = `/create-event?venue=${venueName}&id=${venueId}&date=${date}`;
-        } else {
-          resultDiv.innerHTML = `<span class="block text-lg font-bold mb-1">Booked</span>Sorry, this date is taken.`;
+          resultDiv.textContent = "Date Available";
           resultDiv.className =
-            "p-4 rounded-xl text-center text-sm font-medium bg-red-50 text-red-600 block border border-red-100";
+            "p-4 rounded-2xl text-center text-[10px] font-bold bg-green-100 text-green-700 block mb-6";
+          setTimeout(() => {
+            window.location.href = `/create-event?venue=${venueName}&id=${venueId}&date=${date}`;
+          }, 1000);
+        } else {
+          resultDiv.textContent = "Date Reserved";
+          resultDiv.className =
+            "p-4 rounded-2xl text-center text-[10px] font-bold bg-red-100 text-red-700 block mb-6";
         }
       }
     </script>
