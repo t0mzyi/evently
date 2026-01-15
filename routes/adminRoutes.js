@@ -37,7 +37,6 @@ router.patch(
 );
 
 //events Side
-r;
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 
