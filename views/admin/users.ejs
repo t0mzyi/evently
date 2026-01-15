@@ -27,19 +27,10 @@
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <style>
-      /* Custom scrollbar for a cleaner look */
-      .overflow-x-auto::-webkit-scrollbar {
-        height: 6px;
-      }
-      .overflow-x-auto::-webkit-scrollbar-thumb {
-        background: rgba(28, 42, 58, 0.1);
-        border-radius: 10px;
-      }
+      .overflow-x-auto::-webkit-scrollbar { height: 6px; }
+      .overflow-x-auto::-webkit-scrollbar-thumb { background: rgba(28, 42, 58, 0.1); border-radius: 10px; }
     </style>
   </head>
 
@@ -47,392 +38,206 @@
     <%- include('../partials/toast') %>
 
     <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-      <nav
-        class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl"
-      >
+      <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
         <div class="flex items-center gap-6">
-          <span class="text-xl font-bold tracking-tight text-white font-heading"
-            >evently admin</span
-          >
-          <div
-            class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80"
-          >
-            <a
-              href="/admin/dashboard"
-              class="hover:text-white transition-colors"
-              >Dashboard</a
-            >
-            <a href="/admin/events" class="hover:text-white transition-colors"
-              >Events</a
-            >
-            <a
-              href="/admin/users"
-              class="text-white border-b-2 border-[#ED8842] pb-1"
-              >Users</a
-            >
-            <a href="/admin/venues" class="hover:text-white transition-colors"
-              >Venues</a
-            >
-            <a
-              href="/admin/categories"
-              class="hover:text-white transition-colors"
-              >Categories</a
-            >
+          <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
+          <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
+            <a href="/admin/dash" class="hover:text-white transition-colors">Dashboard</a>
+            <a href="/admin/events" class="hover:text-white transition-colors">Events</a>
+            <a href="/admin/users" class="text-white border-b-2 border-[#ED8842] pb-1">Users</a>
+            <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
+            <a href="/admin/categories" class="hover:text-white transition-colors">Categories</a>
           </div>
         </div>
         <div class="flex items-center gap-4">
           <span class="text-white/70 text-sm hidden sm:inline">Admin</span>
-          <a
-            href="/"
-            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-all hover:scale-105"
-            title="Go to Website"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              ></path>
-            </svg>
+          <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-all hover:scale-105" title="Go to Website">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
           </a>
         </div>
       </nav>
     </div>
 
     <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8"
-      >
-        <div>
-          <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">
-            User Management
-          </h1>
-          <p class="text-[#1C2A3A]/60">Manage platform users and permissions</p>
-        </div>
-        <div class="flex gap-3 w-full md:w-auto">
-          <div class="flex-1 md:w-64">
-            <form action="/admin/users" method="GET">
-              <input
-                type="search"
-                value="<%= userDb.searchQuery %>"
-                name="n"
-                placeholder="Search users..."
-                class="w-full px-4 py-2 bg-white/60 border border-[#1C2A3A]/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/40"
-              />
-            </form>
-          </div>
-          <button
-            class="px-4 py-2 bg-white/60 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium hover:bg-white transition-colors"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-              ></path>
-            </svg>
-          </button>
-        </div>
+      <div class="mb-8">
+        <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">User Management</h1>
+        <p class="text-[#1C2A3A]/60">Manage platform users and permissions</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div
-          class="bg-white/60 backdrop-blur-xl rounded-xl p-5 border border-white/40 shadow-sm"
-        >
-          <p class="text-2xl font-heading font-bold text-[#1C2A3A]">
-            <%= userDb.totalUsers %>
-          </p>
-          <p
-            class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider font-bold"
-          >
-            Total Users
-          </p>
+        <div class="bg-white/60 backdrop-blur-xl rounded-xl p-5 border border-white/40 shadow-sm">
+          <p class="text-2xl font-heading font-bold text-[#1C2A3A]"><%= userDb.totalUsers %></p>
+          <p class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider font-bold">Total Users</p>
         </div>
-        <div
-          class="bg-green-500/10 backdrop-blur-xl rounded-xl p-5 border border-green-500/20 shadow-sm"
-        >
-          <p class="text-2xl font-heading font-bold text-green-700">
-            <%= userDb.activeUsers %>
-          </p>
-          <p
-            class="text-xs text-green-700/80 uppercase tracking-wider font-bold"
-          >
-            Active Users
-          </p>
+        <div class="bg-green-500/10 backdrop-blur-xl rounded-xl p-5 border border-green-500/20 shadow-sm">
+          <p class="text-2xl font-heading font-bold text-green-700"><%= userDb.activeUsers %></p>
+          <p class="text-xs text-green-700/80 uppercase tracking-wider font-bold">Active Users</p>
         </div>
-        <div
-          class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-5 border border-blue-500/20 shadow-sm"
-        >
-          <p class="text-2xl font-heading font-bold text-blue-700">
-            <%= userDb.hosts %>
-          </p>
-          <p
-            class="text-xs text-blue-700/80 uppercase tracking-wider font-bold"
-          >
-            Event Hosts
-          </p>
+        <div class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-5 border border-blue-500/20 shadow-sm">
+          <p class="text-2xl font-heading font-bold text-blue-700"><%= userDb.hosts %></p>
+          <p class="text-xs text-blue-700/80 uppercase tracking-wider font-bold">Event Hosts</p>
         </div>
-        <div
-          class="bg-red-500/10 backdrop-blur-xl rounded-xl p-5 border border-red-500/20 shadow-sm"
-        >
-          <p class="text-2xl font-heading font-bold text-red-700">
-            <%= userDb.blockedUsers %>
-          </p>
-          <p class="text-xs text-red-700/80 uppercase tracking-wider font-bold">
-            Blocked
-          </p>
+        <div class="bg-red-500/10 backdrop-blur-xl rounded-xl p-5 border border-red-500/20 shadow-sm">
+          <p class="text-2xl font-heading font-bold text-red-700"><%= userDb.blockedUsers %></p>
+          <p class="text-xs text-red-700/80 uppercase tracking-wider font-bold">Blocked</p>
         </div>
       </div>
 
-      <div
-        class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden"
-      >
+      <div class="bg-white/40 backdrop-blur-md rounded-2xl p-4 mb-8 border border-white/20">
+        <form action="/admin/users" method="GET" class="flex flex-col md:flex-row items-center gap-6">
+          <input type="hidden" name="p" value="1">
+          
+          <div class="relative w-full md:flex-1">
+            <input type="search" value="<%= userDb.searchQuery %>" name="n" placeholder="Search by name or email..." 
+                   class="w-full px-4 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40" />
+          </div>
+
+          <div class="flex flex-wrap items-center gap-6 w-full md:w-auto">
+            <label class="flex items-center cursor-pointer group">
+  <span class="mr-3 text-sm font-medium text-[#1C2A3A]/70 group-hover:text-[#1C2A3A] transition-colors">Active Only</span>
+  <div class="relative inline-flex items-center">
+    <input 
+      type="checkbox" 
+      name="active" 
+      value="true" 
+      onchange="this.form.submit()" 
+      class="sr-only peer" 
+      <%= userDb.showActiveOnly === 'true' ? 'checked' : '' %>
+    >
+    <div class="w-11 h-6 bg-[#1C2A3A]/10 rounded-full peer peer-checked:bg-green-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+  </div>
+</label>
+
+            <div class="relative min-w-[160px]">
+              <select name="s" onchange="this.form.submit()" class="w-full appearance-none pl-4 pr-10 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40 cursor-pointer">
+                <option value="newest" <%= userDb.selectedSort === 'newest' ? 'selected' : '' %>>Newest First</option>
+                <option value="oldest" <%= userDb.selectedSort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+                <option value="name-asc" <%= userDb.selectedSort === 'name-asc' ? 'selected' : '' %>>Name A-Z</option>
+                <option value="name-desc" <%= userDb.selectedSort === 'name-desc' ? 'selected' : '' %>>Name Z-A</option>
+              </select>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
             <thead class="bg-[#1C2A3A]/5 border-b border-[#1C2A3A]/10">
               <tr>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  User
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Email
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Joined
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Activity
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Actions
-                </th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">User</th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Email</th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Joined</th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Activity</th>
+                <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Status</th>
+                <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Actions</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#1C2A3A]/5">
-              <% for(let i=0; i < userDb.users.length; i++) { %>
-              <tr class="hover:bg-white/50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A] font-bold overflow-hidden border border-white"
-                    >
-                      <% if (userDb.users[i].avatarUrl) { %>
-                      <img
-                        src="<%= userDb.users[i].avatarUrl %>"
-                        alt="Avatar"
-                        class="w-full h-full object-cover"
-                      />
-                      <% } else { %> <%= userDb.users[i].firstName.charAt(0) %>
-                      <% } %>
+              <% if (userDb.users.length > 0) { %>
+                <% for(let i=0; i < userDb.users.length; i++) { %>
+                <tr class="hover:bg-white/50 transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A] font-bold overflow-hidden border border-white">
+                        <% if (userDb.users[i].avatarUrl) { %>
+                          <img src="<%= userDb.users[i].avatarUrl %>" alt="Avatar" class="w-full h-full object-cover" />
+                        <% } else { %> <%= userDb.users[i].firstName.charAt(0) %> <% } %>
+                      </div>
+                      <p class="font-medium text-[#1C2A3A]"><%= userDb.users[i].firstName %> <%= userDb.users[i].lastName %></p>
                     </div>
-                    <div>
-                      <p class="font-medium text-[#1C2A3A]">
-                        <%= userDb.users[i].firstName %> <%=
-                        userDb.users[i].lastName %>
-                      </p>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-[#1C2A3A]"><%= userDb.users[i].emailAddress %></td>
+                  <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= new Date(userDb.users[i].createdAt).toLocaleDateString() %></td>
+                  <td class="px-6 py-4 text-xs">
+                    <span class="text-[#1C2A3A]"><%= userDb.users[i].attendedCount || 0 %> attended</span> | 
+                    <span class="text-[#ED8842] font-semibold"><%= userDb.users[i].hostCount || 0 %> hosted</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider <%= userDb.users[i].isBlocked ? 'bg-red-500/10 text-red-700' : 'bg-green-500/10 text-green-700' %>">
+                      <%= userDb.users[i].isBlocked ? 'Blocked' : 'Active' %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <a href="/admin/users/<%= userDb.users[i]._id %>" class="px-3 py-1.5 bg-[#1C2A3A]/5 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/10 transition-colors">View</a>
+                      <button onclick="openActionModal('<%= userDb.users[i]._id %>', '<%= userDb.users[i].firstName %>', <%= userDb.users[i].isBlocked %>)" 
+                        class="px-3 py-1.5 rounded-lg text-xs font-bold transition-colors <%= userDb.users[i].isBlocked ? 'bg-green-500/10 text-green-700 hover:bg-green-500/20' : 'bg-red-500/10 text-red-700 hover:bg-red-500/20' %>">
+                        <%= userDb.users[i].isBlocked ? 'Unblock' : 'Block' %>
+                      </button>
                     </div>
-                  </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]">
-                  <%= userDb.users[i].emailAddress %>
-                </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60">
-                  <%= new Date(userDb.users[i].createdAt).toLocaleDateString()
-                  %>
-                </td>
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-2 text-xs">
-                    <span class="text-[#1C2A3A]"
-                      ><%= userDb.users[i].attendedCount || 0 %> attended</span
-                    >
-                    <span class="text-[#1C2A3A]/20">|</span>
-                    <span class="text-[#ED8842] font-semibold"
-                      ><%= userDb.users[i].hostCount || 0 %> hosted</span
-                    >
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <% if (!userDb.users[i].isBlocked) { %>
-                  <span
-                    class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                    >Active</span
-                  >
-                  <% } else { %>
-                  <span
-                    class="px-3 py-1 bg-red-500/10 text-red-700 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                    >Blocked</span
-                  >
-                  <% } %>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <a
-                      href="/admin/users/<%= userDb.users[i]._id %>"
-                      class="px-3 py-1.5 bg-[#1C2A3A]/5 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/10 transition-colors"
-                      >View</a
-                    >
-                    <% if (!userDb.users[i].isBlocked) { %>
-                    <button
-                      onclick="openActionModal('<%= userDb.users[i]._id %>', '<%= userDb.users[i].firstName %>', false)"
-                      class="px-3 py-1.5 bg-red-500/10 text-red-700 rounded-lg text-xs font-bold hover:bg-red-500/20 transition-colors"
-                    >
-                      Block
-                    </button>
-                    <% } else { %>
-                    <button
-                      onclick="openActionModal('<%= userDb.users[i]._id %>', '<%= userDb.users[i].firstName %>', true)"
-                      class="px-3 py-1.5 bg-green-500/10 text-green-700 rounded-lg text-xs font-bold hover:bg-green-500/20 transition-colors"
-                    >
-                      Unblock
-                    </button>
-                    <% } %>
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                </tr>
+                <% } %>
+              <% } else { %>
+                <tr><td colspan="6" class="px-6 py-10 text-center text-[#1C2A3A]/40 italic">No users found.</td></tr>
               <% } %>
             </tbody>
           </table>
         </div>
 
-        <div
-          class="px-6 py-6 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-4"
-        >
-          <p class="text-sm text-[#1C2A3A]/60">
-            Showing <%= userDb.users.length %> of <%= userDb.totalUsers %> users
-          </p>
+        <% const baseUrl = `/admin/users?n=${userDb.searchQuery}&s=${userDb.selectedSort}&active=${userDb.showActiveOnly}`; %>
 
-          <div class="flex items-center gap-1">
-            <% if (userDb.currentPage > 1) { %>
-            <a
-              href="/admin/users?p=<%= userDb.currentPage - 1 %>&n=<%= userDb.searchQuery || '' %>"
-              class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors"
-              >&laquo;</a
-            >
-            <% } %> <% if (userDb.currentPage > 2) { %>
-            <a
-              href="/admin/users?p=1&n=<%= userDb.searchQuery || '' %>"
-              class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]"
-              >1</a
-            >
-            <% } %> <% if (userDb.currentPage > 1) { %>
-            <a
-              href="/admin/users?p=<%= userDb.currentPage - 1 %>&n=<%= userDb.searchQuery || '' %>"
-              class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]"
-            >
-              <%= userDb.currentPage - 1 %>
-            </a>
-            <% } %>
+<div class="px-6 py-6 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+  <p class="text-sm text-[#1C2A3A]/60 font-medium">
+    Showing <%= userDb.users.length %> of <%= userDb.showActiveOnly === 'true' ? userDb.activeUsers : userDb.totalUsers %> users
+  </p>
 
-            <span
-              class="px-4 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold shadow-md"
-            >
-              <%= userDb.currentPage %>
-            </span>
+  <div class="flex items-center gap-1">
+    <% if (userDb.currentPage > 1) { %>
+      <a href="<%= baseUrl %>&p=<%= userDb.currentPage - 1 %>" class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors">&laquo;</a>
+    <% } %>
 
-            <% if (userDb.currentPage < userDb.totalPages) { %>
-            <a
-              href="/admin/users?p=<%= userDb.currentPage + 1 %>&n=<%= userDb.searchQuery || '' %>"
-              class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]"
-            >
-              <%= userDb.currentPage + 1 %>
-            </a>
-            <% } %> <% if (userDb.currentPage < userDb.totalPages - 1) { %>
-            <a
-              href="/admin/users?p=<%= userDb.totalPages %>&n=<%= userDb.searchQuery || '' %>"
-              class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]"
-            >
-              <%= userDb.totalPages %>
-            </a>
-            <% } %> <% if (userDb.currentPage < userDb.totalPages) { %>
-            <a
-              href="/admin/users?p=<%= userDb.currentPage + 1 %>&n=<%= userDb.searchQuery || '' %>"
-              class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors"
-              >&raquo;</a
-            >
-            <% } %>
-          </div>
-        </div>
+    <% if (userDb.currentPage > 2) { %>
+      <a href="<%= baseUrl %>&p=1" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]">1</a>
+         <% } %>
+
+    <% if (userDb.currentPage > 1) { %>
+      <a href="<%= baseUrl %>&p=<%= userDb.currentPage - 1 %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]">
+        <%= userDb.currentPage - 1 %>
+      </a>
+    <% } %>
+
+    <span class="px-4 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold shadow-md">
+      <%= userDb.currentPage %>
+    </span>
+
+    <% if (userDb.currentPage < userDb.totalPages) { %>
+      <a href="<%= baseUrl %>&p=<%= userDb.currentPage + 1 %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]">
+        <%= userDb.currentPage + 1 %>
+      </a>
+    <% } %>
+
+    <% if (userDb.currentPage < userDb.totalPages - 1) { %>
+
+      <a href="<%= baseUrl %>&p=<%= userDb.totalPages %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white/50 text-[#1C2A3A]">
+        <%= userDb.totalPages %>
+      </a>
+    <% } %>
+
+    <% if (userDb.currentPage < userDb.totalPages) { %>
+      <a href="<%= baseUrl %>&p=<%= userDb.currentPage + 1 %>" class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors">&raquo;</a>
+    <% } %>
+  </div>
+</div>
       </div>
     </main>
 
-    <div
-      id="actionModal"
-      class="fixed inset-0 z-[100] hidden"
-      aria-labelledby="modalTitle"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity"
-        onclick="closeModal()"
-      ></div>
+    <div id="actionModal" class="fixed inset-0 z-[100] hidden">
+      <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm" onclick="closeModal()"></div>
       <div class="relative flex items-center justify-center min-h-screen px-4">
-        <div
-          class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl border border-white/20 text-center transform transition-all scale-100"
-        >
-          <div
-            id="modalIconContainer"
-            class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-          >
-            <svg
-              id="modalIcon"
-              class="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            ></svg>
+        <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center shadow-2xl border border-white/20">
+          <div id="modalIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg id="modalIcon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
           </div>
-          <h3
-            id="modalTitle"
-            class="text-xl font-heading font-bold mb-2 text-[#1C2A3A]"
-          ></h3>
-          <p class="text-[#1C2A3A]/60 text-sm mb-8">
-            Are you sure you want to <span id="modalActionText"></span>
-            <span id="targetUserName" class="font-bold text-[#1C2A3A]"></span>?
-            <span
-              id="modalWarningText"
-              class="block mt-2 text-[10px] uppercase tracking-wider"
-              >This action can be reversed later.</span
-            >
-          </p>
+          <h3 id="modalTitle" class="text-xl font-heading font-bold mb-2"></h3>
+          <p class="text-[#1C2A3A]/60 text-sm mb-8">Are you sure you want to <span id="modalActionText"></span> <span id="targetUserName" class="font-bold"></span>?</p>
           <div class="flex gap-3">
-            <button
-              onclick="closeModal()"
-              class="flex-1 px-4 py-3 border border-[#1C2A3A]/10 rounded-xl text-sm font-bold hover:bg-[#1C2A3A]/5 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              id="confirmActionBtn"
-              class="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white transition-all shadow-lg active:scale-95"
-            ></button>
+            <button onclick="closeModal()" class="flex-1 px-4 py-3 border border-[#1C2A3A]/10 rounded-xl text-sm font-bold">Cancel</button>
+            <button id="confirmActionBtn" class="flex-1 px-4 py-3 rounded-xl text-sm font-bold text-white shadow-lg active:scale-95"></button>
           </div>
         </div>
       </div>
@@ -459,59 +264,31 @@
           modalTitle.innerText = "Unblock User";
           modalActionText.innerText = "unblock";
           confirmBtn.innerText = "Unblock Now";
-          confirmBtn.className =
-            "flex-1 px-4 py-3 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700 shadow-lg shadow-green-600/20 transition-all";
-          iconContainer.className =
-            "w-16 h-16 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4";
+          confirmBtn.className = "flex-1 px-4 py-3 bg-green-600 text-white rounded-xl text-sm font-bold shadow-green-600/20 transition-all";
+          iconContainer.className = "w-16 h-16 bg-green-500/10 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4";
           modalIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
         } else {
           modalTitle.innerText = "Confirm Suspension";
           modalActionText.innerText = "block";
           confirmBtn.innerText = "Block User";
-          confirmBtn.className =
-            "flex-1 px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 shadow-lg shadow-red-600/20 transition-all";
-          iconContainer.className =
-            "w-16 h-16 bg-red-500/10 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4";
+          confirmBtn.className = "flex-1 px-4 py-3 bg-red-600 text-white rounded-xl text-sm font-bold shadow-red-600/20 transition-all";
+          iconContainer.className = "w-16 h-16 bg-red-500/10 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4";
           modalIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>`;
         }
-
         modal.classList.remove("hidden");
-        document.body.style.overflow = "hidden";
       }
 
-      function closeModal() {
-        modal.classList.add("hidden");
-        document.body.style.overflow = "auto";
-      }
+      function closeModal() { modal.classList.add("hidden"); }
 
       confirmBtn.addEventListener("click", async () => {
         const action = isCurrentlyBlocked ? "unblock" : "block";
         const url = `/admin/users/${currentUserId}/${action}`;
-
-        // Visual feedback on button
-        confirmBtn.innerText = "Processing...";
-        confirmBtn.disabled = true;
-        confirmBtn.style.opacity = "0.7";
-
         try {
-          const response = await fetch(url, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-          });
-
+          const response = await fetch(url, { method: "PATCH", headers: { "Content-Type": "application/json" } });
           const result = await response.json();
-          if (result.success) {
-            window.location.href = result.redirectUrl || window.location.href;
-          } else {
-            closeModal();
-          }
-        } catch (error) {
-          console.error("Network error:", error);
-          closeModal();
-        } finally {
-          confirmBtn.disabled = false;
-          confirmBtn.style.opacity = "1";
-        }
+          if (result.success) window.location.reload();
+          else closeModal();
+        } catch (error) { closeModal(); }
       });
     </script>
   </body>

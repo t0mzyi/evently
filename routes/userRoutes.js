@@ -36,11 +36,11 @@ import { foryou } from "../controller/user/foryouController.js";
 import { showVenues, singleVenue } from "../controller/user/venueController.js";
 const router = express.Router();
 
-router.get("/", (req, res) => res.redirect("/foryou"));
-router.get("/foryou", foryou);
+router.get("/", (req, res) => res.redirect("/venues"));
+router.get("/foryou", showVenues);
 
-router.get("/signUp", signUp);
-router.post("/signUp", signUpPost);
+router.get("/signUp", ifAuth, signUp);
+router.post("/signUp", ifAuth, signUpPost);
 
 //google auth
 router.get("/auth/google", ifAuth, googleAuth);
@@ -58,7 +58,7 @@ router.get("/otp", otpGuard, otpPage);
 router.post("/otp", otpGuard, otpHandler);
 router.post("/resend-otp", resentOtp);
 
-//forgotpassword flowwwwee
+//forgotpassword flowwww
 router.get("/forgot-password", forgotPassword);
 router.post("/forgot-password", forgotPasswordPost);
 

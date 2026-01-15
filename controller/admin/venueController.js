@@ -7,15 +7,11 @@ import {
 
 export const showVenues = async (req, res) => {
   const page = req.query.p || 1;
-  const { venues, activeVenues, totalVenues, totalPages, currentPage } =
-    await venueList(page);
-  res.render("admin/venue/venues", {
-    venues,
-    totalVenues,
-    activeVenues,
-    currentPage,
-    totalPages,
-  });
+  const search = req.query.n || "";
+  const type = req.query.t;
+  const sort = req.query.s || "name-asc";
+  const venuesData = await venueList(page, search, type, sort);
+  res.render("admin/venue/venues", { venuesData });
 };
 export const showAddVenue = (req, res) => {
   res.render("admin/venue/addVenue");

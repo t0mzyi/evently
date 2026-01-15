@@ -1,7 +1,7 @@
 import eventsDb from "../../model/eventsDb.js";
 import userDb from "../../model/userDb.js";
 
-export const userDetails = async (page, searchQuery) => {
+export const userDetails = async (page, searchQuery, sort, onlyActive) => {
   const limits = 1;
 
   const filter = {};
@@ -11,6 +11,14 @@ export const userDetails = async (page, searchQuery) => {
       { lastName: { $regex: searchQuery, $options: "i" } },
     ];
   }
+  console.log(onlyActive);
+  if (onlyActive == "true") filter.isBlocked = false;
+
+  let sortOptions = { firstName: 1 };
+  if (sort == "newest") sortOptions = { createdAt: -1 };
+  else if (sort == "oldest") sortOptions = { createdAt: 1 };
+  else if (sort == "name-asc") sortOptions = { firstName: 1 };
+  else if (sort == "name-desc") sortOptions = { firstName: -1 };
   const [blockedUsers, activeUsers, hosts, users, totalFilteredUser] =
     await Promise.all([
       userDb.countDocuments({ isBlocked: true }),
@@ -18,13 +26,11 @@ export const userDetails = async (page, searchQuery) => {
       userDb.countDocuments({ isHost: true }),
       userDb
         .find(filter)
-        .sort({ createdAt: -1 })
+        .sort(sortOptions)
         .skip((page - 1) * limits)
         .limit(limits),
       userDb.countDocuments(filter),
     ]);
-
-  const totalPages = Math.ceil(totalFilteredUser / limits);
 
   return {
     blockedUsers,
@@ -32,9 +38,11 @@ export const userDetails = async (page, searchQuery) => {
     totalUsers: activeUsers + blockedUsers,
     hosts,
     users,
-    totalPages,
+    totalPages: Math.ceil(totalFilteredUser / limits),
     currentPage: parseInt(page),
     searchQuery,
+    selectedSort: sort,
+    showActiveOnly: onlyActive,
   };
 };
 

@@ -1,18 +1,18 @@
 import express from "express";
-import { AloginGet, AloginPost } from "../controller/admin/Alogin.js";
+import { AloginGet, AloginPost } from "../controller/admin/login.js";
 import {
   getDash,
   singleUser,
   toggleBlockUser,
   users,
-} from "../controller/admin/AdashController.js";
+} from "../controller/admin/dashController.js";
 import {
   addVenue,
   editVenue,
   showAddVenue,
   showEditVenue,
   showVenues,
-} from "../controller/admin/AvenueController.js";
+} from "../controller/admin/venueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
 import { ifAdmin, isAdmin } from "../middlewares/flowMiddleware.js";
 
@@ -35,6 +35,9 @@ router.patch(
   uploadVenue.array("images[]", 10),
   editVenue
 );
+
+//events Side
+r;
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 

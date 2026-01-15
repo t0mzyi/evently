@@ -13,9 +13,11 @@ export const getDash = async (req, res) => {
 
 export const users = async (req, res) => {
   const page = req.query.p || 1;
-  const filter = req.query.n || "";
-  const userDb = await userDetails(page, filter);
-  console.log;
+  const search = req.query.n || "";
+  const sort = req.query.s || "newest";
+  const showActiveOnly = req.query.active === "true" ? "true" : "false";
+
+  const userDb = await userDetails(page, search, sort, showActiveOnly);
   res.render("admin/users", { userDb });
 };
 

@@ -1,21 +1,39 @@
 import venueDb from "../../model/venueDb.js";
 
-export const venueList = async (page) => {
+export const venueList = async (page, search, type, sortQuery) => {
+  const limit = 5;
   const totalVenues = await venueDb.countDocuments({});
   const activeVenues = await venueDb.countDocuments({ isActive: true });
+  const filter = {};
+  if (search) {
+    filter.name = { $regex: search, $options: "i" };
+  }
+  if (type && type != "all") {
+    filter.type = type;
+  }
+  let sort = {};
+  if (sortQuery == "name-asc") sort = { name: 1 };
+  else if (sortQuery == "name-desc") sort = { name: -1 };
+  else if (sortQuery == "capacity-asc") sort = { capacity: 1 };
+  else if (sortQuery == "capacity-desc") sort = { capacity: -1 };
+  console.log(sort);
+
   const venues = await venueDb
-    .find()
-    .sort({ createdAt: -1 })
-    .skip((page - 1) * 3)
-    .limit(3);
-  console.log(venues);
-  const totalPages = Math.ceil(totalVenues / 3);
+    .find(filter)
+    .sort(sort)
+    .skip((page - 1) * limit)
+    .limit(limit);
+  console.log(page, search);
+  const totalPages = Math.ceil(totalVenues / limit);
   return {
     venues,
     totalVenues,
     activeVenues,
     totalPages,
     currentPage: parseInt(page),
+    searchQuery: search,
+    selectedType: type,
+    selectedSort: sortQuery,
   };
 };
 
