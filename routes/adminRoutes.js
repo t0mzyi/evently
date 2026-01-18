@@ -15,6 +15,7 @@ import {
 } from "../controller/admin/venueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
 import { ifAdmin, isAdmin } from "../middlewares/flowMiddleware.js";
+import { showEvents } from "../controller/admin/eventsController.js";
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router.patch(
 );
 
 //events Side
+router.get("/events", showEvents);
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 

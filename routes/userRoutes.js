@@ -20,23 +20,15 @@ import {
   googleAuthCallbackMiddleware,
   googleAuthSuccess,
 } from "../controller/user/googleAuthController.js";
-import {
-  ifAuth,
-  isAuth,
-  otpGuard,
-  resetPasswordGuard,
-} from "../middlewares/flowMiddleware.js";
-import {
-  editProfile,
-  getEditProfile,
-  getProfile,
-} from "../controller/user/profileController.js";
+import { ifAuth, isAuth, otpGuard, resetPasswordGuard } from "../middlewares/flowMiddleware.js";
+import { editProfile, getEditProfile, getProfile } from "../controller/user/profileController.js";
 import { upload } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/user/foryouController.js";
 import { showVenues, singleVenue } from "../controller/user/venueController.js";
+import { showAllEvents, showSingleEvent } from "../controller/user/eventsController.js";
 const router = express.Router();
 
-router.get("/", (req, res) => res.redirect("/venues"));
+router.get("/", (req, res) => res.redirect("/foryou"));
 router.get("/foryou", showVenues);
 
 router.get("/signUp", ifAuth, signUp);
@@ -44,12 +36,7 @@ router.post("/signUp", ifAuth, signUpPost);
 
 //google auth
 router.get("/auth/google", ifAuth, googleAuth);
-router.get(
-  "/auth/google/callback",
-  ifAuth,
-  googleAuthCallbackMiddleware,
-  googleAuthSuccess
-);
+router.get("/auth/google/callback", ifAuth, googleAuthCallbackMiddleware, googleAuthSuccess);
 
 router.get("/signIn", ifAuth, signIn);
 router.post("/signIn", ifAuth, signInPost);
@@ -74,16 +61,15 @@ router.patch("/reset-password", resetPasswordGuard, resetPassPatch);
 router.get("/dashboard", isAuth, getProfile);
 
 router.get("/dashboard/editProfile", isAuth, getEditProfile);
-router.patch(
-  "/dashboard/editProfile",
-  isAuth,
-  upload.single("avatar"),
-  editProfile
-);
+router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
 
 //VENUE
 router.get("/venues", showVenues);
 router.get("/venues/:venueId", singleVenue);
+
+//events
+router.get("/events", showAllEvents);
+router.get("/events/:eventId", showSingleEvent);
 
 router.get("/logout", isAuth, logout);
 export default router;
