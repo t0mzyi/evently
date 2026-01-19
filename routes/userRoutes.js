@@ -23,13 +23,13 @@ import {
 import { ifAuth, isAuth, otpGuard, resetPasswordGuard } from "../middlewares/flowMiddleware.js";
 import { editProfile, getEditProfile, getProfile } from "../controller/user/profileController.js";
 import { upload } from "../middlewares/multerUpload.js";
-import { foryou } from "../controller/user/foryouController.js";
+import { foryou } from "../controller/foryouController.js";
 import { showVenues, singleVenue } from "../controller/user/venueController.js";
 import { showAllEvents, showSingleEvent } from "../controller/user/eventsController.js";
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/foryou"));
-router.get("/foryou", showVenues);
+router.get("/foryou", foryou);
 
 router.get("/signUp", ifAuth, signUp);
 router.post("/signUp", ifAuth, signUpPost);

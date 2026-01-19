@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evently — Discover & Experience</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              secondary: '#1C2A3A',
+              accent: '#5C7C8A',
+              dark: '#1C2A3A',
+              surface: '#F9F7F5',
+            },
+            apple: {
+              bg: '#EAE0CF',
+              card: 'rgba(255, 255, 255, 0.6)',
+              text: '#1C2A3A',
+              secondary: '#5C7C8A',
+              accent: '#1C2A3A'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <style>
+    .swiper {
+      width: 100%;
+      padding-top: 5px;
+      padding-bottom: 50px;
+    }
+
+    .swiper-slide {
+      background-position: center;
+      background-size: cover;
+      width: 600px;
+      height: 400px;
+      overflow: hidden;
+      will-change: transform;
+      transform: translateZ(0);
+      /* Reflection/Shadow effect removed for cleaner look */
+    }
+
+    /* Adjust slide size for mobile */
+    @media (max-width: 768px) {
+      .swiper-slide {
+        width: 300px;
+        height: 350px;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-apple-bg text-apple-text">
+
+  <!-- Navigation -->
+  <%- include('partials/navbar') %>
+  <%- include('partials/doodles') %>
+
+  <!-- Hero Section -->
+  <header class="relative pt-40 pb-16 px-6 text-center overflow-hidden">
+    <!-- Background decorative text or elements, kept minimal -->
+    <div class="max-w-4xl mx-auto relative z-10">
+      <h1 class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-8 text-[#1C2A3A] leading-tight">
+        Discover events happening <br /> around you
+      </h1>
+
+      <!-- Search Bar -->
+      <div class="relative max-w-2xl mx-auto mb-6">
+        <input type="text" placeholder="search events,categories" class="w-full h-14 pl-12 pr-6 bg-[#E5E0D8] border-none rounded-[1rem] text-lg text-[#1C2A3A] placeholder:text-[#1C2A3A]/40 focus:outline-none focus:ring-1 focus:ring-[#1C2A3A]/20 transition-all font-sans">
+        <svg class="absolute left-4 top-4 w-5 h-5 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="text-xl font-medium text-[#1C2A3A] tracking-tight px-6" style="font-family: 'Playfair Display', serif;">
+      Featured Events 🎊
+    </h2>
+
+    <!-- Trending Carousel with Swiper - Full Width -->
+    <div class="w-full relative z-10">
+
+      <div class="swiper mySwiper mb-16 !max-w-full !px-4 md:!px-10">
+        <div class="swiper-wrapper">
+          <% for(let i=0;i<featuredEvents.length;i++) {%>
+          <a href="/view-event" class="swiper-slide group relative cursor-pointer block">
+            <img src="<%= featuredEvents[i].galleryImages[0]%>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Event">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+              <h3 class="text-3xl font-heading text-white tracking-tight uppercase mb-2 drop-shadow-md">
+                <%= featuredEvents[i].title%></h3>
+              <p class="text-white/80 text-sm font-sans tracking-wide"><%=formatDate(featuredEvents[i].startDate).date%></p>
+            </div>
+          </a>
+          <%}%>
+     
+          
+          <% for(let i=0;i<featuredEvents.length;i++) {%>
+          <a href="/view-event" class="swiper-slide group relative cursor-pointer block">
+            <img src="<%= featuredEvents[i].galleryImages[0]%>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Event">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-8">
+              <h3 class="text-3xl font-heading text-white tracking-tight uppercase mb-2 drop-shadow-md">
+                <%= featuredEvents[i].title%></h3>
+              <p class="text-white/80 text-sm font-sans tracking-wide"><%=formatDate(featuredEvents[i].startDate).date%></p>
+            </div>
+          </a>
+          <%}%>
+          
+          
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Explore Categories (Seamless) -->
+ <section class="max-w-full w-full mb-24 relative z-10 overflow-hidden">
+  <div class="text-center mb-16 px-6">
+    <h2 class="text-4xl font-heading text-[#1C2A3A] tracking-tight mb-2">Explore by category</h2>
+    <p class="text-[#1C2A3A]/60 text-lg font-sans">Discover tailored experiences across every genre</p>
+  </div>
+
+  <div class="marquee-container no-scrollbar">
+
+    <div class="marquee-content" id="row1">
+    <% for(let i = 0 ; i< allCategories.length ; i++) {%>
+          <a href="/category/festivals" class="category-pill">
+            <img src="<%= allCategories[i].iconUrl %>" class="category-thumb">
+            <span><%= allCategories[i].name %></span>
+          </a>
+          <%}%>
+    </div>
+
+    <div class="marquee-content-reverse" id="row2">
+    <% for(let i = allCategories.length-1 ; i >= 0 ;i--){ %>
+          <a href="/category/festivals" class="category-pill">
+            <img src="<%= allCategories[i].iconUrl %>" class="category-thumb">
+            <span><%= allCategories[i].name %></span>
+          </a>
+          <%}%>
+      
+    </div>
+  </div>
+</section>
+
+  <main class="max-w-7xl mx-auto px-6 space-y-24 pb-24">
+
+
+
+    <section class="max-w-7xl mx-auto px-6 mb-24">
+  <div class="flex justify-between items-center mb-10">
+    <h2 class="text-4xl font-heading text-[#1C2A3A] tracking-tight">All events</h2>
+    
+    <div class="flex space-x-3">
+      <button class="events-prev w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-[#F9F7F5] hover:bg-white transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="events-next w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-[#F9F7F5] hover:bg-white transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="swiper eventsSwiper  overflow-hidden">
+    <div class="swiper-wrapper">
+        <% for(let i = 0 ; i < allEvents.length ; i++) {%>
+
+          <a href="events/<%= allEvents[i]._id %>" class="swiper-slide bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group block">
+
+            <div class="h-[280px] relative">
+              <img src="<%= allEvents[i].galleryImages[0]%>" class="w-full h-full object-cover" alt="Event">
+
+              <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
+                <h3 class="text-3xl font-heading text-white lowercase">
+                  <%= allEvents[i].title%>
+                </h3>
+
+                <div class="flex gap-2 mt-2">
+                  <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
+                    <%= allEvents[i].categoryId.name%>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6">
+              <p class="text-[#1C2A3A]/70 text-xs leading-relaxed mb-8 font-sans">
+                <%= allEvents[i].description%>
+              </p>
+
+              <div class="absolute bottom-6 right-0 bg-[#ED8842] py-2 pl-4 pr-6 rounded-l-full flex items-center shadow-md">
+                <% const minPrice = Math.min(...allEvents[i].ticketTypes.map(t => t.price)) %>
+
+                <% if(minPrice){ %>
+                <span class="text-white font-heading text-xl tracking-tight">
+                  Starting From $<%= minPrice%>
+                </span>
+                <% } else { %>
+                <span class="text-white font-heading text-xl tracking-tight">
+                  Free
+                </span>
+                <% } %>
+              </div>
+            </div>
+
+          </a>
+
+          <% } %>
+
+        </div>
+        </section>
+
+        <!-- All Venues Grid -->
+        <section>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 space-y-4 md:space-y-0">
+            <h2 class="text-4xl font-heading text-[#1C2A3A] tracking-tight">All venues</h2>
+            <button class="px-6 py-2 bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full text-sm font-medium text-[#1C2A3A] flex items-center space-x-2 hover:bg-white transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4">
+                </path>
+              </svg>
+              <span>Filter</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Venue Card 1 -->
+            <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group">
+              <div class="h-[280px] relative">
+                <img src="https://images.unsplash.com/photo-1519750783826-e2420f4d687f?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Venue">
+                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 class="text-3xl font-heading text-white lowercase">Grand Hall</h3>
+                  <div class="flex gap-2 mt-2">
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">Indoor</span>
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">1000
+                      Cap</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue Card 2 -->
+            <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group">
+              <div class="h-[280px] relative">
+                <img src="https://images.unsplash.com/photo-1464618663641-bbdd760ae84a?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Venue">
+                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 class="text-3xl font-heading text-white lowercase">Central Park Lawn</h3>
+                  <div class="flex gap-2 mt-2">
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">Outdoor</span>
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">5000
+                      Cap</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Venue Card 3 -->
+            <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group">
+              <div class="h-[280px] relative">
+                <img src="https://images.unsplash.com/photo-1496337589254-7e19d01cec44?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover" alt="Venue">
+                <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 class="text-3xl font-heading text-white lowercase">Skyline Loft</h3>
+                  <div class="flex gap-2 mt-2">
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">Rooftop</span>
+                    <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">200
+                      Cap</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-black/5 py-20 px-6 bg-[#2D2520]">
+          <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 text-sm text-white/60">
+            <div class="flex items-center space-x-8">
+              <span class="text-white font-medium">evently</span>
+              <div class="flex space-x-6">
+                <a href="#" class="hover:text-white transition-colors">Terms</a>
+                <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                <a href="#" class="hover:text-white transition-colors">Contact</a>
+              </div>
+            </div>
+            <div>
+              <p>&copy; 2024 Evently Inc. All rights reserved.</p>
+            </div>
+          </div>
+        </footer>
+
+
+
+        <!-- Initialize Swiper -->
+        <script>
+          var swiper = new Swiper(".mySwiper", {
+            effect: "coverflow",
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: "auto",
+            spaceBetween: 50,
+            loop: true,
+            autoplay: {
+              delay: 2500,
+              disableOnInteraction: false,
+            },
+            coverflowEffect: {
+              rotate: 0,
+              stretch: 0,
+              depth: 100,
+              modifier: 1,
+              slideShadows: true,
+            },
+            pagination: {
+              el: ".swiper-pagination",
+              clickable: true,
+            },
+          });
+
+          function setupMarquee(id) {
+            const el = document.getElementById(id);
+            if (el) {
+              const content = el.innerHTML;
+              // Clones the set so the animation has a seamless point to reset (100% to 0%)
+              el.innerHTML = content + content;
+            }
+          }
+
+
+          window.addEventListener('load', () => {
+            setupMarquee('row1');
+            setupMarquee('row2');
+          });
+          var eventsSwiper = new Swiper(".eventsSwiper", {
+            slidesPerView: 1.15,
+            spaceBetween: 30,
+            grabCursor: true,
+            navigation: {
+              nextEl: ".events-next",
+              prevEl: ".events-prev",
+            },
+            breakpoints: {
+              768: {
+                slidesPerView: 2,
+              },
+              1024: {
+                slidesPerView: 3,
+              },
+            },
+          });
+        </script>
+</body>
+
+</html>
