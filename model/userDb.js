@@ -44,10 +44,13 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    hostedCount: {
-      type: Number,
-      default: 0,
-    },
+
+    hostedEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "events",
+      },
+    ],
     attentedCount: {
       type: Number,
       default: 0,

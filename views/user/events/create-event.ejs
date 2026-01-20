@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Event — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          colors: {
+            'apple-bg': '#EAE0CF',
+            'apple-card': 'rgba(255, 255, 255, 0.6)',
+            'apple-text': '#1C2A3A'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .input-error {
+      border: 1px solid #ef4444 !important;
+      background-color: #fff5f5;
+    }
+
+    .error-text {
+      color: #f87171;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+      padding-left: 4px;
+    }
+
+    .glass-modal {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(25px);
+    }
+
+    .locked-input {
+      background-color: rgba(28, 42, 58, 0.05);
+      cursor: not-allowed;
+    }
+
+    #modal-results::-webkit-scrollbar,
+    #image-preview-container::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    #modal-results::-webkit-scrollbar-thumb,
+    #image-preview-container::-webkit-scrollbar-thumb {
+      background: rgba(28, 42, 58, 0.1);
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<%- include('../../partials/navbar')%>
+<%- include('../../partials/doodles')%>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+
+  <!-- AVAILABILITY MODAL -->
+  <div id="availabilityModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md hidden">
+    <div class="glass-modal w-full max-w-2xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-white/40">
+      <div class="flex justify-between items-start mb-8">
+        <div>
+          <h2 class="text-3xl font-heading text-[#1C2A3A] mb-1">Select a Venue</h2>
+          <p class="text-[#1C2A3A]/60 font-sans text-sm">Find an available venue or use a custom location.</p>
+        </div>
+        <button type="button" onclick="useCustomVenue()" class="text-[10px] font-bold uppercase tracking-widest px-4 py-2 bg-[#1C2A3A] text-white rounded-full hover:bg-[#2C3E50] transition-all">+ Custom Venue</button>
+      </div>
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Start Date</label>
+            <input type="datetime-local" id="modal-start" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">End Date</label>
+            <input type="datetime-local" id="modal-end" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none">
+          </div>
+        </div>
+        <div class="relative">
+          <input type="text" id="modal-search" placeholder="Search venues..." class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 pl-10 focus:outline-none">
+          <svg class="w-4 h-4 text-[#1C2A3A]/40 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" />
+          </svg>
+        </div>
+        <div id="modal-results" class="max-h-60 overflow-y-auto space-y-3 rounded-xl pr-2">
+          <p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select dates to check listed availability.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="pt-32 pb-16 px-6 relative z-10">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center justify-between mb-12">
+        <h1 class="text-4xl font-heading text-[#1C2A3A]">Create Event</h1>
+        <button type="button" id="changeVenueBtn" onclick="openModal()" class="hidden px-5 py-2 bg-white/80 hover:bg-white rounded-full text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A] border border-[#1C2A3A]/10 shadow-sm transition-all">Change Selection</button>
+      </div>
+
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-white/40">
+        <form id="eventForm" enctype="multipart/form-data" class="space-y-10" novalidate>
+          <div id="locked-venue-notice" class="hidden p-5 bg-green-500/10 rounded-2xl border border-green-500/20 mb-4">
+            <span class="text-sm font-medium text-green-800 flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Venue Secured.
+            </span>
+          </div>
+
+          <div id="form-fields" class="space-y-10 opacity-40 pointer-events-none blur-[4px] transition-all duration-700">
+
+            <!-- EVENT TITLE -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="col-span-2">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Event Title</label>
+                <input id="titleInput" name="title" type="text" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none">
+                <p id="titleError" class="error-text hidden"></p>
+              </div>
+
+              <!-- DATES -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Start Date</label>
+                <input type="datetime-local" id="final-start" name="startDate" class="w-full border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-sm focus:outline-none">
+                <p id="startDateError" class="error-text hidden"></p>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">End Date</label>
+                <input type="datetime-local" id="final-end" name="endDate" class="w-full border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-sm focus:outline-none">
+                <p id="endDateError" class="error-text hidden"></p>
+              </div>
+
+              <!-- VENUE HIDDEN FIELDS -->
+              <input type="hidden" id="venue-type-input" name="venueType" value="iconic">
+              <input type="hidden" id="final-venue-id" name="venueId">
+
+              <!-- LISTED VENUE DISPLAY -->
+              <div class="col-span-2" id="listed-display">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Selected Venue</label>
+                <input type="text" id="final-venue-name" readonly class="w-full locked-input border border-[#1C2A3A]/10 rounded-xl px-4 py-3 font-bold">
+                <p id="venueError" class="error-text hidden"></p>
+              </div>
+
+              <!-- CUSTOM VENUE FIELDS -->
+              <div class="col-span-2 hidden space-y-6" id="custom-venue-fields">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="col-span-2">
+                    <label class="text-[10px] font-bold text-[#1C2A3A]/40">VENUE NAME</label>
+                    <input type="text" name="custom_name" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
+                    <p id="customNameError" class="error-text hidden"></p>
+                  </div>
+                  <div class="col-span-2">
+                    <label class="text-[10px] font-bold text-[#1C2A3A]/40">ADDRESS</label>
+                    <input type="text" name="custom_address" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
+                    <p id="customAddressError" class="error-text hidden"></p>
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-bold text-[#1C2A3A]/40">CITY</label>
+                    <input type="text" name="custom_city" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
+                    <p id="customCityError" class="error-text hidden"></p>
+                  </div>
+                  <div>
+                    <label class="text-[10px] font-bold text-[#1C2A3A]/40">STATE</label>
+                    <input type="text" name="custom_state" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
+                    <p id="customStateError" class="error-text hidden"></p>
+                  </div>
+
+                  <div>
+                    <label class="text-[10px] font-bold text-[#1C2A3A]/40">MAP LINK</label>
+                    <input type="text" name="custom_mapLink" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
+                    <p id="customMapLinkError" class="error-text hidden"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- GALLERY IMAGES -->
+            <div class="pt-8 border-t border-[#1C2A3A]/5">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Gallery Photos</label>
+              <div class="space-y-4">
+                <div id="image-preview-container" class="flex flex-wrap gap-4 empty:hidden"></div>
+                <div onclick="document.getElementById('image-upload').click()" class="border-2 border-dashed border-[#1C2A3A]/10 rounded-2xl p-8 text-center hover:bg-white/40 cursor-pointer transition-all group">
+                  <p class="text-sm font-medium text-[#1C2A3A]/60 group-hover:text-[#1C2A3A]">Click to select images</p>
+                  <input type="file" id="image-upload" name="galleryImages" multiple accept="image/*" class="hidden" onchange="handleImagePreview(event)">
+                  <p id="imageError" class="error-text hidden"></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- CATEGORY -->
+            <div class="pt-8 border-t border-[#1C2A3A]/5">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Category</label>
+              <select name="categoryId" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 appearance-none focus:outline-none">
+                <% categories.forEach(cat => { %>
+                <option value="<%=cat._id%>"><%=cat.name%></option>
+                <% }) %>
+              </select>
+              <p id="categoryError" class="error-text hidden"></p>
+            </div>
+
+            <!-- TICKETS & CAPACITY -->
+            <div class="pt-8 border-t border-[#1C2A3A]/5">
+              <label class="flex items-center gap-3 cursor-pointer mb-6">
+                <input value="true" type="checkbox" id="freeEntryToggle" name="isFree" onchange="handleFreeEntryToggle(this)" class="w-5 h-5 rounded border-[#1C2A3A]/20 text-[#1C2A3A] focus:ring-0">
+                <span class="text-sm font-bold text-[#1C2A3A] uppercase tracking-widest text-[10px]">Mark as Free Entry</span>
+              </label>
+
+              <!-- PAID TICKETS -->
+              <div id="ticketMasterSection" class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                  <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40">Ticket Configuration</label>
+                  <button type="button" onclick="addTicketType()" class="text-[10px] font-bold uppercase text-blue-600">+ Add Ticket</button>
+                </div>
+                <div id="ticketTypesContainer" class="space-y-4">
+                  <div class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl grid grid-cols-2 gap-4">
+                    <div class="col-span-2">
+                      <input type="text" name="ticket_name[]" placeholder="General Admission" class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none">
+                      <p class="error-text hidden ticket-name-error"></p>
+                    </div>
+                    <div>
+                      <label class="text-[9px] font-bold opacity-40">PRICE</label>
+                      <input type="number" name="ticket_price[]" value="0" class="ticket-price w-full bg-white/50 rounded-lg px-3 py-2 text-sm">
+                      <p class="error-text hidden ticket-price-error"></p>
+                    </div>
+                    <div>
+                      <label class="text-[9px] font-bold opacity-40">QTY</label>
+                      <input type="number" name="ticket_quantityTotal[]" class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm" oninput="calculateTotalCapacity()">
+                      <p class="error-text hidden ticket-qty-error"></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MANUAL CAPACITY (FREE EVENTS) -->
+              <div id="manualCapacitySection" class="hidden mb-6">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Total Event Capacity</label>
+                <input type="number" id="manualMaxCapacity" placeholder="Max Attendees" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none" oninput="syncManualCapacity()">
+                <p id="manualCapacityError" class="error-text hidden"></p>
+              </div>
+
+              <!-- ALWAYS VISIBLE: TOTAL CAPACITY DISPLAY -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">
+                  Total Event Capacity
+                </label>
+                <input type="text" id="display-capacity" class="w-full bg-gray-100 border border-[#1C2A3A]/20 rounded-xl px-4 py-3 focus:outline-none text-[#1C2A3A]/70" readonly placeholder="0">
+              </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="pt-8 border-t border-[#1C2A3A]/5">
+              <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Description</label>
+              <textarea name="description" rows="6" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:bg-white focus:outline-none transition-all" placeholder="Describe your event..."></textarea>
+              <p id="descriptionError" class="error-text hidden"></p>
+            </div>
+
+            <!-- HIDDEN INPUT FOR BACKEND -->
+            <input type="hidden" id="max-capacity-input" name="totalCapacity">
+
+            <!-- SUBMIT BUTTON -->
+            <div class="pt-8 flex justify-end">
+              <button id="publishBtn" type="submit" class="px-12 py-5 bg-[#1C2A3A] text-white rounded-2xl font-heading text-xl shadow-2xl hover:scale-105 transition-all">Publish Event</button>
+            </div>
+          </div>
+          <div id="backendError" class="hidden p-5 bg-red-500/10 rounded-2xl border border-green-500/20 mb-4">
+            <span class="text-sm font-medium text-green-800 flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Venue Secured.
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const venues = <%- JSON.stringify(venues) %>;
+    const modal = document.getElementById('availabilityModal');
+    const modalResults = document.getElementById('modal-results');
+    const modalStart = document.getElementById('modal-start');
+    const modalEnd = document.getElementById('modal-end');
+    const formFields = document.getElementById('form-fields');
+    let selectedFiles = [];
+
+    window.onload = openModal;
+
+    // MODAL FUNCTIONS
+    function openModal() {
+      modal.classList.remove('hidden');
+      formFields.classList.add('opacity-40', 'pointer-events-none', 'blur-[4px]');
+      document.getElementById('changeVenueBtn').classList.add('hidden');
+    }
+
+    window.confirmVenue = function(id, name) {
+      document.getElementById('final-venue-id').value = id;
+      document.getElementById('final-venue-name').value = name;
+      document.getElementById('venue-type-input').value = "iconic";
+      document.getElementById('final-start').value = modalStart.value;
+      document.getElementById('final-end').value = modalEnd.value;
+      document.getElementById('final-start').readOnly = true;
+      document.getElementById('final-end').readOnly = true;
+      document.getElementById('final-start').classList.add('locked-input');
+      document.getElementById('final-end').classList.add('locked-input');
+      document.getElementById('custom-venue-fields').classList.add('hidden');
+      document.getElementById('listed-display').classList.remove('hidden');
+      finishSelection();
+    };
+
+    window.useCustomVenue = function() {
+      document.getElementById('venue-type-input').value = "custom";
+      document.getElementById('final-venue-id').value = "";
+      document.getElementById('final-start').readOnly = false;
+      document.getElementById('final-end').readOnly = false;
+      document.getElementById('final-start').classList.remove('locked-input');
+      document.getElementById('final-end').classList.remove('locked-input');
+      document.getElementById('custom-venue-fields').classList.remove('hidden');
+      document.getElementById('listed-display').classList.add('hidden');
+      finishSelection();
+    };
+
+    function finishSelection() {
+      modal.classList.add('hidden');
+      formFields.classList.remove('opacity-40', 'pointer-events-none', 'blur-[4px]');
+      document.getElementById('locked-venue-notice').classList.remove('hidden');
+      document.getElementById('changeVenueBtn').classList.remove('hidden');
+    }
+
+    // IMAGE HANDLING
+    function handleImagePreview(event) {
+      const files = Array.from(event.target.files);
+      files.forEach(file => {
+        if (!selectedFiles.some(f => f.name === file.name)) {
+          selectedFiles.push(file);
+        }
+      });
+      renderImagePreviews();
+    }
+
+    function renderImagePreviews() {
+      const container = document.getElementById('image-preview-container');
+      container.innerHTML = selectedFiles.map((file, index) => `
+        <div class="relative w-20 h-20 rounded-xl overflow-hidden group border border-[#1C2A3A]/10">
+          <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
+          <div onclick="removeImage(${index})" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5"/>
+            </svg>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function removeImage(index) {
+      selectedFiles.splice(index, 1);
+      renderImagePreviews();
+    }
+
+    // MODAL SEARCH & FILTER
+    [document.getElementById('modal-search'), modalStart, modalEnd].forEach(el => {
+      el.addEventListener('input', () => {
+        const start = modalStart.value;
+        const end = modalEnd.value;
+        if (!start || !end) {
+          modalResults.innerHTML = '<p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select dates to check listed availability.</p>';
+          return;
+        }
+        const filtered = venues.filter(v => v.name.toLowerCase().includes(document.getElementById('modal-search').value.toLowerCase()));
+        modalResults.innerHTML = filtered.map(v => {
+          const bookedIntervals = v.bookedOn || [];
+          const isOverlapping = bookedIntervals.some(interval => {
+            const [bookedStart, bookedEnd] = interval;
+            return new Date(start) < new Date(bookedEnd) && new Date(end) > new Date(bookedStart);
+          });
+          const available = !isOverlapping;
+          return `
+            <div class="flex items-center justify-between p-4 bg-white/60 rounded-2xl border border-[#1C2A3A]/5">
+              <div class="flex items-center gap-4">
+                <img src="${v.image_url?.[0] || ''}" class="w-12 h-12 rounded-xl object-cover">
+                <div>
+                  <h4 class="text-sm font-bold text-[#1C2A3A]">${v.name}</h4>
+                  <p class="text-[10px] text-[#1C2A3A]/50">${v.address}</p>
+                </div>
+              </div>
+              ${available ? 
+                `<button type="button" onclick="confirmVenue('${v._id}', '${v.name.replace(/'/g, "\\'")}')" class="px-5 py-2 bg-[#1C2A3A] text-white text-[10px] font-bold rounded-xl transition-all hover:scale-105">Select</button>` : 
+                `<span class="text-[10px] font-bold text-red-400 uppercase bg-red-50 rounded-xl px-3 py-1">Booked</span>`
+              }
+            </div>`;
+        }).join('');
+      });
+    });
+
+    // ===== CAPACITY LOGIC =====
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCapacityDisplay();
+    });
+
+    function handleFreeEntryToggle(cb) {
+      const isFree = cb.checked;
+      document.getElementById('ticketMasterSection').classList.toggle('hidden', isFree);
+      document.getElementById('manualCapacitySection').classList.toggle('hidden', !isFree);
+      updateCapacityDisplay();
+    }
+
+    function syncManualCapacity() {
+      const manualInput = document.getElementById('manualMaxCapacity');
+      document.getElementById('max-capacity-input').value = manualInput.value || '';
+      updateCapacityDisplay();
+    }
+
+    function calculateTotalCapacity() {
+      if (document.getElementById('freeEntryToggle').checked) return;
+
+      let total = 0;
+      document.querySelectorAll('.ticket-qty').forEach(input => {
+        const val = parseInt(input.value);
+        if (!isNaN(val)) total += val;
+      });
+
+      document.getElementById('max-capacity-input').value = total;
+      updateCapacityDisplay();
+    }
+
+    function updateCapacityDisplay() {
+      const isFree = document.getElementById('freeEntryToggle').checked;
+      const display = document.getElementById('display-capacity');
+
+      if (isFree) {
+        const manual = document.getElementById('manualMaxCapacity').value || '0';
+        display.value = manual;
+      } else {
+        let total = 0;
+        document.querySelectorAll('.ticket-qty').forEach(input => {
+          const val = parseInt(input.value);
+          if (!isNaN(val)) total += val;
+        });
+        display.value = total;
+      }
+    }
+
+    function addTicketType() {
+      const id = Date.now();
+      document.getElementById('ticketTypesContainer').insertAdjacentHTML('beforeend', `
+        <div id="row-${id}" class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl relative group">
+          <button 
+            type="button" 
+            onclick="this.closest('div').remove(); calculateTotalCapacity()" 
+            class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+          >✕</button>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <input 
+                type="text" 
+                name="ticket_name[]" 
+                placeholder="Ticket Type" 
+                class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none"
+              >
+              <p class="error-text hidden ticket-name-error"></p>
+            </div>
+            <div>
+              <label class="text-[9px] font-bold opacity-40">PRICE</label>
+              <input 
+                type="number" 
+                name="ticket_price[]" 
+                value="0" 
+                class="ticket-price w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
+              >
+              <p class="error-text hidden ticket-price-error"></p>
+            </div>
+            <div>
+              <label class="text-[9px] font-bold opacity-40">QTY</label>
+              <input 
+                type="number" 
+                name="ticket_quantityTotal[]" 
+                class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
+                oninput="calculateTotalCapacity()"
+              >
+              <p class="error-text hidden ticket-qty-error"></p>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    // ===== FORM SUBMISSION =====
+    document.getElementById('eventForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const publishBtn = document.getElementById('publishBtn');
+      const errorDiv = document.getElementById('backendError')
+      errorDiv.classList.add('hidden')
+      publishBtn.disabled = true;
+      publishBtn.textContent = 'Publishing...';
+      publishBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      // Clear errors
+      document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+      document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+
+      let isValid = true;
+
+      function markError(input, errorMsg) {
+        input.classList.add('input-error');
+        let errEl = input.nextElementSibling;
+        if (errEl && errEl.classList.contains('error-text')) {
+          errEl.textContent = errorMsg;
+          errEl.classList.remove('hidden');
+        }
+        isValid = false;
+      }
+
+      // Title
+      const titleInput = document.getElementById('titleInput');
+      if (!titleInput.value.trim()) markError(titleInput, 'Event title is required.');
+
+      // Dates
+      const startDateInput = document.getElementById('final-start');
+      const endDateInput = document.getElementById('final-end');
+      const startDate = startDateInput.value;
+      const endDate = endDateInput.value;
+      if (!startDate) markError(startDateInput, 'Start date is required.');
+      if (!endDate) markError(endDateInput, 'End date is required.');
+      if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
+        markError(endDateInput, 'End date must be after start date.');
+      }
+
+      // Venue
+      const venueType = document.getElementById('venue-type-input').value;
+      if (venueType === 'iconic') {
+        if (!document.getElementById('final-venue-name').value.trim()) {
+          markError(document.getElementById('final-venue-name'), 'Please select a venue.');
+        }
+      } else if (venueType === 'custom') {
+        const fields = [{
+            el: document.querySelector('[name="custom_name"]'),
+            msg: 'Venue name is required.'
+          },
+          {
+            el: document.querySelector('[name="custom_address"]'),
+            msg: 'Address is required.'
+          },
+          {
+            el: document.querySelector('[name="custom_city"]'),
+            msg: 'City is required.'
+          },
+          {
+            el: document.querySelector('[name="custom_state"]'),
+            msg: 'State is required.'
+          },
+          {
+            el: document.querySelector('[name="custom_mapLink"]'),
+            msg: 'Map link is required.'
+          }
+        ];
+        fields.forEach(f => {
+          if (!f.el.value.trim()) markError(f.el, f.msg);
+        });
+        const cap = document.querySelector('[name="custom_capacity"]');
+        if (!cap.value.trim() || parseInt(cap.value) <= 0) {
+          markError(cap, 'Valid capacity (greater than 0) is required.');
+        }
+      }
+
+      // Images
+      if (selectedFiles.length === 0) {
+        document.getElementById('imageError').textContent = 'At least one image is required.';
+        document.getElementById('imageError').classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Category
+      const catSelect = document.querySelector('[name="categoryId"]');
+      if (!catSelect.value) {
+        catSelect.classList.add('input-error');
+        document.getElementById('categoryError').textContent = 'Please select a category.';
+        document.getElementById('categoryError').classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Capacity & Tickets
+      const isFree = document.getElementById('freeEntryToggle').checked;
+      if (isFree) {
+        const manualCap = document.getElementById('manualMaxCapacity');
+        if (!manualCap.value.trim() || parseInt(manualCap.value) <= 0) {
+          markError(manualCap, 'Total capacity is required for free events.');
+        }
+      } else {
+        const ticketNames = document.querySelectorAll('[name="ticket_name[]"]');
+        const ticketQtys = document.querySelectorAll('[name="ticket_quantityTotal[]"]');
+        for (let i = 0; i < ticketNames.length; i++) {
+          const name = ticketNames[i].value.trim();
+          const qty = parseInt(ticketQtys[i].value) || 0;
+          if (!name) markError(ticketNames[i], 'Ticket name is required.');
+          if (qty <= 0) markError(ticketQtys[i], 'Quantity must be greater than 0.');
+        }
+      }
+
+      // Description
+      const desc = document.querySelector('[name="description"]');
+      if (!desc.value.trim()) {
+        desc.classList.add('input-error');
+        document.getElementById('descriptionError').textContent = 'Description is required.';
+        document.getElementById('descriptionError').classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Re-enable button if invalid
+      if (!isValid) {
+        publishBtn.disabled = false;
+        publishBtn.textContent = 'Publish Event';
+        publishBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        const firstError = document.querySelector('.input-error');
+        if (firstError) firstError.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+        return;
+      }
+
+      // Append files to FormData
+      const formData = new FormData(this);
+      formData.delete('galleryImages');
+      selectedFiles.forEach(file => {
+        formData.append('galleryImages', file);
+      });
+
+      // Submit
+      fetch('/createEvent', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+
+            //window.location.href = '/dashboard/hostDashboard';
+          } else {
+
+            errorDiv.classList.remove('hidden')
+            errorDiv.textContent = data.message
+            publishBtn.disabled = false;
+            publishBtn.textContent = 'Publish Event';
+            publishBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Network error. Please try again.');
+          publishBtn.disabled = false;
+          publishBtn.textContent = 'Publish Event';
+          publishBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+        });
+    });
+  </script>
+</body>
+
+</html>

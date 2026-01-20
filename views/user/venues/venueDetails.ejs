@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= venue.name %> — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: "#1C2A3A",
+              highlight: "#2C3E50",
+              accent: "#ED8842",
+              surface: "#F9F7F5",
+            },
+          },
+          fontFamily: {
+            heading: ["Fraunces", "serif"],
+            sans: ["Inter", "sans-serif"],
+          },
+        },
+      },
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans selection:bg-[#ED8842] selection:text-white">
+  <%- include('../../partials/navbar') %>
+
+  <div class="relative h-[45vh] md:h-[50vh] overflow-hidden">
+    <img src="<%= venue.image_url[0] %>" class="absolute inset-0 w-full h-full object-cover" alt="<%= venue.name %>" />
+    <div class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A] via-[#1C2A3A]/40 to-transparent"></div>
+
+    <div class="absolute bottom-0 w-full pb-10 px-6">
+      <div class="max-w-7xl mx-auto">
+        <span class="px-3 py-1 bg-[#ED8842] text-white text-[10px] font-bold uppercase tracking-widest rounded-full mb-4 inline-block">
+          <%= venue.type %> Venue
+        </span>
+        <h1 class="text-4xl md:text-6xl font-heading text-white leading-tight">
+          <%= venue.name %>
+        </h1>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-6 py-16">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div class="lg:col-span-8 space-y-16">
+        <section>
+          <h2 class="text-2xl font-heading mb-6">About the Space</h2>
+          <p class="text-lg text-[#1C2A3A]/70 leading-relaxed font-light whitespace-pre-line">
+            <%= venue.description %>
+          </p>
+        </section>
+
+        <section class="grid grid-cols-2 gap-4">
+          <div class="bg-white/40 p-6 rounded-3xl border border-white/60">
+            <p class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest mb-1">
+              Max Capacity
+            </p>
+            <p class="text-2xl font-heading">
+              <%= venue.capacity.toLocaleString() %> Guests
+            </p>
+          </div>
+          <div class="bg-white/40 p-6 rounded-3xl border border-white/60">
+            <p class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest mb-1">
+              Environment
+            </p>
+            <p class="text-2xl font-heading"><%= venue.type %></p>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xs font-bold mb-8 uppercase tracking-[0.2em] text-[#1C2A3A]/40">
+            Venue Amenities
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <% venue.amenities.forEach(item => { %>
+            <div class="flex items-center gap-4 bg-white/30 p-4 rounded-2xl border border-white/40">
+              <div class="w-2 h-2 rounded-full bg-[#ED8842]"></div>
+              <p class="text-sm">
+                <span class="font-bold text-[#1C2A3A] uppercase text-[10px] tracking-wide"><%= item.key %>:</span>
+                <span class="text-[#1C2A3A]/70"><%= item.value %></span>
+              </p>
+            </div>
+            <% }) %>
+          </div>
+        </section>
+
+        <section>
+          <h2 class="text-xs font-bold mb-8 uppercase tracking-[0.2em] text-[#1C2A3A]/40">
+            Gallery Portfolio
+          </h2>
+          <div class="columns-2 md:columns-3 gap-4 space-y-4">
+            <% venue.image_url.forEach((url, i) => { %>
+            <img src="<%= url %>" class="w-full rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-500" alt="Venue view" />
+            <% }) %>
+          </div>
+        </section>
+      </div>
+
+      <div class="lg:col-span-4 space-y-8">
+        <div class="sticky top-32 space-y-6">
+          <div class="bg-white/80 p-4 rounded-[2.5rem] shadow-sm border border-white/40">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4 px-2">
+              Location
+            </h3>
+
+            <div class="w-full h-64 rounded-[1.5rem] overflow-hidden grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+              <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=<%= encodeURIComponent(venue.address) %>&t=&z=13&ie=UTF8&iwloc=&output=embed">
+              </iframe>
+            </div>
+
+            <div class="mt-4 px-2">
+              <p class="text-sm font-medium text-[#1C2A3A] mb-2">
+                <%= venue.address %>
+              </p>
+              <a href="<%= venue.map_url %>" target="_blank" class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline flex items-center gap-2">
+                Get Directions
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <button onclick="openAvailabilityModal()" class="w-full py-6 bg-[#1C2A3A] text-white rounded-[2rem] font-bold uppercase tracking-[0.2em] text-[10px] shadow-2xl hover:bg-[#ED8842] transition-all transform hover:-translate-y-1">
+            Check Availability
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="availabilityModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeAvailabilityModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#F9F7F5] rounded-[3rem] p-10 shadow-2xl">
+      <h3 class="text-3xl font-heading mb-8">Select Date</h3>
+      <input type="date" id="checkDate" class="w-full px-6 py-4 bg-white rounded-2xl border-none outline-none mb-6 font-bold text-sm" />
+      <div id="availabilityResult" class="hidden p-4 rounded-2xl text-center text-[10px] font-bold uppercase tracking-widest mb-6"></div>
+      <button onclick="checkDateAvailability()" class="w-full py-5 bg-[#ED8842] text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg">
+        Verify & Proceed
+      </button>
+    </div>
+  </div>
+
+  <script>
+    window.onload = () => {
+      const today = new Date().toISOString().split("T")[0];
+      document.getElementById("checkDate").setAttribute("min", today);
+    };
+
+    function openAvailabilityModal() {
+      document.getElementById("availabilityModal").classList.remove("hidden");
+    }
+
+    function closeAvailabilityModal() {
+      document.getElementById("availabilityModal").classList.add("hidden");
+    }
+
+    function checkDateAvailability() {
+      const date = document.getElementById("checkDate").value;
+      const resultDiv = document.getElementById("availabilityResult");
+      if (!date) return;
+
+      // DB Data for the redirect
+      const venueName = "<%= encodeURIComponent(venue.name) %>";
+      const venueId = "<%= venue._id %>";
+
+      const isAvailable = Math.random() > 0.2; // Simulated check
+      if (isAvailable) {
+        resultDiv.textContent = "Date Available";
+        resultDiv.className =
+          "p-4 rounded-2xl text-center text-[10px] font-bold bg-green-100 text-green-700 block mb-6";
+        setTimeout(() => {
+          window.location.href = `/create-event?venue=${venueName}&id=${venueId}&date=${date}`;
+        }, 1000);
+      } else {
+        resultDiv.textContent = "Date Reserved";
+        resultDiv.className =
+          "p-4 rounded-2xl text-center text-[10px] font-bold bg-red-100 text-red-700 block mb-6";
+      }
+    }
+  </script>
+</body>
+
+</html>

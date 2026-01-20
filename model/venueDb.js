@@ -34,6 +34,14 @@ const venueSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
+    bookedOn: {
+      type: Array,
+      default: [],
+    },
+    costPerHour: {
+      type: Number,
+      required: true,
+    },
     isActive: {
       type: Boolean,
       default: true,

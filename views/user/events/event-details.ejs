@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jazz under the Moonlight — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              secondary: '#1C2A3A',
+              accent: '#5C7C8A',
+              dark: '#1C2A3A',
+              surface: '#F9F7F5',
+            },
+            apple: {
+              bg: '#EAE0CF',
+              card: 'rgba(255, 255, 255, 0.6)',
+              text: '#1C2A3A',
+              secondary: '#5C7C8A',
+              accent: '#1C2A3A'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="bg-apple-bg text-apple-text">
+
+  <!-- Navigation -->
+  <%- include('../../partials/navbar') %>
+
+
+  <main class="pt-32 pb-24 px-6 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+      <!-- Left Column: Immersive Content -->
+      <div class="lg:col-span-8 space-y-16">
+        <!-- Event Hero -->
+        <div class="relative h-[500px] md:h-[600px] rounded-[3rem] overflow-hidden card-shadow">
+          <div class="h-full rounded-[3rem] overflow-hidden relative">
+            <img src="<%= event.galleryImages[0]%>" class="w-full h-full object-cover" alt="Event Hero">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          </div>
+          <div class="absolute top-8 left-8 flex space-x-3">
+            <span class="px-4 py-2 bg-white/40 backdrop-blur-md border border-white/40 rounded-full text-xs font-semibold text-theme-dark uppercase tracking-wider"><%= event.categoryId.name%></span>
+
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="bg-white/40 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/60">
+          <div class="prose prose-lg max-w-none text-apple-text font-normal leading-relaxed">
+            <h2 class="text-4xl font-semibold mb-8 text-theme-dark">About the Event</h2>
+
+            <p class="text-apple-secondary"><%= event.description%></p>
+          </div>
+        </div>
+
+        <!-- Gallery -->
+        <section class="bg-theme-surface/60 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10">
+          <h2 class="text-3xl font-semibold mb-8 text-theme-dark">Atmosphere</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <% for(let i=0;i<event.galleryImages.length;i++){%>
+            <img src="<%= event.galleryImages[i] %>" class="w-full h-48 object-cover rounded-3xl hover:scale-105 transition-transform duration-500" alt="Gallery">
+            <%}%>
+          </div>
+        </section>
+
+        <!-- Venue & Location -->
+        <section class="bg-theme-surface/80 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 class="text-3xl font-semibold  text-theme-dark underline">Venue</h2>
+              <h3 class="text-xl font-semibold mb-5"><%= venue.name%></h3>
+            <p class="text-apple-secondary leading-relaxed mb-6"><%= venue.description%>.</p>
+            <div class="space-y-4">
+              <div class="flex items-center space-x-3 text-sm">
+                <svg class="w-5 h-5 text-theme-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                  </path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="font-medium"><%= venue.address%></span>
+              </div>
+              <a href="<%= venue.map_url%>" class="inline-block px-6 py-3 bg-theme-primary/10 text-theme-primary rounded-full text-sm font-bold hover:bg-theme-primary/20 transition-all">Get
+                Directions</a>
+            </div>
+          </div>
+          <div class="h-64 bg-apple-bg rounded-[2.5rem] overflow-hidden card-shadow border border-black/5">
+            <div class="w-full h-full bg-[#E5E3DF] flex items-center justify-center relative">
+
+              <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=<%= encodeURIComponent(venue.address) %>&z=15&output=embed" class="absolute inset-0"></iframe>
+
+            </div>
+          </div>
+
+      </div>
+      </section>
+    </div>
+
+    <!-- Right Column: Sticky Booking Panel -->
+    <div class="lg:col-span-4">
+      <div class="sticky top-32 space-y-8">
+        <!-- Pricing & Quick Info Card -->
+        <div class="bg-theme-surface/90 backdrop-blur-3xl rounded-[3rem] p-10 card-shadow border border-white/10">
+          <div class="mb-8">
+            <h1 class="text-3xl font-bold tracking-tight mb-2"><%=  event.title%></h1>
+            <div class="flex items-center space-x-2 text-apple-secondary text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                </path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+              </svg>
+              <span><%= venue.address%></span>
+            </div>
+          </div>
+
+          <div class="space-y-6 mb-10">
+            <div class="flex justify-between items-center py-4 border-b border-white/10">
+              <span class="text-sm font-medium text-apple-secondary">Date</span>
+              <span class="font-semibold"><%= schedule.date%></span>
+            </div>
+            <div class="flex justify-between items-center py-4 border-b border-white/10">
+              <span class="text-sm font-medium text-apple-secondary">Time</span>
+              <span class="font-semibold"><%= schedule.time%></span>
+            </div>
+            <div class="flex justify-between items-center py-4">
+              <span class="text-sm font-medium text-apple-secondary">Price from</span>
+              <span class="text-2xl font-bold text-theme-primary">$<%=ticket.lowestPrice%>.00</span>
+            </div>
+          </div>
+
+          <!-- Ticket Selection -->
+          <div class="space-y-6 mb-8">
+            <div class="space-y-4">
+              <div class="flex items-center justify-between">
+                <p class="text-xs font-bold uppercase tracking-widest text-apple-secondary ml-1">
+                  Experiences</p>
+                <p class="text-xs font-medium text-theme-primary"> <%=ticket.ticketsLeft%> of <%=ticket.totalTickets%> Tickets left.</p>
+
+              </div>
+              <div class="grid grid-cols-1 gap-3">
+                <% for(let i=0; i<event.ticketTypes.length ;i++){%>
+                <label class="relative flex flex-col p-4 bg-theme-surface/40 border border-white/10 rounded-2xl cursor-pointer hover:border-theme-primary/40 transition-all group">
+                  <div class="flex items-center space-x-3">
+                    <i class="fas fa-chair text-[#1C2A3A]"></i>
+                    <span class="text-sm font-medium text-[#1C2A3A]"><%= event.ticketTypes[i].name%></span>
+                  </div>
+                  <div class="flex items-center justify-between text-xs pl-7">
+                    <span class="text-[#ED8842] font-semibold"><%=event.ticketTypes[i].quantityAvailable%> of <%=event.ticketTypes[i].quantityTotal%> Seats left</span>
+                  </div>
+                </label>
+                <%}%>
+              </div>
+            </div>
+
+            <%# <!-- Quantity Selector -->
+            <div class="flex items-center justify-between p-4 bg-white/30 rounded-2xl border border-white/10">
+              <span class="text-sm font-bold text-[#1C2A3A]">Quantity</span>
+              <div class="flex items-center space-x-4">
+                <button class="w-8 h-8 rounded-full bg-white text-[#1C2A3A] flex items-center justify-center hover:bg-[#1C2A3A] hover:text-white transition-colors">-</button>
+                <span class="text-lg font-bold w-4 text-center">1</span>
+                <button class="w-8 h-8 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center hover:bg-[#2C3E50] transition-colors">+</button>
+              </div>
+            </div> %>
+              </div>
+
+              <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-primary/90 transition-all card-shadow">
+                <a href="/book-tickets">BOOK TICKETS</a></button>
+            </div>
+
+            <!-- Terms Mini -->
+            <div class="px-8 py-6 bg-theme-surface/20 border border-white/10 rounded-[2rem] text-xs text-apple-secondary leading-relaxed">
+              <p class="font-bold text-theme-dark mb-2">Notice</p>
+              21+ only. ID verification required at entry. Prohibited items include professional cameras and
+              outside drinks.
+            </div>
+          </div>
+        </div>
+      </div>
+  </main>
+
+  <!-- Floating CTA for Mobile -->
+  <div class="md:hidden fixed bottom-6 left-6 right-6">
+    <button class="w-full h-16 bg-apple-text text-white rounded-2xl font-semibold card-shadow text-lg">Book
+      Tickets</button>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 py-20 px-6 bg-[#2D2520] mt-12">
+    <div class="max-w-7xl mx-auto flex flex-col items-center space-y-6 text-sm text-white/60">
+      <span class="text-white font-medium text-xl">evently</span>
+      <div class="flex space-x-8">
+        <a href="#" class="hover:text-white transition-colors">Instagram</a>
+        <a href="#" class="hover:text-white transition-colors">Twitter</a>
+        <a href="#" class="hover:text-white transition-colors">Support</a>
+      </div>
+      <p>&copy; 2024 Evently Inc.</p>
+    </div>
+  </footer>
+
+  <script src="/assets/js/app.js"></script>
+</body>
+
+</html>

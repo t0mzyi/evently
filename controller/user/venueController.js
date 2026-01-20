@@ -7,10 +7,10 @@ export const showVenues = async (req, res) => {
   const sort = req.query.s || "name-asc";
   const venueData = await allVenues(page, search, type, sort);
 
-  res.render("venues/venuePage", { venueData });
+  res.render("user/venues/venuePage", { venueData });
 };
 
 export const singleVenue = async (req, res) => {
   const venue = await venueDetails(req.params.venueId);
-  res.render("venues/venueDetails", { venue });
+  res.render("user/venues/venueDetails", { venue });
 };

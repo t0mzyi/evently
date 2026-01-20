@@ -1,52 +1,67 @@
-import './config/env.js'
-import express from 'express'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import "./config/env.js";
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import session from "express-session";
-import {connectDb} from './config/dbConnect.js'
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-import passport from 'passport';
+import { connectDb } from "./config/dbConnect.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import passport from "passport";
 
-
-
+//db
+import "./model/categoryDb.js";
+import "./model/eventsDb.js";
 
 //dependies
-import userRouter from './routes/userRoutes.js'
-import adminRouter from './routes/adminRoutes.js'
+import userRouter from "./routes/userRoutes.js";
+import adminRouter from "./routes/adminRoutes.js";
 
-
-const app = express()
-import './config/passport.js';
-app.use(session({
+const app = express();
+import "./config/passport.js";
+import userDb from "./model/userDb.js";
+app.use(
+  session({
     secret: "Ca32e322321231232",
     resave: false,
     saveUninitialized: false,
-}))
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0')
-    next()
-})
+  req.session.user = "69660908f78d673268043600";
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, must-revalidate");
+  res.set("Pragma", "no-cache");
+  res.set("Expires", "0");
+  next();
+});
 
+app.use(async (req, res, next) => {
+  if (req.session.user) {
+    try {
+      const user = await userDb.findById(req.session.user);
+      res.locals.user = user;
+    } catch (err) {
+      console.error(err);
+      res.locals.user = null;
+    }
+  } else {
+    res.locals.user = null;
+  }
+  next();
+});
 
-app.use(express.json()) 
-app.use(express.urlencoded({ extended: true }))
-app.set('view engine', 'ejs')
-app.set('views', path.join(__dirname, 'views'))
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/", userRouter);
+app.use("/admin", adminRouter);
 
-
-app.use('/',userRouter)
-app.use('/admin',adminRouter)
-
-
-await connectDb()
+await connectDb();
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000')
-})
+  console.log("Server running on http://localhost:3000");
+});
