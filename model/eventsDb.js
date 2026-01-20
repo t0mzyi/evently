@@ -4,77 +4,79 @@ const ticketTypeSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     price: {
       type: Number,
-      default: 0
+      default: 0,
     },
     quantityTotal: {
       type: Number,
-      required: true
+      required: true,
     },
     quantityAvailable: {
       type: Number,
-      required: true
+      required: true,
     },
     isFree: {
       type: Boolean,
-      default: false
+      default: false,
     },
     description: {
-      type: String
+      type: String,
     },
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   { _id: true }
 );
-
-
 
 const eventsSchema = new mongoose.Schema(
   {
     hostId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-      required: true
+      required: true,
     },
 
     title: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     description: {
       type: String,
-      required: true
+      required: true,
     },
 
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "categories",
-      required: true
+      required: true,
     },
 
     startDate: {
       type: Date,
-      required: true
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
     },
 
     venueType: {
       type: String,
       enum: ["iconic", "custom"],
-      required: true
+      required: true,
     },
 
     // If iconic venue
     venueId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "venues"
+      ref: "venues",
     },
 
     // If custom venue
@@ -83,62 +85,60 @@ const eventsSchema = new mongoose.Schema(
       address: String,
       city: String,
       state: String,
-      capacity : Number,
-      mapLink: String
+      mapLink: String,
     },
 
     galleryImages: {
       type: [String],
-      default: []
+      default: [],
     },
 
     status: {
       type: String,
       enum: ["pending", "approved", "rejected", "completed"],
-      default: "pending"
+      default: "pending",
     },
 
     rejectionReason: {
       type: String,
-      default: null
+      default: null,
     },
 
     isFree: {
       type: Boolean,
-      default: false
-    },
-
-    maxCapacity: {
-      type: Number,
-      required: true
+      default: false,
     },
 
     isFeatured: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     featuredUntil: {
-      type: Date
+      type: Date,
     },
 
     ticketTypes: {
       type: [ticketTypeSchema],
-      required : true
+      required: true,
     },
 
     isBlocked: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     isDeleted: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    totalCapacity: {
+      type: Number,
+      required: true,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

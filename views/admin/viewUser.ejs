@@ -1,275 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Details — Evently Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              theme: {
-                primary: "#1C2A3A",
-                highlight: "#2C3E50",
-                accent: "#ED8842",
-                surface: "#F9F7F5",
-              },
-            },
-            fontFamily: {
-              heading: ["Fraunces", "serif"],
-              sans: ["Inter", "sans-serif"],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Details — Evently Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: "#1C2A3A",
+              highlight: "#2C3E50",
+              accent: "#ED8842",
+              surface: "#F9F7F5",
             },
           },
+          fontFamily: {
+            heading: ["Fraunces", "serif"],
+            sans: ["Inter", "sans-serif"],
+          },
         },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
 
-  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-    <!-- Admin Navbar -->
-    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-      <nav
-        class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl"
-      >
-        <div class="flex items-center gap-6">
-          <span class="text-xl font-bold tracking-tight text-white font-heading"
-            >evently admin</span
-          >
-          <div
-            class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80"
-          >
-            <a
-              href="/admin/dash"
-              class="hover:text-white transition-colors"
-              >Dashboard</a
-            >
-            <a href="/admin/events" class="hover:text-white transition-colors"
-              >Events</a
-            >
-            <a href="/admin/users" class="text-white">Users</a>
-            <a href="/admin/venues" class="hover:text-white transition-colors"
-              >Venues</a
-            >
-            <a
-              href="/admin/categories"
-              class="hover:text-white transition-colors"
-              >Categories</a
-            >
-          </div>
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <!-- Admin Navbar -->
+  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
+      <div class="flex items-center gap-6">
+        <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
+        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
+          <a href="/admin/dash" class="hover:text-white transition-colors">Dashboard</a>
+          <a href="/admin/events" class="hover:text-white transition-colors">Events</a>
+          <a href="/admin/users" class="text-white">Users</a>
+          <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
+          <a href="/admin/categories" class="hover:text-white transition-colors">Categories</a>
         </div>
-        <div class="flex items-center gap-4">
-          <span class="text-white/70 text-sm">Admin</span>
-          <a
-            href="/"
-            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              ></path>
-            </svg>
-          </a>
-        </div>
-      </nav>
-    </div>
-
-    <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-      <!-- Back Button & Title -->
-      <div class="flex items-center gap-4 mb-8">
-        <a
-          href="/admin/users"
-          class="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors shadow-sm"
-        >
-          <svg
-            class="w-5 h-5 text-[#1C2A3A]"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 19l-7-7 7-7"
-            ></path>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-white/70 text-sm">Admin</span>
+        <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
           </svg>
         </a>
-        <div>
-          <h1 class="text-3xl font-heading font-medium tracking-tight">
-            User Details
-          </h1>
-          <p class="text-[#1C2A3A]/60">
-            Detailed view of <%= user.firstName %>'s profile
-          </p>
+      </div>
+    </nav>
+  </div>
+
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+    <!-- Back Button & Title -->
+    <div class="flex items-center gap-4 mb-8">
+      <a href="/admin/users" class="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors shadow-sm">
+        <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-3xl font-heading font-medium tracking-tight">
+          User Details
+        </h1>
+        <p class="text-[#1C2A3A]/60">
+          Detailed view of <%= user.firstName %>'s profile
+        </p>
+      </div>
+    </div>
+
+    <div class="gap-8">
+      <!-- Left Column: Profile & Stats -->
+      <div class="space-y-6">
+        <!-- Profile Card -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm text-center">
+          <div class="w-24 h-24 rounded-full bg-[#1C2A3A] flex items-center justify-center text-white text-3xl font-heading mx-auto mb-4 overflow-hidden">
+            <img src="<%= user.avatarUrl %>" alt="" srcset="" />
+          </div>
+          <h2 class="text-xl font-bold font-heading text-[#1C2A3A]">
+            <%= user.firstName + " " + user.lastName%>
+          </h2>
+
+          <% if(!user.isBlocked) {%>
+          <div class="inline-flex items-center px-3 py-1 rounded-full bg-green-500/10 text-green-700 text-xs font-bold uppercase tracking-wider mb-6">
+            Active Account
+          </div>
+          <% }else{ %>
+          <div class="inline-flex items-center px-3 py-1 rounded-full bg-red-500/10 text-red-700 text-xs font-bold uppercase tracking-wider mb-6">
+            Blocked
+          </div>
+          <% } %>
+          <div class="mb-6"></div>
+
+          <div class="text-left space-y-3 pt-6 pb-3 border-t border-[#1C2A3A]/10">
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
+                Email Address
+              </p>
+              <p class="text-sm font-medium"><%= user.emailAddress %></p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
+                Joined Date
+              </p>
+              <p class="text-sm font-medium">
+                <%= new Date(user.createdAt).toLocaleDateString("en-US", {
+                  month: "short", day: "numeric", year: "numeric" }) %>
+              </p>
+            </div>
+            <div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
+                Bio
+              </p>
+              <p class="text-sm font-medium"><%= user.bio %></p>
+            </div>
+          </div>
+          <div class="text-left space-y-3 pt-6 border-t border-[#1C2A3A]/10">
+            <div>
+              <p class="text-sm font-medium">
+                Attended : <%= user.attentedCount %>
+              </p>
+              <p class="text-sm font-medium">
+                Hosted : <%= user.hostedEvents.length %>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wallet Summary -->
+        <div class="bg-[#1C2A3A] text-white rounded-[2rem] p-8 shadow-xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"></div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <h3 class="font-heading text-lg">Wallet & Earnings</h3>
+          </div>
+
+          <div class="mb-6">
+            <p class="text-white/60 text-xs font-bold uppercase tracking-widest mb-1">
+              Current Balance
+            </p>
+            <p class="text-3xl font-heading font-medium">$12,250.00</p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+              <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">
+                Total Earned
+              </p>
+              <p class="text-lg font-bold">$45,000</p>
+            </div>
+            <div class="p-3 rounded-xl bg-white/5 border border-white/10">
+              <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1">
+                Pending
+              </p>
+              <p class="text-lg font-bold">$3,450</p>
+            </div>
+          </div>
+
+          <button class="w-full py-3 bg-white text-[#1C2A3A] rounded-xl font-bold hover:bg-white/90 transition-colors text-sm">
+            View Transaction History
+          </button>
         </div>
       </div>
 
-      <div class="gap-8">
-        <!-- Left Column: Profile & Stats -->
-        <div class="space-y-6">
-          <!-- Profile Card -->
-          <div
-            class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm text-center"
-          >
-            <div
-              class="w-24 h-24 rounded-full bg-[#1C2A3A] flex items-center justify-center text-white text-3xl font-heading mx-auto mb-4 overflow-hidden"
-            >
-              <img src="<%= user.avatarUrl %>" alt="" srcset="" />
-            </div>
-            <h2 class="text-xl font-bold font-heading text-[#1C2A3A]">
-              <%= user.firstName + " " + user.lastName%>
-            </h2>
+      <!-- Main Content: Activity -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Hosted Events -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
+          <h3 class="text-xl font-heading font-medium mb-6">Hosted Events</h3>
 
-            <% if(!user.isBlocked) {%>
-            <div
-              class="inline-flex items-center px-3 py-1 rounded-full bg-green-500/10 text-green-700 text-xs font-bold uppercase tracking-wider mb-6"
-            >
-              Active Account
-            </div>
-            <% }else{ %>
-            <div
-              class="inline-flex items-center px-3 py-1 rounded-full bg-red-500/10 text-red-700 text-xs font-bold uppercase tracking-wider mb-6"
-            >
-              Blocked
-            </div>
-            <% } %>
-            <div class="mb-6"></div>
-
-            <div
-              class="text-left space-y-3 pt-6 pb-3 border-t border-[#1C2A3A]/10"
-            >
-              <div>
-                <p
-                  class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
-                >
-                  Email Address
-                </p>
-                <p class="text-sm font-medium"><%= user.emailAddress %></p>
-              </div>
-              <div>
-                <p
-                  class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
-                >
-                  Joined Date
-                </p>
-                <p class="text-sm font-medium">
-                  <%= new Date(user.createdAt).toLocaleDateString("en-US", {
-                  month: "short", day: "numeric", year: "numeric" }) %>
-                </p>
-              </div>
-              <div>
-                <p
-                  class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1"
-                >
-                  Bio
-                </p>
-                <p class="text-sm font-medium"><%= user.bio %></p>
-              </div>
-            </div>
-            <div class="text-left space-y-3 pt-6 border-t border-[#1C2A3A]/10">
-              <div>
-                <p class="text-sm font-medium">
-                  Attended : <%= user.attentedCount %>
-                </p>
-                <p class="text-sm font-medium">
-                  Hosted : <%= user.hostedCount %>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Wallet Summary -->
-          <div
-            class="bg-[#1C2A3A] text-white rounded-[2rem] p-8 shadow-xl relative overflow-hidden"
-          >
-            <div
-              class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-10 -mt-10"
-            ></div>
-            <div class="flex items-center gap-3 mb-6">
-              <div
-                class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center"
-              >
-                <svg
-                  class="w-5 h-5 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                  ></path>
-                </svg>
-              </div>
-              <h3 class="font-heading text-lg">Wallet & Earnings</h3>
-            </div>
-
-            <div class="mb-6">
-              <p
-                class="text-white/60 text-xs font-bold uppercase tracking-widest mb-1"
-              >
-                Current Balance
-              </p>
-              <p class="text-3xl font-heading font-medium">$12,250.00</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
-                <p
-                  class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1"
-                >
-                  Total Earned
-                </p>
-                <p class="text-lg font-bold">$45,000</p>
-              </div>
-              <div class="p-3 rounded-xl bg-white/5 border border-white/10">
-                <p
-                  class="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-1"
-                >
-                  Pending
-                </p>
-                <p class="text-lg font-bold">$3,450</p>
-              </div>
-            </div>
-
-            <button
-              class="w-full py-3 bg-white text-[#1C2A3A] rounded-xl font-bold hover:bg-white/90 transition-colors text-sm"
-            >
-              View Transaction History
-            </button>
-          </div>
-        </div>
-
-        <!-- Main Content: Activity -->
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Hosted Events -->
-          <div
-            class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm"
-          >
-            <h3 class="text-xl font-heading font-medium mb-6">Hosted Events</h3>
-
-            <div class="space-y-4">
-              <!-- Event Item -->
-              <!-- <div
+          <div class="space-y-4">
+            <!-- Event Item -->
+            <!-- <div
                 class="flex items-center justify-between p-4 rounded-xl bg-white/50 border border-[#1C2A3A]/5"
               >
                 <div class="flex items-center gap-4">
@@ -317,19 +229,17 @@
                     >Completed</span
                   >
                 </div> -->
-              </div>
-            </div>
           </div>
+        </div>
+      </div>
 
-          <!-- Recent Tickets Bought -->
-          <div
-            class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm"
-          >
-            <h3 class="text-xl font-heading font-medium mb-6">
-              Recent Ticket Purchases
-            </h3>
+      <!-- Recent Tickets Bought -->
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
+        <h3 class="text-xl font-heading font-medium mb-6">
+          Recent Ticket Purchases
+        </h3>
 
-            <!-- <div class="overflow-x-auto">
+        <!-- <div class="overflow-x-auto">
               <table class="w-full">
                 <thead
                   class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 border-b border-[#1C2A3A]/10"
@@ -365,9 +275,10 @@
                 </tbody>
               </table>
             </div> -->
-          </div>
-        </div>
       </div>
-    </main>
-  </body>
+    </div>
+    </div>
+  </main>
+</body>
+
 </html>

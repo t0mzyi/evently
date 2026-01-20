@@ -21,11 +21,11 @@ import {
   googleAuthSuccess,
 } from "../controller/user/googleAuthController.js";
 import { ifAuth, isAuth, otpGuard, resetPasswordGuard } from "../middlewares/flowMiddleware.js";
-import { editProfile, getEditProfile, getProfile } from "../controller/user/profileController.js";
-import { upload } from "../middlewares/multerUpload.js";
+import { editProfile, getEditProfile, getProfile, showHostDashboard } from "../controller/user/dashBoardController.js";
+import { upload, uploadEvent } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/foryouController.js";
 import { showVenues, singleVenue } from "../controller/user/venueController.js";
-import { showAllEvents, showSingleEvent } from "../controller/user/eventsController.js";
+import { createEvent, showAllEvents, showCreateEvent, showSingleEvent } from "../controller/user/eventsController.js";
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/foryou"));
@@ -62,6 +62,7 @@ router.get("/dashboard", isAuth, getProfile);
 
 router.get("/dashboard/editProfile", isAuth, getEditProfile);
 router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
+router.get("/dashboard/hostDashboard", showHostDashboard);
 
 //VENUE
 router.get("/venues", showVenues);
@@ -70,6 +71,8 @@ router.get("/venues/:venueId", singleVenue);
 //events
 router.get("/events", showAllEvents);
 router.get("/events/:eventId", showSingleEvent);
+router.get("/createEvent", showCreateEvent);
+router.post("/createEvent", uploadEvent.array("galleryImages", 10), createEvent);
 
 router.get("/logout", isAuth, logout);
 export default router;

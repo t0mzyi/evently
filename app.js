@@ -18,6 +18,7 @@ import adminRouter from "./routes/adminRoutes.js";
 
 const app = express();
 import "./config/passport.js";
+import userDb from "./model/userDb.js";
 app.use(
   session({
     secret: "Ca32e322321231232",
@@ -29,12 +30,25 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  res.set(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, must-revalidate"
-  );
+  req.session.user = "69660908f78d673268043600";
+  res.set("Cache-Control", "no-store, no-cache, must-revalidate, must-revalidate");
   res.set("Pragma", "no-cache");
   res.set("Expires", "0");
+  next();
+});
+
+app.use(async (req, res, next) => {
+  if (req.session.user) {
+    try {
+      const user = await userDb.findById(req.session.user);
+      res.locals.user = user;
+    } catch (err) {
+      console.error(err);
+      res.locals.user = null;
+    }
+  } else {
+    res.locals.user = null;
+  }
   next();
 });
 

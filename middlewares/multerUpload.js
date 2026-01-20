@@ -31,3 +31,9 @@ export const uploadVenue = multer({
   fileFilter: imageFilter,
   limits: { fileSize: 1024 * 1024 * 5 },
 });
+
+export const uploadEvent = multer({
+  storage: createStorage("events"),
+  fileFilter: imageFilter,
+  limits: { fileSize: 1024 * 1024 * 5 },
+});
