@@ -5,6 +5,7 @@ export const formatDate = (isoDate) => {
     day: "2-digit",
     year: "numeric",
   });
+
   const time = ISOdate.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
