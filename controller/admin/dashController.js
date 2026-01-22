@@ -1,9 +1,4 @@
-import {
-  blockAndUnblock,
-  eventDetails,
-  userDetails,
-  userProfile,
-} from "../../service/admin/AdashService.js";
+import { blockAndUnblock, eventDetails, userDetails, userProfile } from "../../service/admin/AdashService.js";
 
 export const getDash = async (req, res) => {
   const users = await userDetails();
@@ -32,9 +27,7 @@ export const toggleBlockUser = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        redirectUrl: `/admin/users?status=error&message=${encodeURIComponent(
-          "update failed"
-        )}`,
+        redirectUrl: `/admin/users?status=error&message=${encodeURIComponent("update failed")}`,
       });
     }
     return res.status(200).json({

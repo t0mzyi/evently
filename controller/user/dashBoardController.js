@@ -54,7 +54,7 @@ export const editProfile = async (req, res) => {
 export const showHostDashboard = async (req, res) => {
   try {
     const user = await userFinder(req.session.user);
-    res.render("user/dash/hostDashboard", { user });
+    return res.render("user/dash/hostDashboard", { user });
   } catch (err) {
     console.log(err);
   }

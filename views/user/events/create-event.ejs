@@ -173,7 +173,6 @@
                     <input type="text" name="custom_state" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
                     <p id="customStateError" class="error-text hidden"></p>
                   </div>
-
                   <div>
                     <label class="text-[10px] font-bold text-[#1C2A3A]/40">MAP LINK</label>
                     <input type="text" name="custom_mapLink" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3">
@@ -207,52 +206,48 @@
               <p id="categoryError" class="error-text hidden"></p>
             </div>
 
-            <!-- TICKETS & CAPACITY -->
+            <!-- TICKETS -->
             <div class="pt-8 border-t border-[#1C2A3A]/5">
-              <label class="flex items-center gap-3 cursor-pointer mb-6">
-                <input value="true" type="checkbox" id="freeEntryToggle" name="isFree" onchange="handleFreeEntryToggle(this)" class="w-5 h-5 rounded border-[#1C2A3A]/20 text-[#1C2A3A] focus:ring-0">
-                <span class="text-sm font-bold text-[#1C2A3A] uppercase tracking-widest text-[10px]">Mark as Free Entry</span>
-              </label>
-
-              <!-- PAID TICKETS -->
-              <div id="ticketMasterSection" class="mb-6">
-                <div class="flex justify-between items-center mb-4">
-                  <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40">Ticket Configuration</label>
-                  <button type="button" onclick="addTicketType()" class="text-[10px] font-bold uppercase text-blue-600">+ Add Ticket</button>
-                </div>
-                <div id="ticketTypesContainer" class="space-y-4">
-                  <div class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl grid grid-cols-2 gap-4">
+              <div class="flex justify-between items-center mb-4">
+                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40">Ticket Configuration</label>
+                <button type="button" onclick="addTicketType()" class="text-[10px] font-bold uppercase text-blue-600">+ Add Ticket</button>
+              </div>
+              <div id="ticketTypesContainer" class="space-y-4">
+                <!-- Initial Ticket Row -->
+                <div class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl relative group">
+                  <button type="button" onclick="this.closest('div').remove(); calculateTotalCapacity()" class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                  <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
                       <input type="text" name="ticket_name[]" placeholder="General Admission" class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none">
                       <p class="error-text hidden ticket-name-error"></p>
                     </div>
                     <div>
                       <label class="text-[9px] font-bold opacity-40">PRICE</label>
-                      <input type="number" name="ticket_price[]" value="0" class="ticket-price w-full bg-white/50 rounded-lg px-3 py-2 text-sm">
+                      <div class="flex items-center gap-2 mt-1">
+                        <input type="number" name="ticket_price[]" value="0" min="0" class="ticket-price-input w-full bg-white/50 rounded-lg px-3 py-2 text-sm" oninput="calculateTotalCapacity()">
+                        <label class="flex items-center gap-1 cursor-pointer text-[9px]">
+                          <input type="checkbox" class="ticket-free-checkbox w-4 h-4 text-[#1C2A3A] rounded" onchange="toggleFreeTicket(this)">
+                          <span class="text-[#1C2A3A]/60">Free</span>
+                        </label>
+                      </div>
                       <p class="error-text hidden ticket-price-error"></p>
                     </div>
                     <div>
                       <label class="text-[9px] font-bold opacity-40">QTY</label>
-                      <input type="number" name="ticket_quantityTotal[]" class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm" oninput="calculateTotalCapacity()">
+                      <input type="number" name="ticket_quantityTotal[]" min="1" class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm" oninput="calculateTotalCapacity()">
                       <p class="error-text hidden ticket-qty-error"></p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- MANUAL CAPACITY (FREE EVENTS) -->
-              <div id="manualCapacitySection" class="hidden mb-6">
-                <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Total Event Capacity</label>
-                <input type="number" id="manualMaxCapacity" placeholder="Max Attendees" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none" oninput="syncManualCapacity()">
-                <p id="manualCapacityError" class="error-text hidden"></p>
-              </div>
-
-              <!-- ALWAYS VISIBLE: TOTAL CAPACITY DISPLAY -->
-              <div>
+              <!-- TOTAL CAPACITY DISPLAY -->
+              <div class="mt-6">
                 <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">
                   Total Event Capacity
                 </label>
                 <input type="text" id="display-capacity" class="w-full bg-gray-100 border border-[#1C2A3A]/20 rounded-xl px-4 py-3 focus:outline-none text-[#1C2A3A]/70" readonly placeholder="0">
+                <input type="hidden" id="max-capacity-input" name="totalCapacity">
               </div>
             </div>
 
@@ -263,17 +258,17 @@
               <p id="descriptionError" class="error-text hidden"></p>
             </div>
 
-            <!-- HIDDEN INPUT FOR BACKEND -->
-            <input type="hidden" id="max-capacity-input" name="totalCapacity">
-
             <!-- SUBMIT BUTTON -->
             <div class="pt-8 flex justify-end">
               <button id="publishBtn" type="submit" class="px-12 py-5 bg-[#1C2A3A] text-white rounded-2xl font-heading text-xl shadow-2xl hover:scale-105 transition-all">Publish Event</button>
             </div>
           </div>
-          <div id="backendError" class="hidden p-5 bg-red-500/10 rounded-2xl border border-green-500/20 mb-4">
-            <span class="text-sm font-medium text-green-800 flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Venue Secured.
+          <div id="backendError" class="hidden p-5 bg-red-500/10 rounded-2xl border border-red-500/20 mb-4">
+            <span class="text-sm font-medium text-red-800 flex items-center gap-2">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+              Error: <span id="backendErrorMessage"></span>
             </span>
           </div>
         </form>
@@ -290,9 +285,13 @@
     const formFields = document.getElementById('form-fields');
     let selectedFiles = [];
 
-    window.onload = openModal;
+    // Open modal on load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openModal);
+    } else {
+      openModal();
+    }
 
-    // MODAL FUNCTIONS
     function openModal() {
       modal.classList.remove('hidden');
       formFields.classList.add('opacity-40', 'pointer-events-none', 'blur-[4px]');
@@ -333,7 +332,7 @@
       document.getElementById('changeVenueBtn').classList.remove('hidden');
     }
 
-    // IMAGE HANDLING
+    // Image handling
     function handleImagePreview(event) {
       const files = Array.from(event.target.files);
       files.forEach(file => {
@@ -363,7 +362,7 @@
       renderImagePreviews();
     }
 
-    // MODAL SEARCH & FILTER
+    // Modal search
     [document.getElementById('modal-search'), modalStart, modalEnd].forEach(el => {
       el.addEventListener('input', () => {
         const start = modalStart.value;
@@ -398,54 +397,34 @@
       });
     });
 
-    // ===== CAPACITY LOGIC =====
-    document.addEventListener('DOMContentLoaded', () => {
-      updateCapacityDisplay();
-    });
+    // FREE TICKET TOGGLE
+    function toggleFreeTicket(checkbox) {
+      const priceInput = checkbox.closest('.grid').querySelector('input[name="ticket_price[]"]');
+      if (!priceInput) return;
 
-    function handleFreeEntryToggle(cb) {
-      const isFree = cb.checked;
-      document.getElementById('ticketMasterSection').classList.toggle('hidden', isFree);
-      document.getElementById('manualCapacitySection').classList.toggle('hidden', !isFree);
-      updateCapacityDisplay();
+      if (checkbox.checked) {
+        priceInput.value = 0;
+        priceInput.disabled = true;
+        priceInput.classList.add('locked-input');
+      } else {
+        priceInput.disabled = false;
+        priceInput.classList.remove('locked-input');
+      }
+      calculateTotalCapacity();
     }
 
-    function syncManualCapacity() {
-      const manualInput = document.getElementById('manualMaxCapacity');
-      document.getElementById('max-capacity-input').value = manualInput.value || '';
-      updateCapacityDisplay();
-    }
-
+    // CAPACITY CALCULATION
     function calculateTotalCapacity() {
-      if (document.getElementById('freeEntryToggle').checked) return;
-
       let total = 0;
       document.querySelectorAll('.ticket-qty').forEach(input => {
         const val = parseInt(input.value);
-        if (!isNaN(val)) total += val;
+        if (!isNaN(val) && val > 0) total += val;
       });
-
       document.getElementById('max-capacity-input').value = total;
-      updateCapacityDisplay();
+      document.getElementById('display-capacity').value = total;
     }
 
-    function updateCapacityDisplay() {
-      const isFree = document.getElementById('freeEntryToggle').checked;
-      const display = document.getElementById('display-capacity');
-
-      if (isFree) {
-        const manual = document.getElementById('manualMaxCapacity').value || '0';
-        display.value = manual;
-      } else {
-        let total = 0;
-        document.querySelectorAll('.ticket-qty').forEach(input => {
-          const val = parseInt(input.value);
-          if (!isNaN(val)) total += val;
-        });
-        display.value = total;
-      }
-    }
-
+    // ADD TICKET
     function addTicketType() {
       const id = Date.now();
       document.getElementById('ticketTypesContainer').insertAdjacentHTML('beforeend', `
@@ -467,12 +446,24 @@
             </div>
             <div>
               <label class="text-[9px] font-bold opacity-40">PRICE</label>
-              <input 
-                type="number" 
-                name="ticket_price[]" 
-                value="0" 
-                class="ticket-price w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
-              >
+              <div class="flex items-center gap-2 mt-1">
+                <input 
+                  type="number" 
+                  name="ticket_price[]" 
+                  value="0" 
+                  min="0"
+                  class="ticket-price-input w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
+                  oninput="calculateTotalCapacity()"
+                >
+                <label class="flex items-center gap-1 cursor-pointer text-[9px]">
+                  <input 
+                    type="checkbox" 
+                    class="ticket-free-checkbox w-4 h-4 text-[#1C2A3A] rounded"
+                    onchange="toggleFreeTicket(this)"
+                  >
+                  <span class="text-[#1C2A3A]/60">Free</span>
+                </label>
+              </div>
               <p class="error-text hidden ticket-price-error"></p>
             </div>
             <div>
@@ -480,6 +471,7 @@
               <input 
                 type="number" 
                 name="ticket_quantityTotal[]" 
+                min="1"
                 class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
                 oninput="calculateTotalCapacity()"
               >
@@ -490,13 +482,14 @@
       `);
     }
 
-    // ===== FORM SUBMISSION =====
+    // FORM SUBMISSION
     document.getElementById('eventForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
       const publishBtn = document.getElementById('publishBtn');
-      const errorDiv = document.getElementById('backendError')
-      errorDiv.classList.add('hidden')
+      const errorDiv = document.getElementById('backendError');
+      const errorMsgSpan = document.getElementById('backendErrorMessage');
+      errorDiv.classList.add('hidden');
       publishBtn.disabled = true;
       publishBtn.textContent = 'Publishing...';
       publishBtn.classList.add('opacity-75', 'cursor-not-allowed');
@@ -563,10 +556,6 @@
         fields.forEach(f => {
           if (!f.el.value.trim()) markError(f.el, f.msg);
         });
-        const cap = document.querySelector('[name="custom_capacity"]');
-        if (!cap.value.trim() || parseInt(cap.value) <= 0) {
-          markError(cap, 'Valid capacity (greater than 0) is required.');
-        }
       }
 
       // Images
@@ -585,21 +574,27 @@
         isValid = false;
       }
 
-      // Capacity & Tickets
-      const isFree = document.getElementById('freeEntryToggle').checked;
-      if (isFree) {
-        const manualCap = document.getElementById('manualMaxCapacity');
-        if (!manualCap.value.trim() || parseInt(manualCap.value) <= 0) {
-          markError(manualCap, 'Total capacity is required for free events.');
-        }
+      // Tickets validation
+      const ticketRows = document.querySelectorAll('#ticketTypesContainer > div.p-6');
+      if (ticketRows.length === 0) {
+        alert('At least one ticket type is required.');
+        isValid = false;
       } else {
-        const ticketNames = document.querySelectorAll('[name="ticket_name[]"]');
-        const ticketQtys = document.querySelectorAll('[name="ticket_quantityTotal[]"]');
-        for (let i = 0; i < ticketNames.length; i++) {
-          const name = ticketNames[i].value.trim();
-          const qty = parseInt(ticketQtys[i].value) || 0;
-          if (!name) markError(ticketNames[i], 'Ticket name is required.');
-          if (qty <= 0) markError(ticketQtys[i], 'Quantity must be greater than 0.');
+        for (const row of ticketRows) {
+          const nameInput = row.querySelector('[name="ticket_name[]"]');
+          const qtyInput = row.querySelector('[name="ticket_quantityTotal[]"]');
+
+          if (!nameInput || !qtyInput) {
+            row.classList.add('border-red-500', 'border-2');
+            isValid = false;
+            continue;
+          }
+
+          const name = nameInput.value.trim();
+          const qty = parseInt(qtyInput.value) || 0;
+
+          if (!name) markError(nameInput, 'Ticket name is required.');
+          if (qty <= 0) markError(qtyInput, 'Quantity must be greater than 0.');
         }
       }
 
@@ -612,7 +607,6 @@
         isValid = false;
       }
 
-      // Re-enable button if invalid
       if (!isValid) {
         publishBtn.disabled = false;
         publishBtn.textContent = 'Publish Event';
@@ -625,8 +619,36 @@
         return;
       }
 
-      // Append files to FormData
+      // ✅ REBUILD TICKET DATA IN CORRECT ORDER ✅
+      const ticketData = [];
+      for (const row of ticketRows) {
+        const name = row.querySelector('[name="ticket_name[]"]').value.trim();
+        const price = parseFloat(row.querySelector('input[name="ticket_price[]"]').value) || 0;
+        const qty = parseInt(row.querySelector('[name="ticket_quantityTotal[]"]').value) || 0;
+        if (name && qty > 0) {
+          ticketData.push({
+            name,
+            price,
+            qty
+          });
+        }
+      }
+
       const formData = new FormData(this);
+
+      // Remove old arrays
+      formData.delete('ticket_name[]');
+      formData.delete('ticket_price[]');
+      formData.delete('ticket_quantityTotal[]');
+
+      // Append in guaranteed order
+      ticketData.forEach(ticket => {
+        formData.append('ticket_name[]', ticket.name);
+        formData.append('ticket_price[]', ticket.price.toString());
+        formData.append('ticket_quantityTotal[]', ticket.qty.toString());
+      });
+
+      // Handle images
       formData.delete('galleryImages');
       selectedFiles.forEach(file => {
         formData.append('galleryImages', file);
@@ -640,12 +662,10 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-
-            //window.location.href = '/dashboard/hostDashboard';
+            window.location.href = data.redirectUrl;
           } else {
-
-            errorDiv.classList.remove('hidden')
-            errorDiv.textContent = data.message
+            errorMsgSpan.textContent = data.message || 'Failed to create event.';
+            errorDiv.classList.remove('hidden');
             publishBtn.disabled = false;
             publishBtn.textContent = 'Publish Event';
             publishBtn.classList.remove('opacity-75', 'cursor-not-allowed');
@@ -653,12 +673,15 @@
         })
         .catch(err => {
           console.error(err);
-          alert('Network error. Please try again.');
+          errorMsgSpan.textContent = 'Network error. Please try again.';
+          errorDiv.classList.remove('hidden');
           publishBtn.disabled = false;
           publishBtn.textContent = 'Publish Event';
           publishBtn.classList.remove('opacity-75', 'cursor-not-allowed');
         });
     });
+
+    calculateTotalCapacity();
   </script>
 </body>
 

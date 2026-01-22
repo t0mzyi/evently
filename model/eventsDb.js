@@ -30,7 +30,7 @@ const ticketTypeSchema = new mongoose.Schema(
       default: true,
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const eventsSchema = new mongoose.Schema(
@@ -104,11 +104,6 @@ const eventsSchema = new mongoose.Schema(
       default: null,
     },
 
-    isFree: {
-      type: Boolean,
-      default: false,
-    },
-
     isFeatured: {
       type: Boolean,
       default: false,
@@ -128,10 +123,6 @@ const eventsSchema = new mongoose.Schema(
       default: false,
     },
 
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
     totalCapacity: {
       type: Number,
       required: true,
@@ -139,7 +130,7 @@ const eventsSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export default mongoose.model("events", eventsSchema);

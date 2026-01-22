@@ -1,334 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Venue Management — Evently Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              theme: {
-                primary: "#1C2A3A",
-                highlight: "#2C3E50",
-                accent: "#ED8842",
-                surface: "#F9F7F5",
-              },
-            },
-            fontFamily: {
-              heading: ["Fraunces", "serif"],
-              sans: ["Inter", "sans-serif"],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Venue Management — Evently Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: "#1C2A3A",
+              highlight: "#2C3E50",
+              accent: "#ED8842",
+              surface: "#F9F7F5",
             },
           },
+          fontFamily: {
+            heading: ["Fraunces", "serif"],
+            sans: ["Inter", "sans-serif"],
+          },
         },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
 
-  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-    <!-- Admin Navbar -->
-    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-      <nav
-        class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl"
-      >
-        <div class="flex items-center gap-6">
-          <span class="text-xl font-bold tracking-tight text-white font-heading"
-            >evently admin</span
-          >
-          <div
-            class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80"
-          >
-            <a
-              href="/admin/dash"
-              class="hover:text-white transition-colors"
-              >Dashboard</a
-            >
-            <a href="/admin/events" class="hover:text-white transition-colors"
-              >Events</a
-            >
-            <a href="/admin/users" class="hover:text-white transition-colors"
-              >Users</a
-            >
-            <a href="/admin/venues" class="text-white">Venues</a>
-            <a
-              href="/admin/categories"
-              class="hover:text-white transition-colors"
-              >Categories</a
-            >
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <!-- Admin Navbar -->
+  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
+      <div class="flex items-center gap-6">
+        <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
+        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
+          <a href="/admin/dashboard" class="hover:text-white transition-colors">Dashboard</a>
+          <a href="/admin/events" class="hover:text-white transition-colors">Events</a>
+          <a href="/admin/users" class="hover:text-white transition-colors">Users</a>
+          <a href="/admin/venues" class="text-white">Venues</a>
+          <a href="/admin/categories" class="hover:text-white transition-colors">Categories</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-white/70 text-sm">Admin</span>
+        <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+    <!-- Header  -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+      <div>
+        <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">
+          Venue Management
+        </h1>
+        <p class="text-[#1C2A3A]/60">Manage event venues and locations</p>
+      </div>
+      <div class="flex gap-3 w-full md:w-auto">
+        <a href="/admin/venues/add" class="px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-colors shadow-lg flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Venue
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white/60 backdrop-blur-xl rounded-xl p-4 border border-white/40">
+        <p class="text-2xl font-heading font-bold text-[#1C2A3A]">
+          <%= venuesData.totalVenues %>
+        </p>
+        <p class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider">
+          Total Venues
+        </p>
+      </div>
+      <div class="bg-green-500/10 backdrop-blur-xl rounded-xl p-4 border border-green-500/20">
+        <p class="text-2xl font-heading font-bold text-green-700"><%= venuesData.activeVenues %></p>
+        <p class="text-xs text-green-700/80 uppercase tracking-wider">
+          Available Now
+        </p>
+      </div>
+      <div class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-4 border border-blue-500/20">
+        <p class="text-2xl font-heading font-bold text-blue-700">45</p>
+        <p class="text-xs text-blue-700/80 uppercase tracking-wider">
+          Upcoming Events
+        </p>
+      </div>
+      <div class="bg-purple-500/10 backdrop-blur-xl rounded-xl p-4 border border-purple-500/20">
+        <p class="text-2xl font-heading font-bold text-purple-700">98%</p>
+        <p class="text-xs text-purple-700/80 uppercase tracking-wider">
+          Avg. Rating
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-white/40 backdrop-blur-md rounded-2xl p-4 mb-8 border border-white/20">
+      <form action="/admin/venues" method="GET" class="flex flex-col md:flex-row items-center gap-6">
+        <input type="hidden" name="p" value="1">
+
+        <div class="relative w-full md:flex-1">
+          <input type="search" name="n" value="<%= venuesData.searchQuery %>" placeholder="Search venues by name..." class="w-full px-4 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40" />
+        </div>
+
+        <div class="flex flex-wrap items-center gap-6 w-full md:w-auto">
+          <div class="relative min-w-[140px]">
+            <select name="t" onchange="this.form.submit()" class="w-full appearance-none pl-4 pr-10 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40 cursor-pointer">
+              <option value="all" <%= venuesData.selectedType === 'all' ? 'selected' : '' %>>All Types</option>
+              <option value="Indoor" <%= venuesData.selectedType === 'Indoor' ? 'selected' : '' %>>Indoor</option>
+              <option value="Outdoor" <%= venuesData.selectedType === 'Outdoor' ? 'selected' : '' %>>Outdoor</option>
+              <option value="Rooftop" <%= venuesData.selectedType === 'Rooftop' ? 'selected' : '' %>>Roof Top</option>
+              <option value="Stadium" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Stadium</option>
+              <option value="Other" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Other</option>
+            </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="relative min-w-[160px]">
+            <select name="s" onchange="this.form.submit()" class="w-full appearance-none pl-4 pr-10 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40 cursor-pointer">
+              <option value="name-asc" <%= venuesData.selectedSort === 'name-asc' ? 'selected' : '' %>>Name A-Z</option>
+              <option value="name-desc" <%= venuesData.selectedSort === 'name-desc' ? 'selected' : '' %>>Name Z-A</option>
+              <option value="capacity-desc" <%= venuesData.selectedSort === 'capacity-desc' ? 'selected' : '' %>>Largest Capacity</option>
+              <option value="capacity-asc" <%= venuesData.selectedSort === 'capacity-asc' ? 'selected' : '' %>>Smallest Capacity</option>
+            </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </div>
           </div>
         </div>
-        <div class="flex items-center gap-4">
-          <span class="text-white/70 text-sm">Admin</span>
-          <a
-            href="/"
-            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              ></path>
-            </svg>
-          </a>
-        </div>
-      </nav>
+      </form>
     </div>
 
-    <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-      <!-- Header  -->
-      <div
-        class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8"
-      >
-        <div>
-          <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">
-            Venue Management
-          </h1>
-          <p class="text-[#1C2A3A]/60">Manage event venues and locations</p>
-        </div>
-        <div class="flex gap-3 w-full md:w-auto">
-          <a
-            href="/admin/venues/add"
-            class="px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-colors shadow-lg flex items-center gap-2"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              ></path>
-            </svg>
-            Add Venue
-          </a>
-        </div>
-      </div>
 
-      <!-- Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div
-          class="bg-white/60 backdrop-blur-xl rounded-xl p-4 border border-white/40"
-        >
-          <p class="text-2xl font-heading font-bold text-[#1C2A3A]">
-            <%= venuesData.totalVenues %>
-          </p>
-          <p class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider">
-            Total Venues
-          </p>
-        </div>
-        <div
-          class="bg-green-500/10 backdrop-blur-xl rounded-xl p-4 border border-green-500/20"
-        >
-          <p class="text-2xl font-heading font-bold text-green-700"><%= venuesData.activeVenues %></p>
-          <p class="text-xs text-green-700/80 uppercase tracking-wider">
-            Available Now
-          </p>
-        </div>
-        <div
-          class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-4 border border-blue-500/20"
-        >
-          <p class="text-2xl font-heading font-bold text-blue-700">45</p>
-          <p class="text-xs text-blue-700/80 uppercase tracking-wider">
-            Upcoming Events
-          </p>
-        </div>
-        <div
-          class="bg-purple-500/10 backdrop-blur-xl rounded-xl p-4 border border-purple-500/20"
-        >
-          <p class="text-2xl font-heading font-bold text-purple-700">98%</p>
-          <p class="text-xs text-purple-700/80 uppercase tracking-wider">
-            Avg. Rating
-          </p>
-        </div>
-      </div>
-    
-      <div class="bg-white/40 backdrop-blur-md rounded-2xl p-4 mb-8 border border-white/20">
-  <form action="/admin/venues" method="GET" class="flex flex-col md:flex-row items-center gap-6">
-    <input type="hidden" name="p" value="1">
-    
-    <div class="relative w-full md:flex-1">
-      <input
-        type="search"
-        name="n"
-        value="<%= venuesData.searchQuery %>"
-        placeholder="Search venues by name..."
-        class="w-full px-4 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40"
-      />
-    </div>
-
-    <div class="flex flex-wrap items-center gap-6 w-full md:w-auto">
-      <div class="relative min-w-[140px]">
-        <select name="t" onchange="this.form.submit()" class="w-full appearance-none pl-4 pr-10 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40 cursor-pointer">
-          <option value="all" <%= venuesData.selectedType === 'all' ? 'selected' : '' %>>All Types</option>
-          <option value="Indoor" <%= venuesData.selectedType === 'Indoor' ? 'selected' : '' %>>Indoor</option>
-          <option value="Outdoor" <%= venuesData.selectedType === 'Outdoor' ? 'selected' : '' %>>Outdoor</option>
-          <option value="Rooftop" <%= venuesData.selectedType === 'Rooftop' ? 'selected' : '' %>>Roof Top</option>
-          <option value="Stadium" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Stadium</option>
-          <option value="Other" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Other</option>
-        </select>
-        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-      </div>
-
-      <div class="relative min-w-[160px]">
-        <select name="s" onchange="this.form.submit()" class="w-full appearance-none pl-4 pr-10 py-2.5 bg-white/80 border border-[#1C2A3A]/10 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#ED8842]/40 cursor-pointer">
-          <option value="name-asc" <%= venuesData.selectedSort === 'name-asc' ? 'selected' : '' %>>Name A-Z</option>
-          <option value="name-desc" <%= venuesData.selectedSort === 'name-desc' ? 'selected' : '' %>>Name Z-A</option>
-          <option value="capacity-desc" <%= venuesData.selectedSort === 'capacity-desc' ? 'selected' : '' %>>Largest Capacity</option>
-          <option value="capacity-asc" <%= venuesData.selectedSort === 'capacity-asc' ? 'selected' : '' %>>Smallest Capacity</option>
-        </select>
-        <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        </div>
-      </div>
-    </div>
-  </form>
-</div>
-      
-
-      <!-- Venues Table -->
-      <div
-        class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden"
-      >
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-[#1C2A3A]/5 border-b border-[#1C2A3A]/10">
-              <tr>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Venue Name
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Location
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Capacity
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Events Hosted
-                </th>
-                <th
-                  class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60"
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#1C2A3A]/5">
+    <!-- Venues Table -->
+    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-[#1C2A3A]/5 border-b border-[#1C2A3A]/10">
+            <tr>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Venue Name
+              </th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Location
+              </th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Capacity
+              </th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Events Hosted
+              </th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Status
+              </th>
+              <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#1C2A3A]/5">
             <% for(let i=0;i<venuesData.venues.length ;i++){ %>
-              <tr class="hover:bg-white/50 transition-colors">
-                <td class="px-6 py-4">
-                  <div class="flex items-center gap-3">
-                    <div
-                      class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden"
-                    >
-                      <img
-                        src="<%= venuesData.venues[i].image_url[0] %>"
-                        class="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p class="font-medium text-[#1C2A3A]"><%= venuesData.venues[i].name %></p>
-                      <p class="text-xs text-[#1C2A3A]/60"><%= venuesData.venues[i].type %></p>
-                    </div>
+            <tr class="hover:bg-white/50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden">
+                    <img src="<%= venuesData.venues[i].image_url[0] %>" class="w-full h-full object-cover" />
                   </div>
-                </td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]"><%= venuesData.venues[i].type %></td>
-                <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venuesData.venues[i].capacity %></td>
-                <td class="px-6 py-4">
-                  <span class="text-[#1C2A3A] text-sm font-medium">no did</span>
-                </td>
-                <td class="px-6 py-4">
-                  <% if(venuesData.venues[i].isActive){ %>
-                  <span
-                    class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >Active</span
-                  >
-                  <% }else{ %>
-                    <span
-                    class="px-3 py-1 bg-orange-500/10 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider"
-                    >Maintainace</span
-                  >
-                  <% } %>
-                </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button
-                      class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors"
-                    >
-                      <a href="/admin/venues/<%= venuesData.venues[i]._id %>/edit">Edit</a>
-                    </button>
+                  <div>
+                    <p class="font-medium text-[#1C2A3A]"><%= venuesData.venues[i].name %></p>
+                    <p class="text-xs text-[#1C2A3A]/60"><%= venuesData.venues[i].type %></p>
                   </div>
-                </td>
-              </tr>
-              <% } %>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <% if (venuesData.totalVenues > 0) { %>
-        <% const q = `&n=${venuesData.searchQuery}&t=${venuesData.selectedType}&s=${venuesData.selectedSort}`; %>
-        <div class="max-w-7xl mx-auto px-6 py-4 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">Showing <strong><%= venuesData.venues.length %></strong> of <strong><%= venuesData.totalVenues %></strong> venues</p>
-          
-          <% if (venuesData.totalPages > 1) { %>
-          <div class="flex items-center gap-1 order-1 sm:order-2">
-            <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a><% } %>
-            
-            <% if (venuesData.currentPage > 2) { %>
-              <a href="/admin/venues?p=1<%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
-
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-[#1C2A3A]"><%= venuesData.venues[i].type %></td>
+              <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venuesData.venues[i].capacity %></td>
+              <td class="px-6 py-4">
+                <span class="text-[#1C2A3A] text-sm font-medium">no did</span>
+              </td>
+              <td class="px-6 py-4">
+                <% if(venuesData.venues[i].isActive){ %>
+                <span class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider">Active</span>
+                <% }else{ %>
+                <span class="px-3 py-1 bg-orange-500/10 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">Maintainace</span>
+                <% } %>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <div class="flex items-center justify-end gap-2">
+                  <button class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors">
+                    <a href="/admin/venues/<%= venuesData.venues[i]._id %>/edit">Edit</a>
+                  </button>
+                </div>
+              </td>
+            </tr>
             <% } %>
-
-            <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage - 1 %></a><% } %>
-            <span class="px-4 py-2 bg-[#1Cshl2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= venuesData.currentPage %></span>
-            <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage + 1 %></a><% } %>
-
-            <% if (venuesData.currentPage < venuesData.totalPages - 1) { %>
-              <a href="/admin/venues?p=<%= venuesData.totalPages %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.totalPages %></a>
-            <% } %>
-
-            <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a><% } %>
-          </div>
-          <% } %>
-        </div>
-      <% } %>
-        </div>
+          </tbody>
+        </table>
       </div>
-    </main>
-  </body>
+
+      <!-- Pagination -->
+      <% if (venuesData.totalVenues > 0) { %>
+      <% const q = `&n=${venuesData.searchQuery}&t=${venuesData.selectedType}&s=${venuesData.selectedSort}`; %>
+      <div class="max-w-7xl mx-auto px-6 py-4 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">Showing <strong><%= venuesData.venues.length %></strong> of <strong><%= venuesData.totalVenues %></strong> venues</p>
+
+        <% if (venuesData.totalPages > 1) { %>
+        <div class="flex items-center gap-1 order-1 sm:order-2">
+          <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a><% } %>
+
+          <% if (venuesData.currentPage > 2) { %>
+          <a href="/admin/venues?p=1<%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
+
+          <% } %>
+
+          <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage - 1 %></a><% } %>
+          <span class="px-4 py-2 bg-[#1Cshl2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= venuesData.currentPage %></span>
+          <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage + 1 %></a><% } %>
+
+          <% if (venuesData.currentPage < venuesData.totalPages - 1) { %>
+          <a href="/admin/venues?p=<%= venuesData.totalPages %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.totalPages %></a>
+          <% } %>
+
+          <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a><% } %>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+    </div>
+  </main>
+</body>
+
 </html>

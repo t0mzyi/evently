@@ -22,9 +22,7 @@ export const isAuth = async (req, res, next) => {
       return next();
     }
   }
-  return res.redirect(
-    `/signIn?status=error&message=${encodeURIComponent("Please login")}`
-  );
+  return res.redirect(`/signIn?status=error&message=${encodeURIComponent("Please login")}`);
 };
 
 export const ifAuth = (req, res, next) => {
@@ -44,7 +42,7 @@ export const isAdmin = (req, res, next) => {
 
 export const ifAdmin = (req, res, next) => {
   if (req.session.isAdmin) {
-    return res.redirect("/admin/dash");
+    return res.redirect("/admin/dashboard");
   }
   return next();
 };

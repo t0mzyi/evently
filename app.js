@@ -12,6 +12,8 @@ import passport from "passport";
 import "./model/categoryDb.js";
 import "./model/eventsDb.js";
 
+import "./jobs/unfeatureEvents.js";
+
 //dependies
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
@@ -24,7 +26,7 @@ app.use(
     secret: "Ca32e322321231232",
     resave: false,
     saveUninitialized: false,
-  })
+  }),
 );
 app.use(passport.initialize());
 app.use(passport.session());

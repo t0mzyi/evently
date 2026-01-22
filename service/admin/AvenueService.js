@@ -23,7 +23,6 @@ export const venueList = async (page, search, type, sortQuery) => {
     .sort(sort)
     .skip((page - 1) * limit)
     .limit(limit);
-  console.log(page, search);
   const totalPages = Math.ceil(totalVenues / limit);
   return {
     venues,
@@ -80,9 +79,7 @@ export const createVenue = async (venueData, files) => {
 
 export const updateVenueService = async (venueId, venueData, newFiles) => {
   const remainingImages = JSON.parse(venueData.remaining_images || "[]");
-  const newImagePaths = newFiles
-    ? newFiles.map((file) => `/uploads/venues/${file.filename}`)
-    : [];
+  const newImagePaths = newFiles ? newFiles.map((file) => `/uploads/venues/${file.filename}`) : [];
   const finalImageArray = [...remainingImages, ...newImagePaths];
 
   if (finalImageArray.length === 0) {
@@ -90,9 +87,7 @@ export const updateVenueService = async (venueId, venueData, newFiles) => {
   }
   const structuredAmenities = [];
   if (venueData["amenity_key[]"]) {
-    const keys = Array.isArray(venueData["amenity_key[]"])
-      ? venueData["amenity_key[]"]
-      : [venueData["amenity_key[]"]];
+    const keys = Array.isArray(venueData["amenity_key[]"]) ? venueData["amenity_key[]"] : [venueData["amenity_key[]"]];
     const values = Array.isArray(venueData["amenity_value[]"])
       ? venueData["amenity_value[]"]
       : [venueData["amenity_value[]"]];
@@ -118,7 +113,7 @@ export const updateVenueService = async (venueId, venueData, newFiles) => {
       image_url: finalImageArray,
       amenities: structuredAmenities,
     },
-    { new: true }
+    { new: true },
   );
 
   return updatedVenue;

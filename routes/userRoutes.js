@@ -25,7 +25,15 @@ import { editProfile, getEditProfile, getProfile, showHostDashboard } from "../c
 import { upload, uploadEvent } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/foryouController.js";
 import { showVenues, singleVenue } from "../controller/user/venueController.js";
-import { createEvent, showAllEvents, showCreateEvent, showSingleEvent } from "../controller/user/eventsController.js";
+import {
+  createEvent,
+  editEvent,
+  showAllEvents,
+  showCreateEvent,
+  showSingleEvent,
+  updateEvent,
+  viewEventHost,
+} from "../controller/user/eventsController.js";
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/foryou"));
@@ -72,7 +80,10 @@ router.get("/venues/:venueId", singleVenue);
 router.get("/events", showAllEvents);
 router.get("/events/:eventId", showSingleEvent);
 router.get("/createEvent", showCreateEvent);
+router.get("/editEvent/:eventId", editEvent);
 router.post("/createEvent", uploadEvent.array("galleryImages", 10), createEvent);
+router.put("/editEvent/:eventId", uploadEvent.array("galleryImages", 10), updateEvent);
+router.get("/viewEventHost/:eventId", viewEventHost);
 
 router.get("/logout", isAuth, logout);
 export default router;

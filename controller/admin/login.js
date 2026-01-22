@@ -9,7 +9,7 @@ export const AloginPost = (req, res) => {
       req.session.isAdmin = true;
       return res.status(200).json({
         success: true,
-        redirectUrl: "/admin/dash",
+        redirectUrl: "/admin/dashboard",
       });
     }
 

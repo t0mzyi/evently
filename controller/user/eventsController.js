@@ -1,41 +1,17 @@
-//user
+// user/eventsController.js
 
 import path from "path";
 import fs from "fs";
-import { allEvents, eventCreator, newEvent, singleEventFinder } from "../../service/user/eventsService.js";
-
+import {
+  allEvents,
+  editEventRender,
+  eventCreator,
+  hostEventViewer,
+  newEvent,
+  singleEventFinder,
+  updateEventer,
+} from "../../service/user/eventsService.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
-// {
-//   _id: ObjectId('6968ab32497f46062263b117'),
-//   hostId: '79607a76389f2bdb6c08d741',
-//   title: 'Sunset Jazz Night',
-//   description: 'Live jazz performance with local artists and cocktails.',
-//   categoryId: '6968a997497f46062263b112',
-//   startDate: ISODate('2025-03-10T18:00:00.000Z'),
-//   venueType: 'iconic',
-//   venueId: '695f5b61f1f90b0ad8171132',
-//   galleryImages: [
-//     'https://images.unsplash.com/photo-1511379938547-c1f69419868d',
-//     'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2'
-//   ],
-//   status: 'approved',
-//   isFree: false,
-//   maxCapacity: 150,
-//   ticketTypes: [
-//     {
-//       name: 'Regular',
-//       price: 25,
-//       quantityTotal: 100,
-//       quantityAvailable: 100
-//     },
-//     {
-//       name: 'VIP',
-//       price: 60,
-//       quantityTotal: 50,
-//       quantityAvailable: 50
-//     }
-//   ]
-// }
 
 export const showAllEvents = async (req, res) => {
   const events = await allEvents();
@@ -44,28 +20,32 @@ export const showAllEvents = async (req, res) => {
 
 export const showSingleEvent = async (req, res) => {
   let eventId = req.params.eventId;
-  const { event, venue, ...ticket } = await singleEventFinder(eventId);
-
+  const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
   const schedule = formatDate(event.startDate);
-  res.render("user/events/event-details", { event, venue, schedule, ticket });
+  res.render("user/events/event-details", { event, venue, schedule, lowestPrice, totalTickets, ticketsLeft });
 };
 
 export const showCreateEvent = async (req, res) => {
   try {
     const { categories, venues } = await eventCreator();
     res.render("user/events/create-event", { categories, venues });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error loading create event page:", error);
+    res.status(500).send("Unable to load event creation form.");
+  }
 };
 
 export const createEvent = async (req, res) => {
   const uploadedFiles = [];
   try {
-    if (!req.body && !req.files && !req.session.user) {
-      return res.status(400).json({ success: false, message: "err while creating event" });
+    if (!req.body || !req.session?.user) {
+      return res.status(400).json({ success: false, message: "Missing required data." });
     }
+
     req.body.hostId = req.session.user;
 
-    if (req.files.length > 0) {
+    // Track uploaded files for cleanup on error
+    if (req.files && req.files.length > 0) {
       uploadedFiles.push(...req.files.map((file) => path.join(file.destination, file.filename)));
     }
 
@@ -75,11 +55,12 @@ export const createEvent = async (req, res) => {
       success: true,
       message: "Event created!",
       eventId: createdEvent._id,
-      redirectUrl: "/dashboard/hostDashboard?status=success&message=Event created",
+      redirectUrl: "/dashboard/hostDashboard?status=success&message=Event+created",
     });
   } catch (err) {
     console.error("Create event error:", err.message);
 
+    // Cleanup uploaded files on error
     if (uploadedFiles.length > 0) {
       uploadedFiles.forEach((filePath) => {
         try {
@@ -104,5 +85,53 @@ export const createEvent = async (req, res) => {
       success: false,
       message: err.message || "Failed to create event.",
     });
+  }
+};
+
+export const viewEventHost = async (req, res) => {
+  try {
+    const event = await hostEventViewer(req.session.user, req.params.eventId);
+
+    res.render("user/events/view-event-active-host", { event });
+  } catch (error) {
+    console.log("error in view Event Host", error.message);
+    res.redirect(`/dashboard?status=false&message=${error.message}`);
+  }
+};
+
+export const editEvent = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const eventId = req.params.eventId;
+    if (!userId && !eventId) {
+      res.redirect(`/dashboard?status=false&message=Event or User error`);
+    }
+    const data = await editEventRender(userId, eventId);
+    res.render("user/events/edit-event", { event: data.event, categories: data.categories, venues: data.venues });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateEvent = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.session.user;
+    if (!userId && !eventId) {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const updatedEvent = await updateEventer(userId, eventId, req.body, req.files || []);
+    if (updatedEvent) {
+      return res.json({
+        success: true,
+        message: "Event updated successfully",
+        event: updatedEvent,
+      });
+    }
+    return res.status(403).json({ success: false, message: "Some error" });
+  } catch (error) {
+    console.log("error in update event controller", error);
+    return res.status(403).json({ success: false, message: error.message });
   }
 };
