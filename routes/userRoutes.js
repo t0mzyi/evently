@@ -20,7 +20,7 @@ import {
   googleAuthCallbackMiddleware,
   googleAuthSuccess,
 } from "../controller/user/googleAuthController.js";
-import { ifAuth, isAuth, otpGuard, resetPasswordGuard } from "../middlewares/flowMiddleware.js";
+import { ifAuth, isAuth, otpVerify, resetPasswordGuard } from "../middlewares/authMiddleware.js";
 import { editProfile, getEditProfile, getProfile, showHostDashboard } from "../controller/user/dashBoardController.js";
 import { upload, uploadEvent } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/foryouController.js";
@@ -34,6 +34,7 @@ import {
   updateEvent,
   viewEventHost,
 } from "../controller/user/eventsController.js";
+import { categories } from "../controller/user/categoryController.js";
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/foryou"));
@@ -49,17 +50,17 @@ router.get("/auth/google/callback", ifAuth, googleAuthCallbackMiddleware, google
 router.get("/signIn", ifAuth, signIn);
 router.post("/signIn", ifAuth, signInPost);
 
-router.get("/otp", otpGuard, otpPage);
-router.post("/otp", otpGuard, otpHandler);
+router.get("/otp", otpVerify, otpPage);
+router.post("/otp", otpVerify, otpHandler);
 router.post("/resend-otp", resentOtp);
 
 //forgotpassword flowwww
-router.get("/forgot-password", forgotPassword);
-router.post("/forgot-password", forgotPasswordPost);
+router.get("/forgot-password", isAuth, forgotPassword);
+router.post("/forgot-password", isAuth, forgotPasswordPost);
 
 //emailChange
-router.get("/emailChange", emailChange);
-router.patch("/emailChange", emailChanger);
+router.get("/emailChange", isAuth, emailChange);
+router.patch("/emailChange", isAuth, emailChanger);
 
 //resetpassword flow
 router.get("/reset-password", resetPasswordGuard, resetPassword);
@@ -79,11 +80,14 @@ router.get("/venues/:venueId", singleVenue);
 //events
 router.get("/events", showAllEvents);
 router.get("/events/:eventId", showSingleEvent);
-router.get("/createEvent", showCreateEvent);
-router.get("/editEvent/:eventId", editEvent);
-router.post("/createEvent", uploadEvent.array("galleryImages", 10), createEvent);
-router.put("/editEvent/:eventId", uploadEvent.array("galleryImages", 10), updateEvent);
-router.get("/viewEventHost/:eventId", viewEventHost);
+router.get("/createEvent", isAuth, showCreateEvent);
+router.get("/editEvent/:eventId", isAuth, editEvent);
+router.post("/createEvent", isAuth, uploadEvent.array("galleryImages", 10), createEvent);
+router.put("/editEvent/:eventId", isAuth, uploadEvent.array("galleryImages", 10), updateEvent);
+router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
+
+//cat
+router.get("/categories", categories);
 
 router.get("/logout", isAuth, logout);
 export default router;

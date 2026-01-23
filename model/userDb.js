@@ -10,6 +10,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    age: {
+      type: Number,
+    },
     emailAddress: {
       type: String,
       required: true,
@@ -56,7 +59,7 @@ const userSchema = new mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.index({ firstName: 1 });

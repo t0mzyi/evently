@@ -23,8 +23,9 @@ export const getEditProfile = async (req, res) => {
 export const editProfile = async (req, res) => {
   try {
     const userId = req.session.user;
-    const { firstName, lastName, bio } = req.body;
-    const updateData = { firstName, lastName, bio };
+    console.log(req.body);
+    const { firstName, lastName, bio, age } = req.body;
+    const updateData = { firstName, lastName, bio, age };
     if (req.file) {
       updateData.avatarUrl = `/uploads/avatars/${req.file.filename}`;
     }

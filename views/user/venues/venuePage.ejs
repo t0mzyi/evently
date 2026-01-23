@@ -1,157 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Discover Venues — Evently</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              theme: {
-                primary: "#1C2A3A",
-                highlight: "#2C3E50",
-                accent: "#ED8842",
-                surface: "#F9F7F5",
-              },
-            },
-            fontFamily: {
-              heading: ["Fraunces", "serif"],
-              sans: ["Inter", "sans-serif"],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discover Venues — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: "#1C2A3A",
+              highlight: "#2C3E50",
+              accent: "#ED8842",
+              surface: "#F9F7F5",
             },
           },
+          fontFamily: {
+            heading: ["Fraunces", "serif"],
+            sans: ["Inter", "sans-serif"],
+          },
         },
-      };
-    </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  </head>
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+</head>
 
-  <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-      <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl relative">
-        <div class="flex items-center">
-          <a href="/" class="text-xl font-bold tracking-tight text-white font-heading">evently</a>
-        </div>
-        <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-x-8 text-xs font-bold tracking-widest text-white/80 uppercase font-sans">
-          <a href="/" class="hover:text-white transition-colors">For You</a>
-          <a href="/events" class="hover:text-white transition-colors">Events</a>
-          <a href="/venues" class="text-white">Venues</a>
-        </div>
-        <div class="flex items-center gap-4">
-          <a href="/dashboard" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors border border-white shadow-md">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-          </a>
-        </div>
-      </nav>
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <%- include('../../partials/navBar') %>
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+    <div class="text-center mb-10 max-w-2xl mx-auto">
+      <h1 class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-6 text-[#1C2A3A]">Iconic Venues <br /><span class="text-[#1C2A3A]/40">Unforgettable Moments</span></h1>
+      <p class="text-lg text-[#1C2A3A]/60 font-sans leading-relaxed">Explore our curated collection of premium event spaces. From rooftop lofts to grand halls, find the perfect backdrop for your next experience.</p>
     </div>
 
-    <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-      <div class="text-center mb-10 max-w-2xl mx-auto">
-        <h1 class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-6 text-[#1C2A3A]">Iconic Venues <br /><span class="text-[#1C2A3A]/40">Unforgettable Moments</span></h1>
-        <p class="text-lg text-[#1C2A3A]/60 font-sans leading-relaxed">Explore our curated collection of premium event spaces. From rooftop lofts to grand halls, find the perfect backdrop for your next experience.</p>
-      </div>
-
-      <div class="mb-12 max-w-4xl mx-auto">
-        <form action="/venues" method="GET" class="space-y-6">
-          <input type="hidden" name="p" value="1">
-          <div class="relative">
-            <input type="text" name="n" value="<%= venueData.searchQuery %>" placeholder="Search venues by name..." 
-                   class="w-full py-3 px-6 pr-12 rounded-full bg-[#F9F7F5] border border-[#1C2A3A]/10 text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842]" />
-            <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2">
-              <svg class="w-5 h-5 text-[#1C2A3A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </button>
-          </div>
-
-          <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Type:</span>
-              <select name="t" onchange="this.form.submit()" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2">
-                <option value="all" <%= venueData.selectedType === 'all' ? 'selected' : '' %>>All Types</option>
-                <option value="indoor" <%= venueData.selectedType === 'indoor' ? 'selected' : '' %>>Indoor</option>
-                <option value="outdoor" <%= venueData.selectedType === 'outdoor' ? 'selected' : '' %>>Outdoor</option>
-                <option value="rooftop" <%= venueData.selectedType === 'rooftop' ? 'selected' : '' %>>Roof Top</option>
-                <option value="garden" <%= venueData.selectedType === 'garden' ? 'selected' : '' %>>Stadium</option>
-              </select>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Sort:</span>
-              <select name="s" onchange="this.form.submit()" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2">
-                <option value="name-asc" <%= venueData.selectedSort === 'name-asc' ? 'selected' : '' %>>Name A–Z</option>
-                <option value="name-desc" <%= venueData.selectedSort === 'name-desc' ? 'selected' : '' %>>Name Z–A</option>
-                <option value="capacity-desc" <%= venueData.selectedSort === 'capacity-desc' ? 'selected' : '' %>>Largest Capacity</option>
-                <option value="capacity-asc" <%= venueData.selectedSort === 'capacity-asc' ? 'selected' : '' %>>Smallest Capacity</option>
-              </select>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-        <% if (venueData.venues && venueData.venues.length > 0) { %>
-          <% venueData.venues.forEach(venue => { %>
-            <div class="venue-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5">
-              <div class="h-64 overflow-hidden relative">
-                <a href="/venues/<%= venue._id %>">
-                  <img src="<%= venue.image_url[0] %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<%= venue.name %>" />
-                </a>
-              </div>
-              <div class="p-8">
-                <div class="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1"><%= venue.name %></h3>
-                    <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1"><%= venue.address %></p>
-                  </div>
-                  <div class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm"><%= venue.type %></div>
-                </div>
-                <div class="space-y-3 mb-6">
-                  <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    <span>Up to <%= venue.capacity.toLocaleString() %> Guests</span>
-                  </div>
-                </div>
-                <a href="/venues/<%= venue._id %>" class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest text-[#1C2A3A]">Check Details</a>
-              </div>
-            </div>
-          <% }) %>
-        <% } else { %>
-          <div class="col-span-full text-center py-20">
-            <p class="text-xl text-[#1C2A3A]/40 font-heading">No venues found.</p>
-          </div>
-        <% } %>
-      </div>
-
-      <% if (venueData.totalVenues > 0) { %>
-        <% const q = `&n=${venueData.searchQuery}&t=${venueData.selectedType}&s=${venueData.selectedSort}`; %>
-        <div class="max-w-7xl mx-auto px-6 py-12 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">Showing <strong><%= venueData.venues.length %></strong> of <strong><%= venueData.totalVenues %></strong> venues</p>
-          
-          <% if (venueData.totalPages > 1) { %>
-          <div class="flex items-center gap-1 order-1 sm:order-2">
-            <% if (venueData.currentPage > 1) { %><a href="/venues?p=<%= venueData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a><% } %>
-            
-            <% if (venueData.currentPage > 2) { %>
-              <a href="/venues?p=1<%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
-
-            <% } %>
-
-            <% if (venueData.currentPage > 1) { %><a href="/venues?p=<%= venueData.currentPage - 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.currentPage - 1 %></a><% } %>
-            <span class="px-4 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= venueData.currentPage %></span>
-            <% if (venueData.currentPage < venueData.totalPages) { %><a href="/venues?p=<%= venueData.currentPage + 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.currentPage + 1 %></a><% } %>
-
-            <% if (venueData.currentPage < venueData.totalPages - 1) { %>
-              <a href="/venues?p=<%= venueData.totalPages %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.totalPages %></a>
-            <% } %>
-
-            <% if (venueData.currentPage < venueData.totalPages) { %><a href="/venues?p=<%= venueData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a><% } %>
-          </div>
-          <% } %>
+    <div class="mb-12 max-w-4xl mx-auto">
+      <form action="/venues" method="GET" class="space-y-6">
+        <input type="hidden" name="p" value="1">
+        <div class="relative">
+          <input type="text" name="n" value="<%= venueData.searchQuery %>" placeholder="Search venues by name..." class="w-full py-3 px-6 pr-12 rounded-full bg-[#F9F7F5] border border-[#1C2A3A]/10 text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842]" />
+          <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2">
+            <svg class="w-5 h-5 text-[#1C2A3A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
         </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Type:</span>
+            <select name="t" onchange="this.form.submit()" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2">
+              <option value="all" <%= venueData.selectedType === 'all' ? 'selected' : '' %>>All Types</option>
+              <option value="indoor" <%= venueData.selectedType === 'indoor' ? 'selected' : '' %>>Indoor</option>
+              <option value="outdoor" <%= venueData.selectedType === 'outdoor' ? 'selected' : '' %>>Outdoor</option>
+              <option value="rooftop" <%= venueData.selectedType === 'rooftop' ? 'selected' : '' %>>Roof Top</option>
+              <option value="garden" <%= venueData.selectedType === 'garden' ? 'selected' : '' %>>Stadium</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Sort:</span>
+            <select name="s" onchange="this.form.submit()" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2">
+              <option value="name-asc" <%= venueData.selectedSort === 'name-asc' ? 'selected' : '' %>>Name A–Z</option>
+              <option value="name-desc" <%= venueData.selectedSort === 'name-desc' ? 'selected' : '' %>>Name Z–A</option>
+              <option value="capacity-desc" <%= venueData.selectedSort === 'capacity-desc' ? 'selected' : '' %>>Largest Capacity</option>
+              <option value="capacity-asc" <%= venueData.selectedSort === 'capacity-asc' ? 'selected' : '' %>>Smallest Capacity</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      <% if (venueData.venues && venueData.venues.length > 0) { %>
+      <% venueData.venues.forEach(venue => { %>
+      <div class="venue-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5">
+        <div class="h-64 overflow-hidden relative">
+          <a href="/venues/<%= venue._id %>">
+            <img src="<%= venue.image_url[0] %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<%= venue.name %>" />
+          </a>
+        </div>
+        <div class="p-8">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1"><%= venue.name %></h3>
+              <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1"><%= venue.address %></p>
+            </div>
+            <div class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm"><%= venue.type %></div>
+          </div>
+          <div class="space-y-3 mb-6">
+            <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+              <span>Up to <%= venue.capacity.toLocaleString() %> Guests</span>
+            </div>
+          </div>
+          <a href="/venues/<%= venue._id %>" class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest text-[#1C2A3A]">Check Details</a>
+        </div>
+      </div>
+      <% }) %>
+      <% } else { %>
+      <div class="col-span-full text-center py-20">
+        <p class="text-xl text-[#1C2A3A]/40 font-heading">No venues found.</p>
+      </div>
       <% } %>
-    </main>
-  </body>
+    </div>
+
+    <% if (venueData.totalVenues > 0) { %>
+    <% const q = `&n=${venueData.searchQuery}&t=${venueData.selectedType}&s=${venueData.selectedSort}`; %>
+    <div class="max-w-7xl mx-auto px-6 py-12 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">Showing <strong><%= venueData.venues.length %></strong> of <strong><%= venueData.totalVenues %></strong> venues</p>
+
+      <% if (venueData.totalPages > 1) { %>
+      <div class="flex items-center gap-1 order-1 sm:order-2">
+        <% if (venueData.currentPage > 1) { %><a href="/venues?p=<%= venueData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a><% } %>
+
+        <% if (venueData.currentPage > 2) { %>
+        <a href="/venues?p=1<%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
+
+        <% } %>
+
+        <% if (venueData.currentPage > 1) { %><a href="/venues?p=<%= venueData.currentPage - 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.currentPage - 1 %></a><% } %>
+        <span class="px-4 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= venueData.currentPage %></span>
+        <% if (venueData.currentPage < venueData.totalPages) { %><a href="/venues?p=<%= venueData.currentPage + 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.currentPage + 1 %></a><% } %>
+
+        <% if (venueData.currentPage < venueData.totalPages - 1) { %>
+        <a href="/venues?p=<%= venueData.totalPages %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venueData.totalPages %></a>
+        <% } %>
+
+        <% if (venueData.currentPage < venueData.totalPages) { %><a href="/venues?p=<%= venueData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a><% } %>
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+  </main>
+</body>
+
 </html>

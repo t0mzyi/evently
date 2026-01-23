@@ -46,7 +46,6 @@ app.use(async (req, res, next) => {
       res.locals.user = user;
     } catch (err) {
       console.error(err);
-      res.locals.user = null;
     }
   } else {
     res.locals.user = null;

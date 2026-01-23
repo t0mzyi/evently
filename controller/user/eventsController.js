@@ -15,15 +15,17 @@ import { formatDate } from "../../utils/dateTimeFormator.js";
 import eventsDb from "../../model/eventsDb.js";
 
 export const showAllEvents = async (req, res) => {
-  const events = await allEvents();
-  res.render("user/events/events", { events });
+  const query = req.query.q || "";
+  const events = await allEvents(query);
+  res.render("user/events/events", { events, q: query });
 };
 
 export const showSingleEvent = async (req, res) => {
   let eventId = req.params.eventId;
   const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
+  const ticket = { lowestPrice, totalTickets, ticketsLeft };
   const schedule = formatDate(event.startDate);
-  res.render("user/events/event-details", { event, venue, schedule, lowestPrice, totalTickets, ticketsLeft });
+  res.render("user/events/event-details", { event, venue, schedule, ticket });
 };
 
 export const showCreateEvent = async (req, res) => {

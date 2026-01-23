@@ -40,13 +40,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A]">
   <!-- Navigation -->
   <%- include('../../partials/navbar') %>
 
-  <!-- Page Header & Filters -->
+  <!-- Page Header & Search Only -->
   <div class="pt-40 px-6 max-w-7xl mx-auto">
     <div class="flex flex-col md:flex-row justify-between items-end mb-12">
       <div>
@@ -59,80 +69,55 @@
       </div>
     </div>
 
-    <!-- Filter Bar -->
-    <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-md rounded-2xl p-4 mb-12 flex flex-col md:flex-row gap-4 items-center justify-between shadow-sm">
-      <div class="relative w-full md:w-96">
-        <input type="text" placeholder="Search events..." class="w-full h-12 pl-12 pr-4 bg-[#F9F7F5] border-none rounded-xl text-[#1C2A3A] placeholder:text-[#1C2A3A]/40 focus:outline-none focus:ring-1 focus:ring-[#1C2A3A]/20 font-sans" />
-        <svg class="absolute left-4 top-3.5 w-5 h-5 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-      </div>
-
-      <div class="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-        <button class="px-4 py-2.5 bg-[#F9F7F5] rounded-xl text-sm font-medium text-[#1C2A3A] hover:bg-white transition-colors whitespace-nowrap flex items-center gap-2">
-          <span>Date</span>
-          <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    <!-- Search Bar Only -->
+    <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-md rounded-2xl p-4 mb-12 w-full max-w-2xl mx-auto">
+      <form action="" method="GET" class="relative">
+        <input type="text" name="q" placeholder="Search events..." value="<%= typeof q !== 'undefined' ? q : '' %>" class="w-full h-12 pl-12 pr-4 bg-[#F9F7F5] border-none rounded-xl text-[#1C2A3A] placeholder:text-[#1C2A3A]/40 focus:outline-none focus:ring-1 focus:ring-[#1C2A3A]/20 font-sans" />
+        <button type="submit" class="absolute left-4 top-3.5 w-5 h-5 text-[#1C2A3A]/40">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </button>
-        <button class="px-4 py-2.5 bg-[#F9F7F5] rounded-xl text-sm font-medium text-[#1C2A3A] hover:bg-white transition-colors whitespace-nowrap flex items-center gap-2">
-          <span>Category</span>
-          <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <button class="px-4 py-2.5 bg-[#F9F7F5] rounded-xl text-sm font-medium text-[#1C2A3A] hover:bg-white transition-colors whitespace-nowrap flex items-center gap-2">
-          <span>Price</span>
-          <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div class="h-10 w-px bg-[#1C2A3A]/10 mx-2"></div>
-        <button class="px-4 py-2.5 bg-[#1C2A3A] rounded-xl text-sm font-medium text-white hover:bg-[#1C2A3A]/90 transition-colors whitespace-nowrap">
-          Apply Filters
-        </button>
-      </div>
+      </form>
     </div>
 
     <!-- Events Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-      <% for(let i=0;i<events.length;i++){ %>
-      <!-- Event Card 1 -->
-      <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group cursor-pointer" onclick="window.location.href='/events/<%= events[i]._id%>'"">
-        <div class=" h-[280px] relative">
-        <img src=" <%= events[i].galleryImages[0]%> " class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Event" />
-        <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
-          <h3 class="text-3xl font-heading text-white lowercase">
-            <%= events[i].title%>
-          </h3>
-          <div class="flex gap-2 mt-2">
-            <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white"><%=events[i].categoryId.name%></span>
-
+      <% for(let i = 0; i < events.length; i++) { %>
+      <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group cursor-pointer" onclick="window.location.href='/events/<%= events[i]._id %>'">
+        <div class="h-[280px] relative">
+          <img src="<%= events[i].galleryImages[0] %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="<%= events[i].title %>" />
+          <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
+            <h3 class="text-3xl font-heading text-white lowercase">
+              <%= events[i].title %>
+            </h3>
+            <div class="flex gap-2 mt-2">
+              <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
+                <%= events[i].categoryId.name %>
+              </span>
+            </div>
           </div>
         </div>
-        <%# <div class="absolute top-4 right-4 bg-[#ED8842] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest">
-            local
-          </div> %>
-      </div>
 
-      <div class="p-6">
-        <p class="text-[#1C2A3A]/70 text-xs leading-relaxed mb-8 font-sans">
-          <%= events[i].description %>
-        </p>
-        <%
-            let lowestPrice = 0;
-            if (events[i].ticketTypes && events[i].ticketTypes.length) {
-              lowestPrice = Math.min(...events[i].ticketTypes.map(t => t.price));
-            }
-          %>
-
-        <div class="absolute bottom-6 right-0 bg-[#ED8842] py-2 pl-4 pr-6 rounded-l-full flex items-center shadow-md">
-          <span class="text-white font-heading text-xs tracking-tight"><%= lowestPrice === 0 ? "Free" : "Starting from $" + lowestPrice %></span>
+        <div class="p-6">
+          <p class="text-[#1C2A3A]/70 text-xs leading-relaxed mb-8 font-sans">
+            <%= events[i].description.substring(0, 100) + '...' %>
+          </p>
+          <%
+              let lowestPrice = 0;
+              if (events[i].ticketTypes && events[i].ticketTypes.length) {
+                lowestPrice = Math.min(...events[i].ticketTypes.map(t => t.price));
+              }
+            %>
+          <div class="absolute bottom-6 right-0 bg-[#ED8842] py-2 pl-4 pr-6 rounded-l-full flex items-center shadow-md">
+            <span class="text-white font-heading text-xs tracking-tight">
+              <%= lowestPrice === 0 ? "Free" : "Starting from $" + lowestPrice %>
+            </span>
+          </div>
         </div>
       </div>
+      <% } %>
     </div>
-    <% } %>
-  </div>
   </div>
 </body>
 

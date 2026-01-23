@@ -3,7 +3,7 @@ import { AloginGet, AloginPost } from "../controller/admin/login.js";
 import { getDash, singleUser, toggleBlockUser, users } from "../controller/admin/dashController.js";
 import { addVenue, editVenue, showAddVenue, showEditVenue, showVenues } from "../controller/admin/venueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
-import { ifAdmin, isAdmin } from "../middlewares/flowMiddleware.js";
+import { ifAdmin, isAdmin } from "../middlewares/authMiddleware.js";
 import {
   approveEvent,
   featureEvent,
@@ -39,22 +39,22 @@ router.get("/venues/:venueId/edit", isAdmin, showEditVenue);
 router.patch("/venues/:venueId/edit", uploadVenue.array("images[]", 10), editVenue);
 
 //events Side
-router.get("/events", showEvents);
-router.get("/events/:eventId", showSingleEvent);
-router.post("/events/:eventId/featureEvent", featureEvent);
-router.post("/events/:eventId/unFeatureEvent", unFeatureEvent);
-router.post("/events/:eventId/approveEvent", approveEvent);
-router.post("/events/:eventId/rejectEvent", rejectEvent);
+router.get("/events", isAdmin, showEvents);
+router.get("/events/:eventId", isAdmin, showSingleEvent);
+router.post("/events/:eventId/featureEvent", isAdmin, featureEvent);
+router.post("/events/:eventId/unFeatureEvent", isAdmin, unFeatureEvent);
+router.post("/events/:eventId/approveEvent", isAdmin, approveEvent);
+router.post("/events/:eventId/rejectEvent", isAdmin, rejectEvent);
 
 //categories
-router.get("/categories", showCategories);
-router.get("/category/:categoryId", showSingleCategory);
-router.get("/categories/add", showAddCategory);
-router.post("/categories/add", addCategory);
-router.get("/categories/:categoryId/edit", showEditCategory);
-router.put("/categories/:categoryId/edit", updateCategory);
+router.get("/categories", isAdmin, showCategories);
+router.get("/category/:categoryId", isAdmin, showSingleCategory);
+router.get("/categories/add", isAdmin, showAddCategory);
+router.post("/categories/add", isAdmin, addCategory);
+router.get("/categories/:categoryId/edit", isAdmin, showEditCategory);
+router.put("/categories/:categoryId/edit", isAdmin, updateCategory);
 
-router.patch("/users/:userId/:action", toggleBlockUser);
+router.patch("/users/:userId/:action", isAdmin, toggleBlockUser);
 
 router.get("/dashboard", isAdmin, getDash);
 

@@ -113,10 +113,12 @@
       <div>
         <div class="flex flex-col md:flex-row justify-between items-end mb-8">
           <div>
-            <h1 class="text-4xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">Host Dashboard
-            </h1>
+            <h1 class="text-4xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">Host Dashboard</h1>
             <p class="text-[#1C2A3A]/60 font-sans">Manage events you are hosting.</p>
           </div>
+          <a href="/createEvent" class="mt-4 md:mt-0 px-6 py-3 bg-[#1C2A3A] text-white rounded-xl font-bold shadow-lg hover:bg-[#2C3E50] transition-colors whitespace-nowrap">
+            Create Event
+          </a>
         </div>
 
         <!-- Analytics Cards -->
@@ -256,6 +258,7 @@
                     <a href="/editEvent/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
                       Edit
                     </a>
+
                     <a href="/boost-event" class="px-4 py-2 bg-[#ED8842] text-white rounded-xl text-sm font-bold hover:bg-[#D97732] transition-colors shadow-lg shadow-orange-500/20 flex items-center gap-2">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -285,8 +288,7 @@
                 <div class="flex-1 p-6">
                   <div class="flex justify-between items-start mb-4">
                     <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2">Tech
-                        Innovation Summit
+                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2"><%=user.hostedEvents[i].title%>
                       </h3>
                       <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
                         <div class="flex items-center gap-1.5">
@@ -294,7 +296,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                             </path>
                           </svg>
-                          <span>Feb 20, 2025</span>
+                          <span><%=user.hostedEvents[i].formattedDate.date%></span>
                         </div>
                         <div class="hidden md:block w-1 h-1 rounded-full bg-current">
                         </div>
@@ -303,7 +305,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                             </path>
                           </svg>
-                          <span>Convention Center, SF</span>
+                          <span><%= user.hostedEvents[i].venueDetails.name %></span>
                         </div>
                       </div>
                     </div>
@@ -328,6 +330,9 @@
 
                   <!-- Actions -->
                   <div class="flex gap-2">
+                    <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
+                      View Event
+                    </a>
                     <a href="/editEvent/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
                       Edit
                     </a>
@@ -396,9 +401,7 @@
                     <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
                       Revise & Resubmit
                     </a>
-                    <button class="flex-1 px-4 py-2 border border-red-200 text-red-600 rounded-xl text-sm font-medium hover:bg-red-50 transition-all text-center">
-                      Delete
-                    </button>
+
                   </div>
                 </div>
               </div>

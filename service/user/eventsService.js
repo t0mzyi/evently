@@ -7,8 +7,14 @@ import venueDb from "../../model/venueDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import { venueDetails } from "./venueService.js";
 
-export const allEvents = async () => {
-  const events = await eventsDb.find({ status: "approved" }).populate("categoryId", "name");
+export const allEvents = async (query) => {
+  let queryFilter = { status: "approved" };
+
+  if (query.trim()) {
+    const searchRegex = new RegExp(query.trim(), "i");
+    queryFilter.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
+  }
+  const events = await eventsDb.find(queryFilter).populate("categoryId", "name");
   return events;
 };
 

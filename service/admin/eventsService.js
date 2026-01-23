@@ -3,7 +3,7 @@ import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
 
 export const allEvents = async (page, search, type, sortQuery) => {
-  const limit = 5;
+  const limit = 1;
   const filter = {};
   if (search) {
     filter.title = { $regex: search, $options: "i" };
