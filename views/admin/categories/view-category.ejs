@@ -7,6 +7,17 @@
   <title>View Category — Evently Admin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <style>
+    .category-thumb {
+      font-size: 24px;
+      /* Adjust size as needed */
+      line-height: 1;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+    }
+  </style>
   <script>
     tailwind.config = {
       theme: {
@@ -51,10 +62,7 @@
 
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-              </path>
-            </svg>
+            <span class="category-thumb"><%= cat.iconUrl %></span>
           </div>
           <div>
             <div class="flex items-center gap-3 mb-1">
