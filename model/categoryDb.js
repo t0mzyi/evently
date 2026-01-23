@@ -18,6 +18,7 @@ const categorySchema = new mongoose.Schema(
     iconUrl: {
       type: String,
       required: true,
+      default: "🎭",
     },
     colorHex: {
       type: String,

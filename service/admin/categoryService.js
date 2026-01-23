@@ -55,4 +55,5 @@ export const categoryCreator = async (body) => {
 export const editCategory = async (id) => {
   const cat = await categoryDb.findById(id);
   if (!cat) throw new Error("No category exists");
+  return cat;
 };

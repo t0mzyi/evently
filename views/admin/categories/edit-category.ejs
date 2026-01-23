@@ -74,7 +74,7 @@
           <!-- Emoji Input -->
           <div class="shrink-0">
             <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60 mb-2">Icon</label>
-            <input type="text" id="emojiInput" name="iconUrl" maxlength="4" value="<%= category.iconUrl %>" placeholder="🎭" class="w-24 h-24 text-5xl text-center rounded-2xl bg-white border-2 border-[#1C2A3A]/20 focus:border-[#1C2A3A] focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
+            <input type="text" id="emojiInput" name="iconUrl" maxlength="4" value="<%= category.iconUrl%>" placeholder="🎭" class="w-24 h-24 text-5xl text-center rounded-2xl bg-white border-2 border-[#1C2A3A]/20 focus:border-[#1C2A3A] focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
             <p id="emojiError" class="error-text hidden mt-1">Must be a valid emoji</p>
           </div>
 
@@ -111,10 +111,7 @@
         </div>
 
         <!-- Status -->
-        <div class="flex items-center gap-3 p-4 bg-white/40 rounded-xl">
-          <input type="checkbox" id="status" name="isActive" class="w-5 h-5 rounded text-[#1C2A3A] border-gray-300 focus:ring-[#1C2A3A]" <%= category.isActive ? 'checked' : '' %>>
-          <label for="status" class="font-medium text-[#1C2A3A]">Active Category</label>
-        </div>
+
 
         <!-- Actions -->
         <div class="flex gap-4 pt-4 border-t border-[#1C2A3A]/10">
@@ -157,7 +154,7 @@
       const icon = form.iconUrl.value.trim();
       const description = form.description.value.trim();
       const colorHex = document.querySelector('input[name="colorHex"]:checked')?.value;
-      const isActive = document.getElementById('status').checked;
+
 
       let isValid = true;
 
@@ -170,11 +167,11 @@
       }
 
       // Validate emoji
-      if (!isValidEmoji(icon)) {
-        document.getElementById('emojiError').classList.remove('hidden');
-        document.getElementById('emojiInput').classList.add('input-error');
-        isValid = false;
-      }
+      //   if (!isValidEmoji(icon)) {
+      //     document.getElementById('emojiError').classList.remove('hidden');
+      //     document.getElementById('emojiInput').classList.add('input-error');
+      //     isValid = false;
+      //   }
 
       // Validate description
       if (!description) {
@@ -203,7 +200,7 @@
         iconUrl: icon,
         description,
         colorHex,
-        isActive
+
       };
 
       // Disable button
@@ -211,7 +208,7 @@
       saveBtn.textContent = 'Updating...';
 
       try {
-        const res = await fetch(`/admin/categories/edit/<%= category._id %>`, {
+        const res = await fetch(`/admin/categories/<%= category._id %>/edit`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -226,9 +223,7 @@
           messageBox.textContent = 'Category updated successfully!';
           messageBox.classList.remove('hidden');
 
-          setTimeout(() => {
-            window.location.href = '/admin/categories';
-          }, 1500);
+          window.location.href = data.redirectUrl
         } else {
           throw new Error(data.message || 'Failed to update category');
         }

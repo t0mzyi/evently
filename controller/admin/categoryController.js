@@ -28,7 +28,7 @@ export const addCategory = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "Category created successfully",
-      redirectUrl: "/admin/categories?status=success&message=Category Created SuccessFull",
+      redirectUrl: `/admin/category/${newCategory._id}?status=success&message=Category Created SuccessFull`,
     });
   } catch (error) {
     console.log("add category Error", error);
@@ -41,9 +41,27 @@ export const addCategory = async (req, res) => {
 
 export const showEditCategory = async (req, res) => {
   try {
-    const category = editCategory(req.params.categoryId);
+    const category = await editCategory(req.params.categoryId);
     res.render("admin/categories/edit-category", { category });
   } catch (error) {
-    res.redirectUrl(`/admin/categories?status=error&message=${error.message}`);
+    res.redirect(`/admin/categories?status=error&message=${error.message}`);
+  }
+};
+
+export const updateCategory = async (req, res) => {
+  try {
+    const updatedCategory = await updateCategory(req.params.categoryId, req.body);
+    console.log(req.body);
+    res.json({
+      success: true,
+      message: "Category updated successfully",
+      redirectUrl: `/admin/category/${updateCategory._id}?status=success&message=Category updated successfulls`,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to update category",
+    });
   }
 };

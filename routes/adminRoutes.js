@@ -18,6 +18,7 @@ import {
   showCategories,
   showEditCategory,
   showSingleCategory,
+  updateCategory,
 } from "../controller/admin/categoryController.js";
 
 const router = express.Router();
@@ -51,6 +52,7 @@ router.get("/category/:categoryId", showSingleCategory);
 router.get("/categories/add", showAddCategory);
 router.post("/categories/add", addCategory);
 router.get("/categories/:categoryId/edit", showEditCategory);
+router.put("/categories/:categoryId/edit", updateCategory);
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 
