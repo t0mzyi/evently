@@ -35,6 +35,16 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <style>
+    .category-thumb {
+      font-size: 24px;
+      /* Adjust size as needed */
+      line-height: 1;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+    }
+
     .swiper {
       width: 100%;
       padding-top: 5px;
@@ -138,7 +148,7 @@
     <div class="marquee-content" id="row1">
     <% for(let i = 0 ; i< allCategories.length ; i++) {%>
           <a href="/category/festivals" class="category-pill">
-            <img src="<%= allCategories[i].iconUrl %>" class="category-thumb">
+            <span class="category-thumb"><%= allCategories[i].iconUrl %></span>
             <span><%= allCategories[i].name %></span>
           </a>
           <%}%>
@@ -147,7 +157,7 @@
     <div class="marquee-content-reverse" id="row2">
     <% for(let i = allCategories.length-1 ; i >= 0 ;i--){ %>
           <a href="/category/festivals" class="category-pill">
-            <img src="<%= allCategories[i].iconUrl %>" class="category-thumb">
+            <span class="category-thumb"><%= allCategories[i].iconUrl %></span>
             <span><%= allCategories[i].name %></span>
           </a>
           <%}%>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Category — Evently Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              accent: '#ED8842',
+              surface: '#F9F7F5'
+            },
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+
+  <!-- Admin Navbar -->
+  <%- include('../../partials/adminNavbar') %>
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex items-end justify-between mb-12">
+      <div class="flex items-center gap-6">
+        <a href="/admin/categories" class="w-12 h-12 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors shadow-sm shrink-0">
+          <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+            </path>
+          </svg>
+        </a>
+
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-600">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <h1 class="text-4xl font-heading font-medium tracking-tight"><%= cat.name %></h1>
+              <span class="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-widest">Active</span>
+            </div>
+            <p class="text-[#1C2A3A]/60"><%= cat.events.length %> events • <%= cat.date.date %></p>
+          </div>
+        </div>
+      </div>
+
+      <a href="/admin/categories/<%= cat._id %>/edit" class="px-5 py-2.5 bg-white text-[#1C2A3A] rounded-xl text-sm font-bold shadow-sm border border-[#1C2A3A]/10 hover:bg-gray-50 transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+          </path>
+        </svg>
+        Edit Category
+      </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="mb-12">
+      <div class="bg-white/60 backdrop-blur-xl rounded-[1.5rem] p-6 border border-white/40 shadow-sm inline-block min-w-[200px]">
+        <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Total Events</p>
+        <p class="text-3xl font-heading text-[#1C2A3A]"><%= cat.events.length %></p>
+      </div>
+    </div>
+
+    <h2 class="text-xl font-heading font-medium mb-6">Events in <%= cat.name %></h2>
+
+    <!-- Events List -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <% for(let i=0;i<cat.events.length ; i++) {%>
+      <!-- Event Card 1 -->
+      <a href="/admin/events/<%= cat.events[i]._id %>" class="group bg-white/60 backdrop-blur-xl rounded-[2rem] overflow-hidden border border-white/40 shadow-sm hover:shadow-md transition-all">
+        <div class="relative h-48 overflow-hidden">
+          <img src="<%= cat.events[i].galleryImages[0] %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A]/60 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 text-white">
+
+            <h3 class="text-xl font-heading"><%= cat.events[i].name %></h3>
+          </div>
+        </div>
+        <div class="p-5">
+          <div class="flex justify-between items-center text-sm text-[#1C2A3A]/60">
+
+          </div>
+        </div>
+      </a>
+      <%}%>
+
+
+
+
+
+    </div>
+
+  </main>
+
+</body>
+
+</html>

@@ -12,6 +12,13 @@ import {
   showSingleEvent,
   unFeatureEvent,
 } from "../controller/admin/eventsController.js";
+import {
+  addCategory,
+  showAddCategory,
+  showCategories,
+  showEditCategory,
+  showSingleCategory,
+} from "../controller/admin/categoryController.js";
 
 const router = express.Router();
 
@@ -37,6 +44,13 @@ router.post("/events/:eventId/featureEvent", featureEvent);
 router.post("/events/:eventId/unFeatureEvent", unFeatureEvent);
 router.post("/events/:eventId/approveEvent", approveEvent);
 router.post("/events/:eventId/rejectEvent", rejectEvent);
+
+//categories
+router.get("/categories", showCategories);
+router.get("/category/:categoryId", showSingleCategory);
+router.get("/categories/add", showAddCategory);
+router.post("/categories/add", addCategory);
+router.get("/categories/:categoryId/edit", showEditCategory);
 
 router.patch("/users/:userId/:action", toggleBlockUser);
 

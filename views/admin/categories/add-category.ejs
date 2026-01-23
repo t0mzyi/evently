@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Category — Evently Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              accent: '#ED8842',
+              surface: '#F9F7F5'
+            },
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .input-error {
+      border-color: #ef4444 !important;
+      background-color: #fff5f5;
+    }
+
+    .error-text {
+      color: #f87171;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+      padding-left: 4px;
+    }
+  </style>
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+
+  <!-- Admin Navbar -->
+  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
+      <div class="flex items-center gap-6">
+        <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
+        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
+          <a href="/admin/dashboard" class="hover:text-white transition-colors">Dashboard</a>
+          <a href="/admin/events" class="hover:text-white transition-colors">Events</a>
+          <a href="/admin/users" class="hover:text-white transition-colors">Users</a>
+          <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
+          <a href="/admin/categories" class="text-white">Categories</a>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-white/70 text-sm">Admin</span>
+        <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </div>
+
+  <main class="pt-32 pb-16 px-6 max-w-2xl mx-auto">
+    <div class="flex items-center gap-4 mb-8">
+      <a href="/admin/categories" class="w-10 h-10 rounded-full bg-white/60 flex items-center justify-center hover:bg-white transition-colors shadow-sm">
+        <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </a>
+      <div>
+        <h1 class="text-3xl font-heading font-medium tracking-tight">Add Category</h1>
+        <p class="text-[#1C2A3A]/60">Create a new event category</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
+      <form id="categoryForm" class="space-y-6">
+        <!-- Icon & Name -->
+        <div class="flex gap-6">
+          <!-- Emoji Input -->
+          <div class="shrink-0">
+            <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60 mb-2">Icon</label>
+            <input type="text" id="emojiInput" name="iconUrl" maxlength="4" placeholder="🎭" class="w-24 h-24 text-5xl text-center rounded-2xl bg-white border-2 border-[#1C2A3A]/20 focus:border-[#1C2A3A] focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all" value="🎭">
+            <p id="emojiError" class="error-text hidden mt-1">Must be a valid emoji</p>
+          </div>
+
+          <!-- Name -->
+          <div class="flex-1">
+            <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60 mb-2">Category Name</label>
+            <input type="text" name="name" placeholder="e.g. Music, Sports" class="w-full h-12 rounded-xl bg-white border-none px-4 focus:ring-2 focus:ring-[#1C2A3A]/10 transition-all font-heading text-lg">
+            <p id="nameError" class="error-text hidden"></p>
+          </div>
+        </div>
+
+        <!-- Color Theme -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60 mb-3">Theme Color</label>
+          <div class="grid grid-cols-5 gap-3">
+            <% const colors = ['#8B5CF6', '#3B82F6', '#EC4899', '#10B981', '#F59E0B']; %>
+            <% colors.forEach((color, i) => { %>
+            <label class="cursor-pointer">
+              <input type="radio" name="colorHex" value="<%= color %>" class="peer sr-only" <%= i === 0 ? 'checked' : '' %>>
+              <div class="w-10 h-10 rounded-full border-2 border-transparent peer-checked:border-[#1C2A3A] transition-all flex items-center justify-center">
+                <div class="w-6 h-6 rounded-full" style="background-color: <%= color %>"></div>
+              </div>
+            </label>
+            <% }) %>
+          </div>
+          <p id="colorError" class="error-text hidden mt-2">Please select a color</p>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60 mb-2">Description</label>
+          <textarea name="description" rows="4" class="w-full rounded-xl bg-white border-none p-4 focus:ring-2 focus:ring-[#1C2A3A]/10 transition-all resize-none" placeholder="Briefly describe what kind of events belong here..."></textarea>
+          <p id="descError" class="error-text hidden"></p>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-4 pt-4 border-t border-[#1C2A3A]/10">
+          <button type="submit" id="saveBtn" class="flex-1 px-6 py-3 bg-[#1C2A3A] text-white rounded-xl font-bold shadow-lg hover:bg-[#2C3E50] transition-colors">
+            Save Category
+          </button>
+          <a href="/admin/categories" class="flex-1 px-6 py-3 bg-white text-[#1C2A3A] rounded-xl font-bold border border-[#1C2A3A]/10 hover:bg-gray-50 transition-colors text-center">
+            Cancel
+          </a>
+        </div>
+
+        <!-- Success/Error Messages -->
+        <div id="messageBox" class="hidden p-4 rounded-xl"></div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // Helper: Check if string is valid emoji
+    function isValidEmoji(str) {
+      if (!str) return false;
+      const emojiRegex = /^[\p{Emoji}]{1,4}$/u;
+      return emojiRegex.test(str);
+    }
+
+    document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const saveBtn = document.getElementById('saveBtn');
+      const messageBox = document.getElementById('messageBox');
+
+      // Reset errors
+      document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+      document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
+      messageBox.classList.add('hidden');
+
+      // Get values
+      const name = form.name.value.trim();
+      const icon = form.iconUrl.value.trim();
+      const description = form.description.value.trim();
+      const colorHex = document.querySelector('input[name="colorHex"]:checked')?.value;
+
+      let isValid = true;
+
+      // Validate name
+      if (!name) {
+        document.getElementById('nameError').textContent = 'Category name is required';
+        document.getElementById('nameError').classList.remove('hidden');
+        form.name.classList.add('input-error');
+        isValid = false;
+      }
+
+      // Validate emoji
+      if (!isValidEmoji(icon)) {
+        document.getElementById('emojiError').classList.remove('hidden');
+        document.getElementById('emojiInput').classList.add('input-error');
+        isValid = false;
+      }
+
+      // Validate description
+      if (!description) {
+        document.getElementById('descError').textContent = 'Description is required';
+        document.getElementById('descError').classList.remove('hidden');
+        form.description.classList.add('input-error');
+        isValid = false;
+      }
+
+      // Validate color
+      if (!colorHex) {
+        document.getElementById('colorError').classList.remove('hidden');
+        isValid = false;
+      }
+
+      if (!isValid) {
+        return;
+      }
+
+      // Prepare data
+      const formData = {
+        name,
+        iconUrl: icon,
+        description,
+        colorHex
+      };
+
+      // Disable button
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving...';
+
+      try {
+        const res = await fetch('/admin/categories/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          messageBox.className = 'p-4 rounded-xl bg-emerald-50 text-emerald-800';
+          messageBox.textContent = 'Category created successfully!';
+          messageBox.classList.remove('hidden');
+
+          window.location.href = data.redirectUrl
+        } else {
+          throw new Error(data.message || 'Failed to create category');
+        }
+      } catch (err) {
+        messageBox.className = 'p-4 rounded-xl bg-red-50 text-red-800';
+        messageBox.textContent = err.message || 'An error occurred';
+        messageBox.classList.remove('hidden');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Save Category';
+      }
+    });
+
+    // Real-time emoji validation
+    document.getElementById('emojiInput').addEventListener('input', function(e) {
+      const value = e.target.value;
+      const emojis = value.match(/[\p{Emoji}]/gu) || [];
+      e.target.value = emojis.join('').substring(0, 4);
+    });
+  </script>
+</body>
+
+</html>

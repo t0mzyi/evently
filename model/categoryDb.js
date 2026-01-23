@@ -21,10 +21,16 @@ const categorySchema = new mongoose.Schema(
     },
     colorHex: {
       type: String,
-      required: true,
     },
+    events: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "events",
+        default: [],
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const categoryDb = mongoose.model("categories", categorySchema);
