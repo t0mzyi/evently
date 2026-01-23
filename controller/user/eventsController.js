@@ -12,6 +12,7 @@ import {
   updateEventer,
 } from "../../service/user/eventsService.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
+import eventsDb from "../../model/eventsDb.js";
 
 export const showAllEvents = async (req, res) => {
   const events = await allEvents();
@@ -125,7 +126,49 @@ export const updateEvent = async (req, res) => {
       return res.status(400).json({ success: false, message: "Event ID missing" });
     }
 
-    const updatedEvent = await updateEventer(userId, eventId, req.body, req.files || []);
+    const currentEvent = await eventsDb.findById(eventId);
+    if (!currentEvent) {
+      return res.status(404).json({ success: false, message: "Event not found" });
+    }
+    const names = Array.isArray(req.body.ticket_name) ? req.body.ticket_name : [];
+    const prices = Array.isArray(req.body.ticket_price) ? req.body.ticket_price : [];
+    const qtys = Array.isArray(req.body.ticket_quantityTotal) ? req.body.ticket_quantityTotal : [];
+
+    const ticketTypes = [];
+    const maxLength = Math.max(names.length, prices.length, qtys.length);
+
+    for (let i = 0; i < maxLength; i++) {
+      const name = (names[i] || "").trim();
+      const price = parseFloat(prices[i]) || 0;
+      const qty = parseInt(qtys[i]) || 0;
+
+      if (name && qty > 0) {
+        const existingTicket = currentEvent.ticketTypes?.[i];
+        const quantityAvailable =
+          existingTicket?.quantityAvailable !== undefined ? existingTicket.quantityAvailable : qty;
+
+        ticketTypes.push({
+          name,
+          price,
+          quantityTotal: qty,
+          quantityAvailable,
+          isFree: price === 0,
+          description: "",
+        });
+      }
+    }
+
+    const body = {
+      ...req.body,
+      ticketTypes,
+    };
+    delete body.ticket_name;
+    delete body.ticket_price;
+    delete body.ticket_quantityTotal;
+
+    // Call service
+    const updatedEvent = await updateEventer(userId, eventId, body, req.files || []);
+
     if (updatedEvent) {
       return res.json({
         success: true,
@@ -133,6 +176,7 @@ export const updateEvent = async (req, res) => {
         event: updatedEvent,
       });
     }
+
     return res.status(500).json({ success: false, message: "Unknown error" });
   } catch (error) {
     console.error("Error in update event controller:", error);

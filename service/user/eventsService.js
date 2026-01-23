@@ -261,23 +261,30 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
 
   body.galleryImages = allImagePaths;
 
+  // Sanitize & validate ticket types
   if (body.ticketTypes && Array.isArray(body.ticketTypes)) {
     body.ticketTypes = body.ticketTypes
       .filter((ticket) => ticket.name && ticket.quantityTotal > 0)
-      .map((ticket) => ({
-        name: ticket.name.trim(),
-        price: parseFloat(ticket.price) || 0,
-        quantityTotal: parseInt(ticket.quantityTotal) || 0,
-        isFree: ticket.isFree || false,
-        description: ticket.description || "",
-      }));
+      .map((ticket) => {
+        const qtyTotal = parseInt(ticket.quantityTotal) || 0;
+        return {
+          name: ticket.name.trim(),
+          price: parseFloat(ticket.price) || 0,
+          quantityTotal: qtyTotal,
+          quantityAvailable: ticket.quantityAvailable ?? qtyTotal, // ✅ safe & clear
+          isFree: ticket.isFree || false,
+          description: ticket.description || "",
+        };
+      });
   }
 
+  // Auto-reset status if previously rejected
   if (currentEvent.status === "rejected") {
     body.status = "pending";
     body.rejectionReason = "";
   }
 
   const updatedEvent = await eventsDb.findByIdAndUpdate(eventId, body, { new: true, runValidators: true });
+
   return updatedEvent;
 };
