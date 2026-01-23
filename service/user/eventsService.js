@@ -204,11 +204,10 @@ export const editEventRender = async (userId, eventId) => {
 export const updateEventer = async (userId, eventId, body, uploadedFiles = []) => {
   const currentEvent = await eventsDb.findById(eventId);
   if (!currentEvent) {
-    throw new Error("Event doest Exists");
+    throw new Error("Event does not exist");
   }
 
   const user = await userDb.findById(userId);
-
   if (!user || !user.hostedEvents.some((e) => e.equals(eventId))) {
     throw new Error("Access Denied");
   }
@@ -217,11 +216,11 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
   if (isApproved) {
     delete body.startDate;
     delete body.endDate;
-    //check
     delete body.venueId;
+
     if (body.ticketTypes && Array.isArray(body.ticketTypes)) {
-      body.ticketTypes = body.ticketTypes.map((newTicket) => {
-        const existing = currentEvent.ticketTypes.find((t) => t.name === newTicket.name);
+      body.ticketTypes = body.ticketTypes.map((newTicket, idx) => {
+        const existing = currentEvent.ticketTypes[idx];
         if (existing) {
           return {
             ...newTicket,
@@ -237,21 +236,27 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
   if (body.totalCapacity !== undefined) {
     const newCapacity = parseInt(body.totalCapacity);
     const currentSold = currentEvent.ticketsSold || 0;
-
     if (newCapacity < currentSold) {
       throw new Error(`Total capacity cannot be less than tickets already sold (${currentSold}).`);
     }
   }
 
-  let allImagePaths = [...(currentEvent.galleryImages || [])];
+  let allImagePaths = [];
+
+  if (typeof body.existingGalleryImages === "string") {
+    try {
+      allImagePaths = JSON.parse(body.existingGalleryImages);
+    } catch (e) {
+      console.warn("Failed to parse existingGalleryImages, using fallback");
+      allImagePaths = [...(currentEvent.galleryImages || [])];
+    }
+  } else {
+    allImagePaths = [...(currentEvent.galleryImages || [])];
+  }
 
   if (uploadedFiles.length > 0) {
     const newImagePaths = uploadedFiles.map((file) => `/uploads/events/${file.filename}`);
     allImagePaths.push(...newImagePaths);
-  }
-
-  if (Array.isArray(body.galleryImages)) {
-    allImagePaths = body.galleryImages;
   }
 
   body.galleryImages = allImagePaths;
@@ -267,12 +272,12 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
         description: ticket.description || "",
       }));
   }
-  if (currentEvent.status == "rejected") {
+
+  if (currentEvent.status === "rejected") {
     body.status = "pending";
     body.rejectionReason = "";
   }
 
   const updatedEvent = await eventsDb.findByIdAndUpdate(eventId, body, { new: true, runValidators: true });
-  console.log("Dd", updatedEvent);
   return updatedEvent;
 };

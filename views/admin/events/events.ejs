@@ -35,30 +35,7 @@
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
   <%- include('../../partials/toast')%>
   <!-- Admin Navbar -->
-  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
-      <div class="flex items-center gap-6">
-        <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
-        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
-          <a href="/admin/dashboard" class="hover:text-white transition-colors">Dashboard</a>
-          <a href="/admin/events" class="text-white">Events</a>
-          <a href="/admin/users" class="hover:text-white transition-colors">Users</a>
-          <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
-          <a href="/admin/categories" class="hover:text-white transition-colors">Categories</a>
-          <a href="/admin/wallet" class="hover:text-white transition-colors">Wallet</a>
-          <a href="/admin/coupons" class="hover:text-white transition-colors">Coupons</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="text-white/70 text-sm">Admin</span>
-        <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-          </svg>
-        </a>
-      </div>
-    </nav>
-  </div>
+  <%-include('../../partials/adminNavbar') %>
 
   <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
     <!-- Header with Filters -->

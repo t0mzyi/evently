@@ -117,8 +117,12 @@ export const updateEvent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const userId = req.session.user;
-    if (!userId && !eventId) {
+
+    if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    if (!eventId) {
+      return res.status(400).json({ success: false, message: "Event ID missing" });
     }
 
     const updatedEvent = await updateEventer(userId, eventId, req.body, req.files || []);
@@ -129,9 +133,9 @@ export const updateEvent = async (req, res) => {
         event: updatedEvent,
       });
     }
-    return res.status(403).json({ success: false, message: "Some error" });
+    return res.status(500).json({ success: false, message: "Unknown error" });
   } catch (error) {
-    console.log("error in update event controller", error);
-    return res.status(403).json({ success: false, message: error.message });
+    console.error("Error in update event controller:", error);
+    return res.status(400).json({ success: false, message: error.message });
   }
 };
