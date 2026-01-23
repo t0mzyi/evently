@@ -1,4 +1,4 @@
-import { categoryCreator, editCategory } from "../../service/admin/categoryService.js";
+import { categoryCreator, categoryUpdater, editCategory } from "../../service/admin/categoryService.js";
 import { allCategories, category } from "../../service/admin/categoryService.js ";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 
@@ -50,15 +50,17 @@ export const showEditCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   try {
-    const updatedCategory = await updateCategory(req.params.categoryId, req.body);
+    const { name, iconUrl, description, colorHex } = req.body;
+    const body = { name, iconUrl, description, colorHex };
+    const updatedCategory = await categoryUpdater(req.params.categoryId, body);
     console.log(req.body);
     res.json({
       success: true,
       message: "Category updated successfully",
-      redirectUrl: `/admin/category/${updateCategory._id}?status=success&message=Category updated successfulls`,
+      redirectUrl: `/admin/category/${updatedCategory._id}?status=success&message=Category updated successfulls`,
     });
   } catch (error) {
-    console.error(error);
+    console.error("error in updateCat", error);
     res.status(400).json({
       success: false,
       message: error.message || "Failed to update category",

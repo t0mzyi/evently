@@ -57,3 +57,15 @@ export const editCategory = async (id) => {
   if (!cat) throw new Error("No category exists");
   return cat;
 };
+
+export const categoryUpdater = async (id, data) => {
+  const updated = await categoryDb.findByIdAndUpdate(id, data, {
+    new: true,
+  });
+
+  if (!updated) {
+    throw new Error("Category not found");
+  }
+
+  return updated;
+};
