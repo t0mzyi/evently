@@ -36,6 +36,7 @@ import {
 } from "../controller/user/eventsController.js";
 import { categories } from "../controller/user/categoryController.js";
 import { bookmarks, toggleBookmark } from "../controller/user/bookmarksController.js";
+import { bookTicket, cancelTicket, viewTicket } from "../controller/user/ticketController.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
@@ -94,6 +95,11 @@ router.get("/categories", categories);
 //bookmarks
 router.get("/bookmarks", bookmarks);
 router.post("/toggleBookmark/:eventId", toggleBookmark);
+
+//ticket
+router.get("/bookTickets/:eventId", bookTicket);
+router.get("/cancelTickets", cancelTicket);
+router.get("/viewTicket", viewTicket);
 
 router.get("/logout", isAuth, logout);
 export default router;

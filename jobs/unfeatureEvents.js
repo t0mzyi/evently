@@ -2,7 +2,7 @@ import cron from "node-cron";
 import eventsDb from "../model/eventsDb.js";
 
 // Cron schedule: run every minute
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 0 * * *", async () => {
   console.log(`[${new Date().toISOString()}] Running unfeatureExpiredEvents cron job`);
 
   try {

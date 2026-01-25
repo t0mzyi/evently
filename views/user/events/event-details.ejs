@@ -136,9 +136,19 @@
               <span class="font-semibold"><%= schedule.time%></span>
             </div>
             <div class="flex justify-between items-center py-4">
-              <span class="text-sm font-medium text-apple-secondary">Price from</span>
-              <span class="text-2xl font-bold text-theme-primary">$<%=ticket.lowestPrice%>.00</span>
+              <span class="text-sm font-medium text-apple-secondary">Price</span>
+
+              <% if (ticket.lowestPrice > 0) { %>
+              <span class="text-2xl font-bold text-theme-primary">
+                Price from ₹<%= ticket.lowestPrice %>.00
+              </span>
+              <% } else { %>
+              <span class="text-lg font-semibold text-apple-secondary">
+                Free tickets available
+              </span>
+              <% } %>
             </div>
+
           </div>
 
           <!-- Ticket Selection -->
@@ -151,18 +161,34 @@
 
               </div>
               <div class="grid grid-cols-1 gap-3">
-                <% for(let i=0; i<event.ticketTypes.length ;i++){%>
-                <label class="relative flex flex-col p-4 bg-theme-surface/40 border border-white/10 rounded-2xl cursor-pointer hover:border-theme-primary/40 transition-all group">
-                  <div class="flex items-center space-x-3">
-                    <i class="fas fa-chair text-[#1C2A3A]"></i>
-                    <span class="text-sm font-medium text-[#1C2A3A]"><%= event.ticketTypes[i].name%></span>
+                <% for (let i = 0; i < event.ticketTypes.length; i++) { %>
+                <label class="relative flex items-center justify-between p-4 bg-theme-surface/40 border border-white/10 rounded-2xl cursor-pointer hover:border-theme-primary/40 transition-all group">
+                  <!-- Left side -->
+                  <div class="flex flex-col">
+                    <div class="flex items-center space-x-3">
+                      <i class="fas fa-chair text-[#1C2A3A]"></i>
+                      <span class="text-sm font-medium text-[#1C2A3A]">
+                        <%= event.ticketTypes[i].name %>
+                      </span>
+                    </div>
+                    <div class="flex items-center text-xs pl-7">
+                      <span class="text-[#ED8842] font-semibold">
+                        <%= event.ticketTypes[i].quantityAvailable %> of
+                        <%= event.ticketTypes[i].quantityTotal %> Seats left
+                      </span>
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between text-xs pl-7">
-                    <span class="text-[#ED8842] font-semibold"><%=event.ticketTypes[i].quantityAvailable%> of <%=event.ticketTypes[i].quantityTotal%> Seats left</span>
+
+                  <!-- Right side (Price) -->
+                  <div class="text-right">
+                    <span class="text-lg font-semibold text-[#1C2A3A]">
+                      ₹<%= event.ticketTypes[i].price %>
+                    </span>
                   </div>
                 </label>
-                <%}%>
+                <% } %>
               </div>
+
             </div>
 
             <%# <!-- Quantity Selector -->
@@ -174,27 +200,29 @@
                 <button class="w-8 h-8 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center hover:bg-[#2C3E50] transition-colors">+</button>
               </div>
             </div> %>
-              </div>
-
-              <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-primary/90 transition-all card-shadow">
-                <a href="/book-tickets">BOOK TICKETS</a></button>
-            </div>
-
-            <!-- Terms Mini -->
-            <div class="px-8 py-6 bg-theme-surface/20 border border-white/10 rounded-[2rem] text-xs text-apple-secondary leading-relaxed">
-              <p class="font-bold text-theme-dark mb-2">Notice</p>
-              21+ only. ID verification required at entry. Prohibited items include professional cameras and
-              outside drinks.
-            </div>
           </div>
+
+          <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-primary/90 transition-all card-shadow">
+            <a href="/bookTickets/<%= event._id %>">BOOK TICKETS</a></button>
+        </div>
+
+        <!-- Terms Mini -->
+        <div class="px-8 py-6 bg-theme-surface/20 border border-white/10 rounded-[2rem] text-xs text-apple-secondary leading-relaxed">
+          <p class="font-bold text-theme-dark mb-2">Notice</p>
+          21+ only. ID verification required at entry. Prohibited items include professional cameras and
+          outside drinks.
         </div>
       </div>
+    </div>
+    </div>
   </main>
 
   <!-- Floating CTA for Mobile -->
   <div class="md:hidden fixed bottom-6 left-6 right-6">
-    <button class="w-full h-16 bg-apple-text text-white rounded-2xl font-semibold card-shadow text-lg">Book
-      Tickets</button>
+    <a href="/bookTicket">
+      <button class="w-full h-16 bg-apple-text text-white rounded-2xl font-semibold card-shadow text-lg">Book
+        Tickets</button>
+    </a>
   </div>
 
   <!-- Footer -->
