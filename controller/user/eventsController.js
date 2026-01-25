@@ -13,11 +13,16 @@ import {
 } from "../../service/user/eventsService.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import eventsDb from "../../model/eventsDb.js";
+import { userBookmarks } from "../../service/user/bookmarksService.js";
 
 export const showAllEvents = async (req, res) => {
   const query = req.query.q || "";
   const events = await allEvents(query);
-  res.render("user/events/events", { events, q: query });
+  let bookmarks = false;
+  if (req.session.user) {
+    bookmarks = await userBookmarks(req.session.user);
+  }
+  return res.render("user/events/events", { events, q: query, userBookmarks: bookmarks.eventIds });
 };
 
 export const showSingleEvent = async (req, res) => {

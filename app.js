@@ -62,6 +62,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
+app.use((req, res) => {
+  res.status(404).render("404");
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  if (res.headersSent) return next(err);
+  res.status(err.status || 500).render("404");
+});
 await connectDb();
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");

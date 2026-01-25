@@ -1,5 +1,6 @@
 // service/user/eventsService.js
 
+import { bookmarksDb } from "../../model/bookmarksDb.js";
 import categoryDb from "../../model/categoryDb.js";
 import eventsDb from "../../model/eventsDb.js";
 import userDb from "../../model/userDb.js";
@@ -15,6 +16,7 @@ export const allEvents = async (query) => {
     queryFilter.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
   }
   const events = await eventsDb.find(queryFilter).populate("categoryId", "name");
+
   return events;
 };
 

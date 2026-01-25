@@ -35,6 +35,8 @@ import {
   viewEventHost,
 } from "../controller/user/eventsController.js";
 import { categories } from "../controller/user/categoryController.js";
+import { bookmarks, toggleBookmark } from "../controller/user/bookmarksController.js";
+// import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
 router.get("/", (req, res) => res.redirect("/foryou"));
@@ -88,6 +90,10 @@ router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
 
 //cat
 router.get("/categories", categories);
+
+//bookmarks
+router.get("/bookmarks", bookmarks);
+router.post("/toggleBookmark/:eventId", toggleBookmark);
 
 router.get("/logout", isAuth, logout);
 export default router;
