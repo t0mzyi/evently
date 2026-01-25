@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Ticket — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: { primary: '#1C2A3A', highlight: '#2C3E50', secondary: '#1C2A3A', accent: '#ED8842', surface: '#F9F7F5' },
+                    },
+                    fontFamily: { heading: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        .ticket-perforation {
+            background-image: radial-gradient(#EAE0CF 6px, transparent 0);
+            background-size: 20px 20px;
+            background-position: -10px center;
+            background-repeat: repeat-y;
+        }
+    </style>
+</head>
+
+<body class="bg-[#EAE0CF] min-h-screen flex flex-col items-center justify-center p-6 text-[#1C2A3A] font-sans">
+
+    <!-- Navbar Back Button -->
+    <a href="/dashboard"
+        class="absolute top-6 left-6 flex items-center gap-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18">
+            </path>
+        </svg>
+        <span>Back</span>
+    </a>
+
+    <!-- Main Ticket Card -->
+    <div
+        class="w-full max-w-[360px] bg-[#1C2A3A] rounded-[2rem] overflow-hidden shadow-2xl relative text-white flex flex-col transform hover:scale-[1.01] transition-transform duration-500">
+
+        <!-- Premium Header Image -->
+        <div class="h-80 relative shrink-0">
+            <img src="https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=1000&auto=format&fit=crop"
+                class="w-full h-full object-cover opacity-80 mix-blend-overlay" alt="Event">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-[#1C2A3A]/20 to-[#1C2A3A]"></div>
+
+            <!-- Live Status Tag -->
+            <div class="absolute top-6 left-6">
+                <span
+                    class="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest border border-white/20 text-white shadow-lg flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                    Valid Entry
+                </span>
+            </div>
+
+            <!-- Event Title Overlay -->
+            <div class="absolute bottom-4 left-6 right-6">
+                <h1 class="text-3xl font-heading leading-tight mb-1 text-[#EAE0CF]">Jazz under the Moonlight</h1>
+                <div class="flex items-center gap-2 text-white/60 text-xs">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>The Rooftop Lounge, NYC</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ticket Body Details -->
+        <div class="px-8 pt-4 pb-8 space-y-6">
+
+            <!-- Key Info Grid -->
+            <div class="grid grid-cols-2 gap-y-6 text-[#EAE0CF]">
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Date</p>
+                    <p class="font-medium text-lg">Dec 24, 2024</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Time</p>
+                    <p class="font-medium text-lg">08:00 PM</p>
+                </div>
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Ticket Type</p>
+                    <p class="font-medium text-lg text-[#ED8842]">VIP Access</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Seat</p>
+                    <p class="font-heading text-2xl">A-24</p>
+                </div>
+            </div>
+
+            <!-- Divider with Perforation -->
+            <div class="relative h-px bg-white/10 my-6">
+                <div
+                    class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[42px] w-6 h-6 rounded-full bg-[#EAE0CF]">
+                </div>
+                <div
+                    class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[42px] w-6 h-6 rounded-full bg-[#EAE0CF]">
+                </div>
+            </div>
+
+            <!-- User & QR Section -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest text-white/30 mb-1">Guest</p>
+                    <p class="font-heading text-xl">Jaiden</p>
+                    <p class="text-[10px] text-white/30 font-mono mt-1">ID: #8293-XJ</p>
+                </div>
+                <div class="p-2 bg-white rounded-xl">
+                    <svg class="w-16 h-16 text-[#1C2A3A]" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3H9V9H3V3Z" fill="currentColor" />
+                        <path d="M15 3H21V9H15V3Z" fill="currentColor" />
+                        <path d="M3 15H9V21H3V15Z" fill="currentColor" />
+                        <rect x="11" y="11" width="2" height="2" fill="currentColor" />
+                        <rect x="13" y="13" width="2" height="2" fill="currentColor" />
+                        <rect x="11" y="15" width="2" height="2" fill="currentColor" />
+                        <rect x="13" y="17" width="2" height="2" fill="currentColor" />
+                        <rect x="15" y="11" width="2" height="2" fill="currentColor" />
+                        <rect x="17" y="13" width="2" height="2" fill="currentColor" />
+                        <rect x="15" y="15" width="2" height="2" fill="currentColor" />
+                        <rect x="17" y="17" width="2" height="2" fill="currentColor" />
+                        <path d="M11 3H13V9H11V3Z" fill="currentColor" />
+                        <path d="M3 11H9V13H3V11Z" fill="currentColor" />
+                        <path d="M15 21H21V23H15V21Z" fill="currentColor" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Shine -->
+        <div class="h-2 w-full bg-gradient-to-r from-[#ED8842] to-[#1C2A3A]"></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-8 flex gap-4">
+        <button onclick="window.print()"
+            class="px-6 py-3 bg-[#1C2A3A] text-[#EAE0CF] rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#2C3E50] transition-all shadow-lg flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Save to Phone
+        </button>
+        <button
+            class="px-6 py-3 bg-transparent border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-full text-xs font-bold uppercase tracking-wider hover:bg-white transition-all">
+            Share
+        </button>
+    </div>
+
+</body>
+
+</html>

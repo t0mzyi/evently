@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancel Ticket — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: { primary: '#1C2A3A', highlight: '#2C3E50', accent: '#ED8842', surface: '#F9F7F5' },
+                    },
+                    fontFamily: { heading: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] min-h-screen font-sans text-[#1C2A3A]">
+
+    <!-- Navbar -->
+    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+        <nav
+            class="max-w-7xl mx-auto bg-white/60 backdrop-blur-xl rounded-full h-16 px-6 flex items-center justify-between shadow-lg border border-white/40">
+            <a href="/" class="text-2xl font-bold tracking-tight text-[#1C2A3A] font-heading">evently</a>
+            <a href="/dashboard"
+                class="text-sm font-bold uppercase tracking-wider text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors">
+                Cancel & Return
+            </a>
+        </nav>
+    </div>
+
+    <main class="pt-32 pb-16 px-6 relative z-10">
+        <div class="max-w-xl mx-auto">
+
+            <div
+                class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-white/40 text-center">
+
+                <!-- Icon -->
+                <div
+                    class="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-6 text-red-600">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                </div>
+
+                <h1 class="text-3xl font-heading font-bold text-[#1C2A3A] mb-2">Cancel Tickets</h1>
+                <p class="text-[#1C2A3A]/60 mb-8">Select the tickets you want to cancel for <strong
+                        class="text-[#1C2A3A]">Jazz under the Moonlight</strong>.</p>
+
+                <!-- Ticket Selection List -->
+                <div class="space-y-4 mb-8 text-left">
+                    <% if (typeof tickets !=='undefined' && tickets.length> 0) { %>
+                        <% tickets.forEach(function(ticket, index) { %>
+                            <label class="block relative group cursor-pointer">
+                                <input type="checkbox" name="selected_tickets" value="<%= ticket.price %>"
+                                    class="peer sr-only" onchange="updateRefund()">
+                                <div
+                                    class="bg-white border border-[#1C2A3A]/10 rounded-2xl p-4 transition-all peer-checked:border-[#1C2A3A] peer-checked:bg-white peer-checked:shadow-md flex items-center gap-4">
+                                    <!-- Checkbox Visual -->
+                                    <div
+                                        class="w-6 h-6 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center peer-checked:bg-[#1C2A3A] peer-checked:border-[#1C2A3A] transition-colors shrink-0">
+                                        <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+
+                                    <!-- Ticket details -->
+                                    <div class="flex-1">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <span class="font-bold text-[#1C2A3A]">
+                                                <%= ticket.type %>
+                                            </span>
+                                            <span
+                                                class="font-mono text-xs text-[#1C2A3A]/60 bg-[#1C2A3A]/5 px-2 py-0.5 rounded">
+                                                <%= ticket.id %>
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-[#1C2A3A]/60 flex justify-between">
+
+                                            <span>Price</span>
+                                            <span>$<%= ticket.price.toFixed(2) %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                            <% }); %>
+                                <% } else { %>
+                                    <div class="bg-red-50 p-4 rounded-xl text-red-600 text-sm">No tickets found or
+                                        simple ID mode active.</div>
+                                    <% } %>
+                </div>
+
+                <!-- Refund Summary -->
+                <div class="bg-white/50 rounded-2xl p-6 mb-8 text-left border border-[#1C2A3A]/5 transition-all"
+                    id="refundSummary">
+                    <div class="flex justify-between mb-4 pb-4 border-b border-[#1C2A3A]/10">
+                        <span class="text-sm text-[#1C2A3A]/60">Total Refund</span>
+                        <span class="font-bold text-[#1C2A3A] text-xl" id="refundAmount">$0.00</span>
+                    </div>
+                    <div class="flex items-start gap-3 bg-blue-50 p-4 rounded-xl">
+                        <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-xs text-blue-800 leading-relaxed">
+                            Refunds are processed to original payment method (5-7 days). Select tickets to calculate
+                            refund.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex flex-col gap-3">
+                    <button type="button" id="confirmBtn" onclick="confirmCancellation()" disabled
+                        class="w-full py-4 bg-[#1C2A3A] disabled:bg-gray-300 text-white rounded-xl font-bold shadow-lg shadow-[#1C2A3A]/20 transition-all">
+                        Cancel Selected Tickets
+                    </button>
+                    <a href="/dashboard"
+                        class="w-full py-4 bg-white border border-[#1C2A3A]/10 text-[#1C2A3A] rounded-xl font-bold hover:bg-[#F9F7F5] transition-all">
+                        Nevermind, Keep Tickets
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity opacity-0"
+            id="confirmBackdrop"></div>
+        <div class="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
+            id="confirmCard">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                        </path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-heading font-bold text-[#1C2A3A] mb-2">Are you sure?</h3>
+                <p class="text-[#1C2A3A]/60 text-sm mb-6">This action cannot be undone. The selected tickets will be
+                    permanently invalid.</p>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="processCancellation()"
+                        class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-500/20 transition-all">
+                        Yes, Cancel Tickets
+                    </button>
+                    <button onclick="closeConfirmModal()"
+                        class="w-full py-3 bg-white border border-[#1C2A3A]/10 text-[#1C2A3A] rounded-xl font-bold hover:bg-[#F9F7F5] transition-all">
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop">
+        </div>
+
+        <!-- Modal Card -->
+        <div class="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
+            id="modalCard">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-heading font-bold text-[#1C2A3A] mb-2">Tickets Cancelled</h3>
+                <p class="text-[#1C2A3A]/60 text-sm mb-6">Your refund of <strong class="text-[#1C2A3A]"
+                        id="modalRefundAmount">$0.00</strong> has been processed successfully.</p>
+
+                <a href="/dashboard"
+                    class="block w-full py-3 bg-[#1C2A3A] text-white rounded-xl font-bold hover:bg-[#2C3E50] transition-colors">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateRefund() {
+            const checkboxes = document.querySelectorAll('input[name="selected_tickets"]:checked');
+            let total = 0;
+            checkboxes.forEach(cb => total += parseFloat(cb.value));
+
+            // Update Text
+            const formatted = '$' + total.toFixed(2);
+            document.getElementById('refundAmount').innerText = formatted;
+            document.getElementById('modalRefundAmount').innerText = formatted;
+
+            // Enable/Disable Button
+            const btn = document.getElementById('confirmBtn');
+            if (checkboxes.length > 0) {
+                btn.disabled = false;
+                btn.innerText = `Cancel ${checkboxes.length} Ticket${checkboxes.length > 1 ? 's' : ''}`;
+                btn.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
+                btn.classList.remove('bg-gray-300');
+            } else {
+                btn.disabled = true;
+                btn.innerText = 'Select Tickets to Cancel';
+                btn.classList.remove('bg-red-600', 'hover:bg-red-700');
+                btn.classList.add('bg-gray-300');
+            }
+        }
+
+        // Step 1: Show Confirmation
+        function confirmCancellation() {
+            const modal = document.getElementById('confirmModal');
+            const backdrop = document.getElementById('confirmBackdrop');
+            const card = document.getElementById('confirmCard');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                card.classList.remove('scale-95', 'opacity-0');
+                card.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            const backdrop = document.getElementById('confirmBackdrop');
+            const card = document.getElementById('confirmCard');
+
+            backdrop.classList.add('opacity-0');
+            card.classList.remove('scale-100', 'opacity-100');
+            card.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
+        }
+
+        // Step 2: Show Success
+        function processCancellation() {
+            closeConfirmModal();
+
+            // Wait for close animation
+            setTimeout(() => {
+                const modal = document.getElementById('successModal');
+                const backdrop = document.getElementById('modalBackdrop');
+                const card = document.getElementById('modalCard');
+
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    backdrop.classList.remove('opacity-0');
+                    card.classList.remove('scale-95', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }, 300);
+        }
+    </script>
+
+</body>
+
+</html>

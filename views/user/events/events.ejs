@@ -55,6 +55,7 @@
 <body class="bg-[#EAE0CF] text-[#1C2A3A]">
   <!-- Navigation -->
   <%- include('../../partials/navbar') %>
+  <%- include('../../partials/toast') %>
 
   <!-- Page Header & Search Only -->
   <div class="pt-40 px-6 max-w-7xl mx-auto">
@@ -85,8 +86,18 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
       <% for(let i = 0; i < events.length; i++) { %>
       <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group cursor-pointer" onclick="window.location.href='/events/<%= events[i]._id %>'">
+
         <div class="h-[280px] relative">
           <img src="<%= events[i].galleryImages[0] %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="<%= events[i].title %>" />
+          <% if (userBookmarks) { %>
+          <% const isBookmarked = userBookmarks.includes(events[i]._id.toString()); %>
+
+          <button id="bookmark-btn-<%= events[i]._id %>" onclick="event.stopPropagation(); handleBookmarkToggle('<%= events[i]._id %>','<%=events[i].title%>')" class="absolute top-4 right-4 z-10 p-2 backdrop-blur-md rounded-full transition-all duration-300 shadow-lg border border-white/30 <%= isBookmarked ? 'bg-[#ED8842] text-white' : 'bg-white/20 text-white hover:bg-white/40' %>">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="<%= isBookmarked ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+            </svg>
+          </button>
+          <% } %>
           <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
             <h3 class="text-3xl font-heading text-white lowercase">
               <%= events[i].title %>
@@ -104,11 +115,11 @@
             <%= events[i].description.substring(0, 100) + '...' %>
           </p>
           <%
-              let lowestPrice = 0;
-              if (events[i].ticketTypes && events[i].ticketTypes.length) {
-                lowestPrice = Math.min(...events[i].ticketTypes.map(t => t.price));
-              }
-            %>
+      let lowestPrice = 0;
+      if (events[i].ticketTypes && events[i].ticketTypes.length) {
+        lowestPrice = Math.min(...events[i].ticketTypes.map(t => t.price));
+      }
+    %>
           <div class="absolute bottom-6 right-0 bg-[#ED8842] py-2 pl-4 pr-6 rounded-l-full flex items-center shadow-md">
             <span class="text-white font-heading text-xs tracking-tight">
               <%= lowestPrice === 0 ? "Free" : "Starting from $" + lowestPrice %>
@@ -120,5 +131,39 @@
     </div>
   </div>
 </body>
+<script>
+  async function handleBookmarkToggle(id, title) {
+    try {
+      const response = await fetch(`/toggleBookmark/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      const result = await response.json();
+
+      const btn = document.getElementById(`bookmark-btn-${id}`);
+      if (result.action === 'Added') {
+        // remove "unbookmarked" styles
+        btn.classList.remove('bg-white/20', 'hover:bg-white/40');
+
+        // add "bookmarked" styles
+        btn.classList.add('bg-[#ED8842]', 'text-white');
+        svg.setAttribute('fill', 'currentColor');
+      }
+
+      if (result.action === 'Removed') {
+        // remove "bookmarked" styles
+        btn.classList.remove('bg-[#ED8842]');
+
+        // restore "unbookmarked" styles
+        btn.classList.add('bg-white/20', 'hover:bg-white/40');
+        svg.setAttribute('fill', 'none');
+      }
+    } catch (err) {
+      console.error('Bookmark failed:', err);
+    }
+  }
+</script>
 
 </html>

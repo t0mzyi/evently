@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookmarks — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              secondary: '#1C2A3A',
+              accent: '#5C7C8A',
+              dark: '#1C2A3A',
+              surface: '#F9F7F5',
+            },
+            apple: {
+              bg: '#EAE0CF',
+              card: 'rgba(255, 255, 255, 0.6)',
+              text: '#1C2A3A',
+              secondary: '#5C7C8A',
+              accent: '#1C2A3A'
+            }
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A]">
+
+  <!-- Navigation -->
+  <%- include('../partials/navbar') %>
+  <%- include('../partials/toast') %>
+
+  <!-- Page Header -->
+  <div class="pt-40 px-6 max-w-7xl mx-auto">
+    <div class="mb-12">
+      <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-4 text-[#1C2A3A]">My bookmarks
+      </h1>
+      <p class="text-[#1C2A3A]/60 font-sans">Events you've saved for later.</p>
+    </div>
+
+    <!-- Bookmarked Events Grid -->
+    <% if(bms.length > 0) { %>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mb-24">
+      <!-- Event Card 1 -->
+      <% for(let i =0;i<bms.length ;i++) {%>
+      <div class="bg-[#B8B2A6] rounded-[1.75rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 relative group cursor-pointer" onclick="window.location.href='/events/<%=bms[i]._id %>'">
+
+        <!-- Image -->
+        <div class="h-[280px] relative overflow-hidden">
+          <img src="<%= bms[i].galleryImages[0] %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Event" />
+
+          <!-- Remove Bookmark -->
+          <button onclick="event.stopPropagation(); removeBookmark('<%= bms[i]._id%>','<%= bms[i].title%>');" class="absolute top-4 right-4 z-20 p-2 rounded-full bg-white/20 backdrop-blur-md text-white
+             hover:bg-red-500/80 transition-colors shadow-lg" aria-label="Remove bookmark">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <!-- Gradient + Title -->
+          <div class="absolute inset-x-0 bottom-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+            <h3 class="text-3xl font-heading text-white lowercase leading-tight">
+              <%= bms[i].title %>
+            </h3>
+
+            <div class="flex gap-2 mt-3">
+              <span class="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md
+                 text-[10px] font-semibold uppercase tracking-wider text-white">
+                <%= bms[i].categoryId.name %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 relative">
+          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed font-sans mb-10">
+            <%= bms[i].description %>
+          </p>
+
+          <% 
+    let lowestPrice = 0;
+    if (bms[i].ticketTypes && bms[i].ticketTypes.length) {
+      lowestPrice = Math.min(...bms[i].ticketTypes.map(t => t.price));
+    }
+  %>
+
+          <!-- Price -->
+          <div class="absolute bottom-6 right-0 bg-[#ED8842]
+              py-2 pl-4 pr-6 rounded-l-full shadow-lg">
+            <span class="text-white font-heading text-sm tracking-tight">
+              <%= lowestPrice === 0 ? "Free" : "Starting from $" + lowestPrice %>
+            </span>
+          </div>
+        </div>
+
+      </div>
+      <%}%>
+    </div>
+    <%} else{%>
+
+      <div class="text-center py-20 ">
+        <div class="w-16 h-16 bg-[#1C2A3A]/5 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg class="w-8 h-8 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
+          </svg>
+        </div>
+        <h3 class="text-xl font-heading font-medium text-[#1C2A3A] mb-2">No bookmarks yet</h3>
+        <p class="text-[#1C2A3A]/60 mb-8">Start exploring events and save the ones you like.</p>
+        <a href="/events" class="px-6 py-3 bg-[#1C2A3A] text-white rounded-full font-medium hover:bg-[#1C2A3A]/90 transition-colors">Explore Events</a>
+      </div>
+
+      <%}%>
+
+</body>
+<script>
+async function removeBookmark(id,name){
+// console.log(id,name)
+    try{
+        const response = await fetch(`/toggleBookmark/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      const result = await response.json();
+      if(result.status){
+        window.location.href = `/bookmarks?status=success&message=SuccesFully removed ${name} from bookmarks`
+      }else{
+        window.location.href = `/bookmarks?status=error&message=${result.message}`
+
+      }
+    }catch(err){
+         window.location.href = `/bookmarks?status=error&message= ${result.message}`
+
+    }
+}
+</script>
+</html>
