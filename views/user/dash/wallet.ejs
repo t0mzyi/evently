@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Wallet — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              accent: '#ED8842',
+              surface: '#F9F7F5',
+            }
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': {
+                opacity: 0,
+                transform: 'translateY(10px)'
+              },
+              '100%': {
+                opacity: 1,
+                transform: 'translateY(0)'
+              }
+            },
+            slideUp: {
+              '0%': {
+                opacity: 0,
+                transform: 'translateY(20px)'
+              },
+              '100%': {
+                opacity: 1,
+                transform: 'translateY(0)'
+              }
+            },
+            float: {
+              '0%, 100%': {
+                transform: 'translateY(0)'
+              },
+              '50%': {
+                transform: 'translateY(-10px)'
+              }
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Success/Error Modal */
+    .notification-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .notification-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .notification-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+
+    .notification-modal.show .notification-content {
+      transform: translateY(0);
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1C2A3A;
+    }
+
+    .success {
+      color: #10B981;
+    }
+
+    .error {
+      color: #EF4444;
+    }
+
+    .notification-btn {
+      margin-top: 1.5rem;
+      padding: 0.5rem 1.5rem;
+      background: #ED8842;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+
+    .notification-btn:hover {
+      background: #E07A3A;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .animate-gradient {
+      background-size: 200% 200%;
+      animation: gradientShift 8s ease infinite;
+    }
+
+    .nav-btn.active {
+      background: linear-gradient(135deg, rgba(237, 136, 66, 0.15), rgba(237, 136, 66, 0.05));
+      border-left: 3px solid #ED8842;
+      color: #1C2A3A !important;
+      font-weight: 500;
+    }
+
+    .nav-btn.active svg {
+      opacity: 1 !important;
+      color: #ED8842;
+    }
+
+    .balance-card {
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      transform-origin: center top;
+    }
+
+    .balance-card:hover {
+      transform: translateY(-5px) scale(1.015);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .modal-content {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .modal-content.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    .pulse-animation {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .stagger-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .stagger-item.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      margin-left: 8px;
+    }
+
+    /* Currency conversion indicator */
+    .currency-indicator {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #1C2A3A;
+      font-size: 0.875rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <!-- Global Navigation -->
+  <!-- Simulated navbar for demo -->
+  <%- include('../../partials/navbar') %>
+
+  <div class="flex pt-28 max-w-7xl mx-auto px-6 gap-8 pb-12 animate-fade-in">
+    <!-- Sidebar Navigation -->
+    <%- include('../../partials/sideBar') %>
+    <!-- Simulated sidebar for demo -->
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full min-w-0">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-8 stagger-container">
+        <div class="stagger-item" style="animation-delay: 0.1s">
+          <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">Wallet</h1>
+          <p class="text-[#1C2A3A]/60 font-sans">Track your earnings and payout history.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0 stagger-item" style="animation-delay: 0.2s">
+          <button id="addMoneyBtn" onclick="document.getElementById('addMoneyModal').classList.remove('hidden')" class="px-6 py-3 border-2 border-[#1C2A3A] text-[#1C2A3A] rounded-xl font-medium hover:bg-[#1C2A3A] hover:text-white transition-all flex items-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-0.5">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Money
+          </button>
+          <button onclick="document.getElementById('withdrawModal').classList.remove('hidden')" class="px-6 py-3 bg-[#1C2A3A] text-white rounded-xl font-medium shadow-lg hover:bg-[#2C3E50] transition-all flex items-center gap-2 hover:shadow-xl transform hover:-translate-y-0.5 pulse-animation">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+            Request Payout
+          </button>
+        </div>
+      </div>
+
+      <!-- Balance Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 stagger-container">
+        <!-- Total Balance -->
+        <div class="balance-card bg-gradient-to-br from-[#1C2A3A] to-[#2C3E50] text-white rounded-[2rem] p-8 shadow-xl relative overflow-hidden group">
+          <div class="absolute -top-12 -right-12 w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors duration-500 animate-gradient"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#ED8842]/10 to-transparent animate-gradient"></div>
+          <p class="text-white/70 text-xs font-bold uppercase tracking-widest mb-1 relative z-10">Available Balance</p>
+          <h2 class="text-4xl font-heading mb-4 relative z-10">₹<span data-balance="available"><%= details.walletInfo.availableBalance %></span></h2>
+          <div class="flex items-center gap-2 text-white/70 text-sm relative z-10">
+            <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+            <span>Ready to withdraw</span>
+          </div>
+          <div class="absolute bottom-4 right-4 opacity-20">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Pending Clearance -->
+        <div class="balance-card bg-white/60 backdrop-blur-xl border border-white/40 rounded-[2rem] p-8 shadow-sm relative overflow-hidden group hover:bg-white/70 transition-colors">
+          <div class="absolute -top-12 -right-12 w-40 h-40 bg-[#1C2A3A]/5 rounded-full blur-3xl group-hover:bg-[#1C2A3A]/10 transition-colors duration-500"></div>
+          <p class="text-[#1C2A3A]/50 text-xs font-bold uppercase tracking-widest mb-1">Pending Clearance</p>
+          <h2 class="text-4xl font-heading mb-4 text-[#1C2A3A]">₹<%= details.walletInfo.pendingBalance %></h2>
+          <div class="flex items-center gap-2 text-[#1C2A3A]/60 text-sm">
+            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+            <span>Awaiting confirmation</span>
+          </div>
+          <div class="absolute bottom-4 right-4 opacity-10">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Total Earnings -->
+        <div class="balance-card bg-white/60 backdrop-blur-xl border border-white/40 rounded-[2rem] p-8 shadow-sm relative overflow-hidden group hover:bg-white/70 transition-colors">
+          <div class="absolute -top-12 -right-12 w-40 h-40 bg-[#1C2A3A]/5 rounded-full blur-3xl group-hover:bg-[#1C2A3A]/10 transition-colors duration-500"></div>
+          <p class="text-[#1C2A3A]/50 text-xs font-bold uppercase tracking-widest mb-1">Total Lifetime</p>
+          <h2 class="text-4xl font-heading mb-4 text-[#1C2A3A]">₹<%= details.walletInfo.totalEarnings %></h2>
+          <div class="flex items-center gap-2 text-[#1C2A3A]/60 text-sm">
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+            <span>All-time earnings</span>
+          </div>
+          <div class="absolute bottom-4 right-4 opacity-10">
+            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] shadow-sm border border-white/40 overflow-hidden animate-slide-up stagger-container" style="animation-delay: 0.3s">
+        <div class="p-8 border-b border-[#1C2A3A]/5 flex justify-between items-center">
+          <h3 class="text-xl font-heading text-[#1C2A3A]">Recent Transactions</h3>
+          <button class="text-sm font-bold text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Download Statement
+          </button>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="text-[10px] uppercase font-bold tracking-widest text-[#1C2A3A]/40 border-b border-[#1C2A3A]/5">
+                <th class="px-8 py-4">Event / Description</th>
+                <th class="px-8 py-4">Date</th>
+                <th class="px-8 py-4">Status</th>
+                <th class="px-8 py-4 text-right">Amount</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[#1C2A3A]/5">
+              <%if(details.transactions){%>
+              <% for(let i = 0 ; i < details?.transactions.length ; i++) {%>
+              <tr class="text-emerald-600">
+                <td class="px-8 py-5 font-medium flex items-center">
+                  <div class="w-10 h-10 rounded-xl bg-[#ED8842]/10 flex items-center justify-center mr-3">
+                    <span class="text-[#ED8842] font-bold"><%= details.transactions[i].status.charAt(0) %></span>
+                  </div>
+                  <%= details.transactions[i].description %>
+                </td>
+                <td class="px-8 py-5 text-[#1C2A3A]/70">Jan 25, 2026</td>
+                <td class="px-8 py-5">
+                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Completed</span>
+                </td>
+                <td class="px-8 py-5 font-bold text-right">+₹125.00</td>
+              </tr>
+              <%}%>
+              <%}%>
+            </tbody>
+          </table>
+        </div>
+        <div class="px-8 py-6 border-t border-[#1C2A3A]/5 text-center">
+          <button class="text-sm font-bold text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors flex items-center gap-1 mx-auto">
+            View All Transactions
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Withdrawal Modal -->
+  <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fade-in">
+    <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 max-w-md w-full shadow-2xl border border-white/40 modal-content">
+      <h2 class="text-2xl font-heading font-bold text-[#1C2A3A] mb-2">Request Payout</h2>
+      <p class="text-[#1C2A3A]/60 mb-6">Withdraw earnings to your connected account.</p>
+      <form action="#" onsubmit="event.preventDefault(); processWithdrawal();">
+        <div class="mb-6">
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Amount</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#1C2A3A] font-medium text-xl">₹</span>
+            <input type="number" id="withdrawAmount" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 pl-8 text-[#1C2A3A] text-xl font-bold focus:outline-none focus:ring-2 focus:ring-[#ED8842] transition-all" placeholder="0.00" value="1248.50" max="1248.50" min="10">
+          </div>
+          <p class="text-xs text-[#1C2A3A]/50 mt-1">Minimum withdrawal: ₹10.00</p>
+        </div>
+        <div class="bg-[#1C2A3A]/5 rounded-xl p-4 mb-8">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-[#1C2A3A]/60">Payout Method</span>
+            <span class="font-medium text-[#1C2A3A]">Bank Account •••• 4242</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-[#1C2A3A]/60">Processing Fee</span>
+            <span class="font-medium text-[#1C2A3A]">₹0.00</span>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <button type="button" onclick="closeModal('withdrawModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 px-4 py-3 bg-[#1C2A3A] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#2C3E50] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">
+            Confirm Withdrawal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Money Modal -->
+  <div id="addMoneyModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fade-in">
+    <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 max-w-md w-full shadow-2xl border border-white/40 modal-content">
+      <h2 class="text-2xl font-heading font-bold text-[#1C2A3A] mb-2">Add Funds</h2>
+      <p class="text-[#1C2A3A]/60 mb-6">Add money to your Evently wallet for event bookings and services.</p>
+      <form id="addMoneyForm" action="#" onsubmit="event.preventDefault(); processAddMoney();">
+        <div class="mb-6">
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Amount</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#1C2A3A] font-medium text-xl">₹</span>
+            <input type="text" id="addAmount" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 pl-8 text-[#1C2A3A] text-xl font-bold focus:outline-none focus:ring-2 focus:ring-[#ED8842] transition-all" placeholder="0.00" value="100.00" inputmode="decimal">
+          </div>
+          <p class="text-xs text-[#1C2A3A]/50 mt-1">Minimum amount: ₹10.00</p>
+        </div>
+        <div class="mb-6">
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Payment Method</label>
+          <div class="space-y-3">
+            <label class="flex items-center p-4 border border-[#1C2A3A]/10 rounded-xl cursor-pointer hover:border-[#ED8842] transition-colors">
+              <input type="radio" name="paymentMethod" value="razorpay" class="form-radio text-[#ED8842] border-[#1C2A3A]/20" checked>
+              <div class="ml-4 flex items-center">
+                <div class="w-8 h-5 bg-blue-600 rounded mr-3 flex items-center justify-center">
+                  <span class="text-white text-xs font-bold">RP</span>
+                </div>
+                <span class="font-medium">RazorPay</span>
+                <span class="ml-2 text-xs text-[#1C2A3A]/50">user@example.com</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <button type="button" onclick="closeModal('addMoneyModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">
+            Cancel
+          </button>
+          <button type="submit" id="addMoneySubmitBtn" class="flex-1 px-4 py-3 bg-[#ED8842] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#E07A3A] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">
+            Add Funds
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Notification modal handler
+    function showNotification(message, isSuccess = true) {
+      const modal = document.createElement('div');
+      modal.className = 'notification-modal';
+      modal.innerHTML = `
+      <div class="notification-content">
+        <div class="notification-title ${isSuccess ? 'success' : 'error'}">
+          ${isSuccess ? 'Success!' : 'Error!'}
+        </div>
+        <p>${message}</p>
+        <button class="notification-btn">OK</button>
+      </div>
+    `;
+
+      document.body.appendChild(modal);
+      setTimeout(() => modal.classList.add('show'), 10);
+
+      modal.querySelector('.notification-btn').onclick = () => {
+        modal.classList.remove('show');
+        setTimeout(() => document.body.removeChild(modal), 300);
+      };
+    }
+
+    // Process add money with loading state and validation
+    function processAddMoney() {
+      const addAmountInput = document.getElementById('addAmount');
+      const submitBtn = document.getElementById('addMoneySubmitBtn');
+
+      // Clean input: remove commas/spaces and parse
+      const rawValue = addAmountInput.value.replace(/[^\d.]/g, '');
+      const amount = parseFloat(rawValue);
+
+      if (isNaN(amount) || amount < 10) {
+        showNotification('Please enter a valid amount of at least ₹10.00', false);
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<div class="spinner"></div><span class="loading-text">Creating Order...</span>';
+
+      fetch('/wallet/addMoney', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            amount,
+            paymentMethod: 'razorpay'
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            openRazorpayCheckout(data.data);
+          } else {
+            throw new Error(data.message || 'Failed to create order');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showNotification('Failed to add funds. Please try again.', false);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Add Funds';
+        });
+    }
+
+    function openRazorpayCheckout(order) {
+      const options = {
+        key: order.key,
+        amount: order.amount,
+        currency: "INR",
+        name: "Evently",
+        description: "Add money to wallet",
+        order_id: order.orderId,
+        handler: function(response) {
+          verifyPayment(response);
+        },
+        theme: {
+          color: "#ED8842",
+        },
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+      closeModal('addMoneyModal');
+
+      document.getElementById('addMoneySubmitBtn').disabled = false;
+      document.getElementById('addMoneySubmitBtn').innerHTML = 'Add Funds';
+    }
+
+    function verifyPayment(response) {
+      fetch('/wallet/verifyPayment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(response)
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            showNotification("Payment verification failed: " + (data.message || ""), false);
+          }
+        })
+        .catch(() => {
+          showNotification("Something went wrong while verifying payment", false);
+        });
+    }
+
+    // Process withdrawal
+    function processWithdrawal() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      const currentBalanceEl = document.querySelector('[data-balance="available"]');
+      const currentBalance = parseFloat(currentBalanceEl.textContent.replace(/,/g, ''));
+      const newBalance = currentBalance - amount;
+
+      currentBalanceEl.textContent = newBalance.toLocaleString('en-IN', {
+        minimumFractionDigits: 2
+      });
+
+      showNotification(`Withdrawal request for ₹${amount.toFixed(2)} submitted!`);
+      closeModal('withdrawModal');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) closeModal(this.id);
+        });
+      });
+
+      setTimeout(() => {
+        document.querySelectorAll('.stagger-item').forEach(item => {
+          item.classList.add('visible');
+        });
+        document.querySelectorAll('.modal-content').forEach(el => {
+          el.classList.add('visible');
+        });
+      }, 100);
+    });
+  </script>
+</body>
+
+</html>

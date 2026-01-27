@@ -1,6 +1,7 @@
 import userDb from "../../model/userDb.js";
 import otpDb from "../../model/otpDb.js";
 import bcrypt from "bcrypt";
+import walletDb from "../../model/walletDb.js";
 import { otpCreator } from "../../utils/otpGenerator.js";
 
 export const signUpVerify = async (data) => {
@@ -16,9 +17,7 @@ export const signUpVerify = async (data) => {
 };
 
 export const verifyOtp = async (emailAddress, otp) => {
-  const recentOtp = await otpDb
-    .findOne({ emailAddress })
-    .sort({ createdAt: -1 });
+  const recentOtp = await otpDb.findOne({ emailAddress }).sort({ createdAt: -1 });
   if (!recentOtp) {
     throw new Error("Otp sending failed");
   }
@@ -29,6 +28,8 @@ export const verifyOtp = async (emailAddress, otp) => {
 
 export const createUser = async (userData) => {
   const newUser = await userDb.create(userData);
+  //create wallet too
+  const wallet = await walletDb.create({ userId: newUser._id });
   console.log("New user created", newUser.firstName);
   return newUser;
 };
@@ -46,9 +47,7 @@ export const signInVerify = async (data) => {
     throw new Error("Invalid email or password (e)");
   }
   if (!user.password) {
-    throw new Error(
-      "emailID is registered through google please login using google"
-    );
+    throw new Error("emailID is registered through google please login using google");
   }
 
   if (user.isBlocked) {
@@ -70,7 +69,7 @@ export const forgotPassVerify = async (emailAddress) => {
   }
   if (!emailExist.password) {
     throw new Error(
-      "This account is linked with Google. Please sign in using Google  / login and then set a passwords"
+      "This account is linked with Google. Please sign in using Google  / login and then set a passwords",
     );
   }
 
@@ -90,7 +89,7 @@ export const updatePassword = async (emailAddress, newPassword) => {
   const updatedUser = await userDb.findOneAndUpdate(
     { emailAddress: emailAddress },
     { password: password },
-    { new: true }
+    { new: true },
   );
   if (!updatedUser) {
     throw new Error("Update failed / User doesnt found");

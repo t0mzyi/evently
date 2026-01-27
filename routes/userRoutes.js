@@ -37,6 +37,7 @@ import {
 import { categories } from "../controller/user/categoryController.js";
 import { bookmarks, toggleBookmark } from "../controller/user/bookmarksController.js";
 import { bookTicket, cancelTicket, viewTicket } from "../controller/user/ticketController.js";
+import { addMoney, showWallet, verifyPayment } from "../controller/user/walletController.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
@@ -69,9 +70,9 @@ router.patch("/emailChange", isAuth, emailChanger);
 router.get("/reset-password", resetPasswordGuard, resetPassword);
 router.patch("/reset-password", resetPasswordGuard, resetPassPatch);
 
-//auth pages
-router.get("/dashboard", isAuth, getProfile);
+//dash pages
 
+router.get("/dashboard", isAuth, getProfile);
 router.get("/dashboard/editProfile", isAuth, getEditProfile);
 router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
 router.get("/dashboard/hostDashboard", showHostDashboard);
@@ -100,6 +101,11 @@ router.post("/toggleBookmark/:eventId", toggleBookmark);
 router.get("/bookTickets/:eventId", bookTicket);
 router.get("/cancelTickets", cancelTicket);
 router.get("/viewTicket", viewTicket);
+
+//wallet
+router.get("/dashboard/wallet", showWallet);
+router.post("/wallet/addMoney", addMoney);
+router.post("/wallet/verifyPayment", verifyPayment);
 
 router.get("/logout", isAuth, logout);
 export default router;
