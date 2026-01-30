@@ -823,37 +823,38 @@
           return response.json();
         })
         .then(data => {
-            Swal.close();
+          Swal.close();
 
-            // Show success message with actual booking ID from server
-            Swal.fire({
-                title: 'Payment Successful!',
-                html: `<p>Your booking is confirmed!</p>
+          // Show success message with actual booking ID from server
+          Swal.fire({
+            title: 'Payment Successful!',
+            html: `<p>Your booking is confirmed!</p>
                  <p class="mt-1">Tickets have been sent to ${bookingData.email}</p>
                  <p class="mt-1">SMS updates will be sent to ${bookingData.attendee.phoneNumber}</p>`,
-                icon: 'success',
-                confirmButtonText: 'View Confirmation',
-                customClass: {
-                  confirmButton: 'swal2-confirm'
-                }
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  window.location.href = '/user/my-tickets';
-                }
-              })
-              .catch(error => {
-                Swal.close();
-                Swal.fire({
-                  title: 'Payment Failed',
-                  text: error.message || 'There was an error processing your payment. Please try again.',
-                  icon: 'error',
-                  confirmButtonText: 'OK',
-                  customClass: {
-                    confirmButton: 'swal2-confirm'
-                  }
-                });
-              });
-          }
+            icon: 'success',
+            confirmButtonText: 'View Confirmation',
+            customClass: {
+              confirmButton: 'swal2-confirm'
+            }
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/user/my-tickets';
+            }
+          })
+        })
+        .catch(error => {
+          Swal.close();
+          Swal.fire({
+            title: 'Payment Failed',
+            text: error.message || 'There was an error processing your payment. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'swal2-confirm'
+            }
+          });
+        });
+    }
   </script>
 </body>
 
