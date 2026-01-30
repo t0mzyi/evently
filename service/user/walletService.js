@@ -4,22 +4,68 @@ import userDb from "../../model/userDb.js";
 import crypto from "crypto";
 import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
-import { availableMemory } from "process";
 
-export const walletDetails = async (userId) => {
+export const walletDetails = async (userId, page = 1, limit = 10, filters = {}) => {
   try {
     const user = await userDb.findById(userId);
-    // console.log("user", user);
     if (!user) throw new Error("User doesnt exists");
-    const walletInfo = await walletDb.findOne({ userId: user._id });
-    const transactions = await transactionDb.find({ walletId: walletInfo._id }).lean();
-    transactions.forEach((t) => {
-      t.date = formatDate(t.createdAt).date;
-    });
 
-    return { user, walletInfo, transactions };
+    const walletInfo = await walletDb.findOne({ userId: user._id });
+    const query = { walletId: walletInfo._id };
+    if (filters.type && filters.type !== "all") {
+      query.type = filters.type;
+    }
+    if (filters.search) {
+      query.$or = [
+        { description: { $regex: filters.search, $options: "i" } },
+        { amount: { $regex: filters.search, $options: "i" } },
+        { status: { $regex: filters.search, $options: "i" } },
+      ];
+    }
+    const skip = (page - 1) * limit;
+    const totalTransactions = await transactionDb.countDocuments(query);
+    let sortQuery = { createdAt: -1 };
+
+    if (filters.sort === "date_asc") {
+      sortQuery = { createdAt: 1 };
+    } else if (filters.sort === "amount_desc") {
+      sortQuery = { amount: -1 };
+    } else if (filters.sort === "amount_asc") {
+      sortQuery = { amount: 1 };
+    } else if (filters.sort === "status") {
+      sortQuery = { status: 1 };
+    }
+    const transactions = await transactionDb.find(query).sort(sortQuery).skip(skip).limit(limit).lean();
+
+    transactions.forEach((t) => {
+      t.date = formatDate(t.createdAt);
+    });
+    const totalPages = Math.ceil(totalTransactions / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      user,
+      walletInfo,
+      transactions,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalTransactions,
+        limit,
+        skip,
+        hasNextPage,
+        hasPrevPage,
+        filters: {
+          search: filters.search || "",
+          sort: filters.sort || "date_desc",
+          type: filters.type || "all",
+        },
+      },
+    };
   } catch (error) {
     console.log("Error in walletDetails", error);
+    throw error;
   }
 };
 
@@ -105,4 +151,12 @@ export const refundWallet = async (userId, amount, reason) => {
     status: "COMPLETED",
   });
   console.log(`Refunded ${amount} to Wallet ${walletId} (User ${userId})`);
+};
+
+export const updateTransactionStatus = async (orderId, status) => {
+  try {
+    await transactionDb.findOneAndUpdate({ razorpayOrderId: orderId }, { status: status });
+  } catch (error) {
+    console.error("Error updating transaction status:", error);
+  }
 };

@@ -1,12 +1,29 @@
 import walletDb from "../../model/walletDb.js";
-import { addMoneyOrder, verifyRazorpayPayment, walletDetails } from "../../service/user/walletService.js";
+import {
+  addMoneyOrder,
+  updateTransactionStatus,
+  verifyRazorpayPayment,
+  walletDetails,
+} from "../../service/user/walletService.js";
 import crypto from "crypto";
 
 export const showWallet = async (req, res) => {
-  const user = req.session.user;
-  const details = await walletDetails(user);
+  try {
+    const user = req.session.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 1;
+    const filters = {
+      search: req.query.search || "",
+      sort: req.query.sort || "date_desc",
+      type: req.query.type || "all",
+    };
 
-  res.render("user/dash/wallet", { details });
+    const details = await walletDetails(user, page, limit, filters);
+    res.render("user/dash/wallet", { details, currentPage: page });
+  } catch (error) {
+    console.log("Error in showWallet", error);
+    res.redirect("/user/dashboard");
+  }
 };
 
 export const addMoney = async (req, res) => {
@@ -58,5 +75,15 @@ export const verifyPayment = async (req, res) => {
       success: false,
       message: "Verification failed",
     });
+  }
+};
+
+export const cancelPayment = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    await updateTransactionStatus(orderId, "FAILED");
+    res.status(200).json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false });
   }
 };

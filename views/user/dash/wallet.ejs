@@ -151,6 +151,17 @@
       }
     }
 
+    @keyframes spin-slow {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .animate-spin-slow {
+      animation: spin-slow 2s linear infinite;
+    }
+
+
     .animate-gradient {
       background-size: 200% 200%;
       animation: gradientShift 8s ease infinite;
@@ -238,6 +249,50 @@
       color: #1C2A3A;
       font-size: 0.875rem;
       opacity: 0.7;
+    }
+
+    /* Filter controls */
+    #searchTransactions:focus {
+      box-shadow: 0 0 0 3px rgba(237, 136, 66, 0.2);
+    }
+
+    .filter-btn {
+      transition: all 0.3s ease;
+    }
+
+    .filter-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .filter-btn:active {
+      transform: translateY(0);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .active-filter-badge {
+      animation: pulse 0.5s ease;
+    }
+
+    @media (max-width: 640px) {
+      .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      #searchTransactions {
+        width: 100% !important;
+      }
     }
   </style>
 </head>
@@ -340,45 +395,257 @@
             Download Statement
           </button>
         </div>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left">
-            <thead>
-              <tr class="text-[10px] uppercase font-bold tracking-widest text-[#1C2A3A]/40 border-b border-[#1C2A3A]/5">
-                <th class="px-8 py-4">Event / Description</th>
-                <th class="px-8 py-4">Date</th>
-                <th class="px-8 py-4">Status</th>
-                <th class="px-8 py-4 text-right">Amount</th>
+
+        <!-- Transaction Filters -->
+        <div class="px-8 py-4 border-b border-[#1C2A3A]/5 bg-[#F8FAFC]">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <!-- Search and Type Filters -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <!-- Search Input -->
+              <div class="relative flex-1 sm:flex-initial">
+                <div class="absolute left-3 top-1/2 -translate-y-1/2 text-[#1C2A3A]/40">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                </div>
+                <input type="text" id="searchTransactions" class="w-full sm:w-64 bg-white border border-[#1C2A3A]/10 rounded-xl pl-10 pr-4 py-2 text-sm text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842] focus:border-transparent transition-all" placeholder="Search transactions..." value="<%= details.pagination && details.pagination.filters ? details.pagination.filters.search : '' %>">
+              </div>
+
+              <!-- Type Filter Buttons -->
+              <div class="flex gap-2">
+                <button onclick="applyFilter('type', 'all')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all <%= (details.pagination && details.pagination.filters && details.pagination.filters.type === 'all') || !(details.pagination && details.pagination.filters) ? 'bg-[#1C2A3A] text-white shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-[#1C2A3A]/5' %>">
+                  All
+                </button>
+                <button onclick="applyFilter('type', 'credit')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1 <%= details.pagination && details.pagination.filters && details.pagination.filters.type === 'credit' ? 'bg-emerald-100 text-emerald-700 shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-emerald-50' %>">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Credit
+                </button>
+                <button onclick="applyFilter('type', 'debit')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1 <%= details.pagination && details.pagination.filters && details.pagination.filters.type === 'debit' ? 'bg-rose-100 text-rose-700 shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-rose-50' %>">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                  Debit
+                </button>
+              </div>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <span class="text-xs text-[#1C2A3A]/60 hidden sm:inline">Sort by:</span>
+              <div class="relative">
+                <select id="sortTransactions" onchange="applyFilter('sort', this.value)" class="appearance-none bg-white border border-[#1C2A3A]/10 rounded-xl px-4 py-2 text-sm text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842] focus:border-transparent cursor-pointer transition-all">
+                  <option value="date_desc" <%= !(details.pagination && details.pagination.filters) || (details.pagination && details.pagination.filters.sort === 'date_desc') ? 'selected' : '' %>>Newest First</option>
+                  <option value="date_asc" <%= details.pagination && details.pagination.filters && details.pagination.filters.sort === 'date_asc' ? 'selected' : '' %>>Oldest First</option>
+                  <option value="amount_desc" <%= details.pagination && details.pagination.filters && details.pagination.filters.sort === 'amount_desc' ? 'selected' : '' %>>Highest Amount</option>
+                  <option value="amount_asc" <%= details.pagination && details.pagination.filters && details.pagination.filters.sort === 'amount_asc' ? 'selected' : '' %>>Lowest Amount</option>
+                  <option value="status" <%= details.pagination && details.pagination.filters && details.pagination.filters.sort === 'status' ? 'selected' : '' %>>Status (A-Z)</option>
+                </select>
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 text-[#1C2A3A]/40 pointer-events-none">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Clear Filters Button -->
+              <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all' || details.pagination.filters.sort !== 'date_desc')) { %>
+              <button onclick="clearFilters()" class="px-3 py-2 rounded-xl text-xs font-medium bg-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/20 hover:text-[#1C2A3A] transition-all flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                Clear
+              </button>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Active Filters Badge (Mobile) -->
+          <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all' || details.pagination.filters.sort !== 'date_desc')) { %>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <% if (details.pagination.filters.search) { %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#1C2A3A]/10 text-[#1C2A3A]">
+              <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              "<%= details.pagination.filters.search %>"
+              <button onclick="clearSearch()" class="ml-1 hover:text-[#1C2A3A]">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </span>
+            <% } %>
+
+            <% if (details.pagination.filters.type !== 'all') { %>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= details.pagination.filters.type === 'credit' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' %>">
+              <%= details.pagination.filters.type.charAt(0).toUpperCase() + details.pagination.filters.type.slice(1) %>
+              <button onclick="applyFilter('type', 'all')" class="ml-1 hover:opacity-70">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </span>
+            <% } %>
+          </div>
+          <% } %>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-[#1C2A3A]/10 shadow-sm">
+          <table class="w-full text-left min-w-[600px]">
+            <thead class="bg-[#F8FAFC]">
+              <tr class="text-xs font-semibold tracking-wide text-[#475569] uppercase border-b border-[#1C2A3A]/10">
+                <th class="px-6 py-4 whitespace-nowrap">Transaction</th>
+                <th class="px-6 py-4 whitespace-nowrap">Date</th>
+                <th class="px-6 py-4 whitespace-nowrap">Status</th>
+                <th class="px-6 py-4 whitespace-nowrap">Type</th>
+                <th class="px-6 py-4 whitespace-nowrap text-right">Amount</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#1C2A3A]/5">
-              <%if(details.transactions){%>
-              <% for(let i = 0 ; i < details?.transactions.length ; i++) {%>
-              <tr class="text-emerald-600">
-                <td class="px-8 py-5 font-medium flex items-center">
-                  <div class="w-10 h-10 rounded-xl bg-[#ED8842]/10 flex items-center justify-center mr-3">
-                    <span class="text-[#ED8842] font-bold"><%= details.transactions[i].status.charAt(0) %></span>
+              <% if (details.transactions && details.transactions.length > 0) { %>
+              <% for (let i = 0; i < details.transactions.length; i++) { 
+          const tx = details.transactions[i];
+          const isCredit = tx.type === "credit";
+          const amountColor = isCredit ? "text-emerald-600" : "text-rose-600";
+          const amountPrefix = isCredit ? "+" : "-";
+        %>
+              <tr class="hover:bg-[#F9FAFB] transition-colors group">
+                <td class="px-6 py-4">
+                  <div class="flex items-start">
+                    <div class="mt-1 mr-3 flex-shrink-0">
+                      <% if (tx.status === "COMPLETED") { %>
+                      <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                        <span class="text-emerald-600 font-bold text-sm">✓</span>
+                      </div>
+                      <% } else if (tx.status === "PENDING") { %>
+                      <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                        <span class="text-amber-600 font-bold text-sm">⋯</span>
+                      </div>
+                      <% } else if (tx.status === "FAILED") { %>
+                      <div class="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center">
+                        <span class="text-rose-600 font-bold text-sm">!</span>
+                      </div>
+                      <% } %>
+                    </div>
+                    <div>
+                      <div class="font-medium text-[#1E293B] group-hover:text-[#0F172A] transition-colors"><%= tx.description %></div>
+                      <div class="text-xs text-[#64748B] mt-0.5 flex items-center">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium 
+                    <%= tx.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : 
+                       tx.status === 'PENDING' ? 'bg-amber-100 text-amber-800' : 
+                       'bg-rose-100 text-rose-800' %>">
+                          <%= tx.status.replace('_', ' ') %>
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <%= details.transactions[i].description %>
                 </td>
-                <td class="px-8 py-5 text-[#1C2A3A]/70">Jan 25, 2026</td>
-                <td class="px-8 py-5">
-                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Completed</span>
+                <td class="px-6 py-4 whitespace-nowrap text-[#475569]"><%= tx.date.date %> <%= tx.date.time %> </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center justify-start">
+                    <% if (tx.status === "COMPLETED") { %>
+                    <span class="text-emerald-500 text-lg" title="Completed">✓</span>
+                    <% } else if (tx.status === "PENDING") { %>
+                    <span class="text-amber-500 animate-spin-slow" title="Pending">↻</span>
+                    <% } else if (tx.status === "FAILED") { %>
+                    <span class="text-rose-500 text-lg" title="Failed">⚠</span>
+                    <% } %>
+                  </div>
                 </td>
-                <td class="px-8 py-5 font-bold text-right">+₹125.00</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-medium 
+              <%= isCredit ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' %>">
+                    <%= isCredit ? 'CREDIT' : 'DEBIT' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 font-bold text-right <%= amountColor %> whitespace-nowrap">
+                  <%= amountPrefix %>₹<%= parseFloat(tx.amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+                </td>
               </tr>
-              <%}%>
-              <%}%>
+              <% } %>
+              <% } else { %>
+              <tr>
+                <td colspan="5" class="px-6 py-12 text-center text-[#64748B]">
+                  <div class="flex flex-col items-center justify-center py-8">
+                    <div class="w-16 h-16 rounded-full bg-[#F1F5F9] flex items-center justify-center mb-3">
+                      <svg class="w-8 h-8 text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+
+                    <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all')) { %>
+                    <p class="text-sm font-medium text-[#1C2A3A]">No matching transactions</p>
+                    <p class="text-xs text-[#64748B] mt-1 mb-4">Try adjusting your filters</p>
+                    <button onclick="clearFilters()" class="px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all">
+                      Clear Filters
+                    </button>
+                    <% } else { %>
+                    <p class="text-sm font-medium text-[#475569]">No transactions found</p>
+                    <p class="text-xs text-[#64748B] mt-1">Your transaction history will appear here</p>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+              <% } %>
             </tbody>
           </table>
         </div>
-        <div class="px-8 py-6 border-t border-[#1C2A3A]/5 text-center">
-          <button class="text-sm font-bold text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors flex items-center gap-1 mx-auto">
-            View All Transactions
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
+
+
+        <!-- Pagination Controls -->
+        <!-- Pagination Controls -->
+        <% if (details.pagination && details.pagination.totalPages > 1) { %>
+        <div class="px-8 py-6 border-t border-[#1C2A3A]/5">
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <!-- Page Info -->
+            <div class="text-sm text-[#1C2A3A]/60">
+              Showing
+              <span class="font-bold text-[#1C2A3A]">
+                <%= (details.pagination.currentPage - 1) * details.pagination.limit + 1 %>
+                -
+                <%= Math.min(details.pagination.currentPage * details.pagination.limit, details.pagination.totalTransactions) %>
+              </span>
+              of
+              <span class="font-bold text-[#1C2A3A]"><%= details.pagination.totalTransactions %></span>
+              transactions
+            </div>
+
+            <!-- Simplified Pagination Buttons -->
+            <div class="flex items-center gap-1.5">
+              <!-- First Page -->
+              <button onclick="changePage(1)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === 1 ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === 1 ? 'disabled' : '' %> title="First Page">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Previous Page -->
+              <button onclick="changePage(<%= details.pagination.currentPage - 1 %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === 1 ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === 1 ? 'disabled' : '' %> title="Previous Page">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Current Page -->
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center font-bold bg-[#1C2A3A] text-white text-sm">
+                <%= details.pagination.currentPage %>
+              </span>
+
+              <!-- Next Page -->
+              <button onclick="changePage(<%= details.pagination.currentPage + 1 %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === details.pagination.totalPages ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === details.pagination.totalPages ? 'disabled' : '' %> title="Next Page">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+
+              <!-- Last Page -->
+              <button onclick="changePage(<%= details.pagination.totalPages %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === details.pagination.totalPages ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === details.pagination.totalPages ? 'disabled' : '' %> title="Last Page">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
+        <% } %>
       </div>
     </main>
   </div>
@@ -462,6 +729,120 @@
   </div>
 
   <script>
+    // Apply filter function
+    function applyFilter(filterType, value) {
+      const url = new URL(window.location.href);
+
+      if (filterType === 'type') {
+        if (value === 'all') {
+          url.searchParams.delete('type');
+        } else {
+          url.searchParams.set('type', value);
+        }
+      } else if (filterType === 'sort') {
+        if (value === 'date_desc') {
+          url.searchParams.delete('sort');
+        } else {
+          url.searchParams.set('sort', value);
+        }
+      } else if (filterType === 'search') {
+        if (!value || value.trim() === '') {
+          url.searchParams.delete('search');
+        } else {
+          url.searchParams.set('search', value);
+        }
+      }
+
+      // Reset to page 1 when filters change
+      url.searchParams.set('page', '1');
+
+      window.location.href = url.toString();
+    }
+
+    // Clear all filters
+    function clearFilters() {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('search');
+      url.searchParams.delete('sort');
+      url.searchParams.delete('type');
+      url.searchParams.set('page', '1');
+      window.location.href = url.toString();
+    }
+
+    // Clear search only
+    function clearSearch() {
+      document.getElementById('searchTransactions').value = '';
+      applyFilter('search', '');
+    }
+
+    // Search with debounce
+    let searchTimeout;
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchTransactions');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            applyFilter('search', e.target.value.trim());
+          }, 500); // 500ms debounce
+        });
+
+        // Enter key to search
+        searchInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            clearTimeout(searchTimeout);
+            applyFilter('search', e.target.value.trim());
+          }
+        });
+      }
+    });
+
+    function changePage(page) {
+      if (page < 1) return;
+
+      // Get current URL and update query parameter
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', page);
+
+      // Reload with new page
+      window.location.href = url.toString();
+    }
+
+    // Optional: Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft' && <%= details.pagination && details.pagination.hasPrevPage ? 'true' : 'false' %>) {
+        changePage(<%= details.pagination.currentPage - 1 %>);
+      }
+      if (e.key === 'ArrowRight' && <%= details.pagination && details.pagination.hasNextPage ? 'true' : 'false' %>) {
+        changePage(<%= details.pagination.currentPage + 1 %>);
+      }
+
+      // Ctrl + F or Cmd + F to focus search
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        const searchInput = document.getElementById('searchTransactions');
+        if (searchInput) searchInput.focus();
+      }
+
+      // Escape to clear search
+      if (e.key === 'Escape') {
+        const searchInput = document.getElementById('searchTransactions');
+        if (searchInput && document.activeElement === searchInput) {
+          clearSearch();
+          searchInput.blur();
+        }
+      }
+    });
+
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    });
+
     // Notification modal handler
     function showNotification(message, isSuccess = true) {
       const modal = document.createElement('div');
@@ -540,17 +921,45 @@
         handler: function(response) {
           verifyPayment(response);
         },
+        modal: {
+          ondismiss: function() {
+            handlePaymentCancel(order.orderId);
+          }
+        },
         theme: {
           color: "#ED8842",
         },
+
       };
 
       const rzp = new Razorpay(options);
+      rzp.on('payment.failed', function(response) {
+        handlePaymentCancel(order.orderId);
+      });
       rzp.open();
       closeModal('addMoneyModal');
 
       document.getElementById('addMoneySubmitBtn').disabled = false;
       document.getElementById('addMoneySubmitBtn').innerHTML = 'Add Funds';
+    }
+
+    function handlePaymentCancel(orderId) {
+      // We send a request to your server to say "Hey, this order was cancelled"
+      fetch('/wallet/cancelPayment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            orderId: orderId
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("Transaction updated to FAILED");
+          window.location.href = `/dashboard/wallet?status=error&message=Wallet transaction failed`;
+        })
+        .catch(err => console.error("Error reporting cancellation:", err));
     }
 
     function verifyPayment(response) {
