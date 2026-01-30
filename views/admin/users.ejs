@@ -183,7 +183,7 @@
         </table>
       </div>
 
-      <% const baseUrl = `/admin/users?n=${userDb.searchQuery}&s=${userDb.selectedSort}&active=${userDb.showActiveOnly}`; %>
+      <% const baseUrl = `/admin/users?n=₹{userDb.searchQuery}&s=₹{userDb.selectedSort}&active=₹{userDb.showActiveOnly}`; %>
 
       <div class="px-6 py-6 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p class="text-sm text-[#1C2A3A]/60 font-medium">
@@ -288,7 +288,7 @@
 
     confirmBtn.addEventListener("click", async () => {
       const action = isCurrentlyBlocked ? "unblock" : "block";
-      const url = `/admin/users/${currentUserId}/${action}`;
+      const url = `/admin/users/₹{currentUserId}/₹{action}`;
       try {
         const response = await fetch(url, {
           method: "PATCH",

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmation — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              accent: '#ED8842',
+              surface: '#F9F7F5'
+            },
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] min-h-screen">
+
+  <!-- Navbar -->
+  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+    <nav class="max-w-7xl mx-auto bg-white/60 backdrop-blur-xl rounded-full h-16 px-6 flex items-center justify-between shadow-lg border border-white/40">
+      <a href="/" class="text-2xl font-bold tracking-tight text-[#1C2A3A] font-heading">evently</a>
+    </nav>
+  </div>
+
+  <main class="pt-32 pb-16 px-6 max-w-4xl mx-auto">
+    <!-- Processing Animation -->
+    <div id="processing" class="text-center">
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-12 md:p-16 border border-white/40 shadow-sm">
+        <!-- Animated Spinner -->
+        <div class="w-20 h-20 mx-auto mb-6 relative">
+          <div class="absolute inset-0 border-4 border-[#1C2A3A]/20 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-[#1C2A3A] rounded-full border-t-transparent animate-spin">
+          </div>
+        </div>
+
+        <h1 class="text-3xl font-heading font-medium text-[#1C2A3A] mb-3">Processing Payment</h1>
+        <p class="text-[#1C2A3A]/60 mb-8">Please wait while we verify your payment...</p>
+
+        <div class="max-w-md mx-auto space-y-3">
+          <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+            <div class="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <span>Payment details verified</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+            <div class="w-5 h-5 rounded-full border-2 border-[#1C2A3A] flex items-center justify-center shrink-0 animate-pulse">
+              <div class="w-2 h-2 rounded-full bg-[#1C2A3A]"></div>
+            </div>
+            <span>Processing transaction...</span>
+          </div>
+          <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/40">
+            <div class="w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 shrink-0"></div>
+            <span>Generating tickets</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Confirmation (Hidden initially) -->
+    <div id="confirmation" class="hidden">
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 border border-white/40 shadow-sm">
+        <!-- Success Icon -->
+        <div class="w-24 h-24 mx-auto mb-6 bg-green-500 rounded-full flex items-center justify-center">
+          <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+
+        <div class="text-center mb-8">
+          <h1 class="text-3xl font-heading font-bold text-[#1C2A3A] mb-3">Payment Successful!</h1>
+          <p class="text-[#1C2A3A]/60">Your booking has been confirmed</p>
+        </div>
+
+        <!-- Order Details -->
+        <div class="bg-[#1C2A3A]/5 rounded-2xl p-6 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <p class="text-xs uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-2">Order Number
+              </p>
+              <p class="text-lg font-bold text-[#1C2A3A] font-mono">#EV-2024-8293</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-2">Event</p>
+              <p class="text-lg font-medium text-[#1C2A3A]">Jazz under the Moonlight</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-2">Date & Time
+              </p>
+              <p class="text-[#1C2A3A]">Dec 24, 2024 • 8:00 PM</p>
+            </div>
+            <div>
+              <p class="text-xs uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-2">Total Paid</p>
+              <p class="text-lg font-bold text-green-600 total-paid">$82.50</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket Summary -->
+        <div class="bg-white/50 rounded-xl p-6 mb-8 border border-[#1C2A3A]/10">
+          <h3 class="font-heading font-medium text-[#1C2A3A] mb-4">Your Tickets</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-medium text-[#1C2A3A] ticket-name">VIP Experience</p>
+                <p class="text-sm text-[#1C2A3A]/60 ticket-details">2 tickets × $75.00</p>
+              </div>
+              <p class="font-bold text-[#1C2A3A] tickets-subtotal">$150.00</p>
+            </div>
+            <div class="pt-3 border-t border-[#1C2A3A]/10 flex justify-between text-sm">
+              <span class="text-[#1C2A3A]/60">Service Fee (2.5%)</span>
+              <span class="text-[#1C2A3A] service-fee">$15.00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirmation Email -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-8">
+          <div class="flex items-start gap-3">
+            <svg class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+              </path>
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-blue-900">Confirmation email sent</p>
+              <p class="text-xs text-blue-700 mt-1 email-disp">We've sent your tickets and receipt to
+                <strong>john.doe@example.com</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="/ticket" class="flex-1 bg-[#1C2A3A] text-white rounded-xl py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-colors text-center">
+            <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
+              </path>
+            </svg>
+            View My Tickets
+          </a>
+          <a href="/dashboard" class="flex-1 bg-white border-2 border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl py-4 font-bold text-sm hover:bg-[#1C2A3A]/5 transition-colors text-center">
+            Go to Dashboard
+          </a>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-8 pt-6 border-t border-[#1C2A3A]/10 text-center">
+          <p class="text-sm text-[#1C2A3A]/60">
+            Need help? <a href="#" class="text-[#ED8842] font-medium hover:underline">Contact Support</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Simulate payment processing
+    setTimeout(() => {
+      // Update progress
+      const steps = document.querySelectorAll('#processing .flex.items-center');
+
+      // Step 2 complete
+      setTimeout(() => {
+        steps[1].querySelector('.w-5').innerHTML = `
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+        steps[1].querySelector('.w-5').classList.remove('border-2', 'border-[#1C2A3A]', 'animate-pulse');
+        steps[1].querySelector('.w-5').classList.add('bg-green-500');
+        steps[1].querySelector('.w-5 div').remove();
+        steps[1].querySelector('span').classList.remove('text-[#1C2A3A]/60');
+
+        // Step 3 active
+        steps[2].querySelector('.w-5').classList.remove('border-[#1C2A3A]/20');
+        steps[2].querySelector('.w-5').classList.add('border-[#1C2A3A]', 'animate-pulse');
+        steps[2].querySelector('.w-5').innerHTML = '<div class="w-2 h-2 rounded-full bg-[#1C2A3A]"></div>';
+        steps[2].querySelector('span').classList.remove('text-[#1C2A3A]/40');
+        steps[2].querySelector('span').classList.add('text-[#1C2A3A]/60');
+      }, 1000); // Speed up for better UX
+
+      // Step 3 complete and show confirmation
+      setTimeout(() => {
+        steps[2].querySelector('.w-5').innerHTML = `
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                `;
+        steps[2].querySelector('.w-5').classList.remove('border-2', 'border-[#1C2A3A]', 'animate-pulse');
+        steps[2].querySelector('.w-5').classList.add('bg-green-500');
+        steps[2].querySelector('span').classList.remove('text-[#1C2A3A]/60');
+
+        // Hide processing, show confirmation
+        setTimeout(() => {
+          document.getElementById('processing').classList.add('hidden');
+          document.getElementById('confirmation').classList.remove('hidden');
+
+          // Populate from LocalStorage
+          const data = localStorage.getItem('bookingData');
+          if (data) {
+            const booking = JSON.parse(data);
+            console.log("Loading booking:", booking);
+
+            // Update UI
+            document.querySelector('.ticket-name').textContent = booking.ticketName;
+            document.querySelector('.ticket-details').textContent = `${booking.quantity} tickets × $${booking.price.toFixed(2)}`;
+            document.querySelector('.total-paid').textContent = `$${booking.total.toFixed(2)}`;
+            document.querySelector('.service-fee').textContent = `$${booking.serviceFee.toFixed(2)}`;
+            document.querySelector('.tickets-subtotal').textContent = `$${booking.subtotal.toFixed(2)}`;
+
+            if (booking.email) {
+              document.querySelector('.email-disp').innerHTML = `We've sent your tickets and receipt to <strong>${booking.email}</strong>`;
+            }
+          }
+        }, 500);
+      }, 2500);
+    }, 100);
+  </script>
+
+</body>
+
+</html>

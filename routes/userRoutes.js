@@ -36,8 +36,16 @@ import {
 } from "../controller/user/eventsController.js";
 import { categories } from "../controller/user/categoryController.js";
 import { bookmarks, toggleBookmark } from "../controller/user/bookmarksController.js";
-import { bookTicket, cancelTicket, viewTicket } from "../controller/user/ticketController.js";
+import {
+  bookTicket,
+  cancelTicket,
+  checkoutPage,
+  processCheckout,
+  ticketBooking,
+  viewTicket,
+} from "../controller/user/ticketController.js";
 import { addMoney, showWallet, verifyPayment } from "../controller/user/walletController.js";
+import { unReserveTicket } from "../service/user/ticketsService.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
@@ -99,8 +107,12 @@ router.post("/toggleBookmark/:eventId", toggleBookmark);
 
 //ticket
 router.get("/bookTickets/:eventId", bookTicket);
-router.get("/cancelTickets", cancelTicket);
-router.get("/viewTicket", viewTicket);
+router.post("/bookTickets", ticketBooking);
+router.get("/ticket/cancel", cancelTicket);
+router.get("/ticket/view", viewTicket);
+router.get("/ticket/checkout/:orderId", checkoutPage);
+router.post("/ticket/checkout", processCheckout);
+router.post("ticket/unreserve/:orderId", unReserveTicket);
 
 //wallet
 router.get("/dashboard/wallet", showWallet);

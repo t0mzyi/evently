@@ -1,47 +1,52 @@
 import mongoose from "mongoose";
 
-const guestSchema = new mongoose.Schema(
-  {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String },
-  },
-  { _id: false }
-);
-
 const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
       required: true,
     },
-
     eventId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "events",
+      ref: "Event",
       required: true,
     },
-
-    totalAmount: {
-      type: mongoose.Schema.Types.Decimal128,
-      required: true,
+    selectedTicket: {
+      ticketTypeId: mongoose.Schema.Types.ObjectId,
+      name: String,
+      price: Number,
+      quantity: Number,
     },
 
+    attendees: {
+      firstName: String,
+      lastName: String,
+      email: String,
+      phone: String,
+      ticketTypeId: mongoose.Schema.Types.ObjectId,
+    },
+
+    pricing: {
+      subTotal: Number,
+      couponCode: String,
+      discountAmount: { type: Number, default: 0 },
+      serviceFee: Number,
+      totalAmount: { type: Number, required: true },
+    },
     status: {
       type: String,
-      enum: ["PENDING", "CONFIRMED", "CANCELLED", "FAILED", "EXPIRED"],
+      enum: ["PENDING", "CONFIRMED", "CANCELLED", "REFUNDED", "FAILED", "EXPIRED"],
       default: "PENDING",
     },
-
-    guestDetails: guestSchema,
-
-    paymentIntentId: {
-      type: String,
+    paymentIntentId: String,
+    expiresAt: {
+      type: Date,
+      default: () => new Date(Date.now() + 5 * 60 * 1000),
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export default mongoose.model("orders", orderSchema);
+const orderDb = mongoose.model("order", orderSchema);
+export default orderDb;

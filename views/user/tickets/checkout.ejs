@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              accent: '#ED8842',
+              surface: '#F9F7F5'
+            },
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out forwards',
+            'slide-up': 'slideUp 0.5s ease-out forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': {
+                opacity: '0'
+              },
+              '100%': {
+                opacity: '1'
+              },
+            },
+            slideUp: {
+              '0%': {
+                opacity: '0',
+                transform: 'translateY(20px)'
+              },
+              '100%': {
+                opacity: '1',
+                transform: 'translateY(0)'
+              },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .step-content {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .payment-method:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-method.selected {
+      border-color: #1C2A3A;
+      background-color: #f8f9fa;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .payment-method.selected .radio-indicator {
+      border-color: #1C2A3A;
+      background-color: #1C2A3A;
+    }
+
+    .payment-method.razorpay:hover {
+      border-color: #3395FF;
+    }
+
+    .payment-method.razorpay.selected {
+      border-color: #3395FF;
+    }
+
+    .payment-method.razorpay.selected .radio-indicator {
+      border-color: #3395FF;
+      background-color: #3395FF;
+    }
+
+    .swal2-container {
+      z-index: 10000;
+    }
+
+    .swal2-popup {
+      border-radius: 1.5rem !important;
+      padding: 1.5rem !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    .swal2-title {
+      font-family: 'Fraunces', serif !important;
+      font-weight: 600 !important;
+      font-size: 1.5rem !important;
+    }
+
+    .swal2-html-container {
+      font-size: 1rem !important;
+      color: #4a5568 !important;
+    }
+
+    .swal2-confirm {
+      background-color: #1C2A3A !important;
+      border-radius: 0.75rem !important;
+      padding: 0.5rem 1.5rem !important;
+      font-weight: 600 !important;
+      font-family: 'Inter', sans-serif !important;
+    }
+
+    .swal2-confirm:hover {
+      background-color: #2C3E50 !important;
+    }
+
+    .swal2-success {
+      border-color: #2ecc71 !important;
+    }
+
+    .swal2-success [class^=swal2-success-line] {
+      background-color: #2ecc71 !important;
+    }
+
+    .swal2-timer-progress-bar {
+      background-color: #ED8842 !important;
+    }
+
+    .swal2-icon.swal2-warning {
+      border-color: #f39c12 !important;
+      color: #f39c12 !important;
+    }
+
+    .swal2-icon.swal2-error {
+      border-color: #e74c3c !important;
+      color: #e74c3c !important;
+    }
+
+    .swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+      background-color: #e74c3c !important;
+    }
+  </style>
+</head>
+
+<body class="bg-[#EAE0CF] min-h-screen font-sans selection:bg-[#ED8842] selection:text-white overflow-x-hidden relative">
+
+  <!-- Booking Timer -->
+  <div id="booking-timer" class="fixed bottom-0 left-0 right-0 w-full z-[60] bg-[#1C2A3A] text-white text-center py-2 font-bold text-sm shadow-md transition-transform duration-300">
+    Time left to complete booking: <span id="timer-display" class="font-mono text-[#ED8842] text-base ml-1">01:40</span>
+  </div>
+
+  <!-- Navbar -->
+  <%- include('../../partials/navbar') %>
+
+  <main class="pt-32 pb-16 px-6 max-w-3xl mx-auto">
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-center mb-12 animate-slide-up">
+      <div class="flex items-center w-full max-w-lg relative">
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[#1C2A3A]/10 rounded-full -z-10"></div>
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#1C2A3A] rounded-full -z-10 transition-all duration-500" id="progress-bar" style="width: 33%"></div>
+
+        <div class="flex justify-between w-full">
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center gap-2">
+            <div class="w-10 h-10 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center font-bold shadow-lg transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-1">1</div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A] transition-colors duration-300" id="step-label-1">Attendee</span>
+          </div>
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center gap-2">
+            <div class="w-10 h-10 rounded-full bg-white text-[#1C2A3A]/40 flex items-center justify-center font-bold shadow-sm transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-2">2</div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A]/40 transition-colors duration-300" id="step-label-2">Summary</span>
+          </div>
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center gap-2">
+            <div class="w-10 h-10 rounded-full bg-white text-[#1C2A3A]/40 flex items-center justify-center font-bold shadow-sm transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-3">3</div>
+            <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A]/40 transition-colors duration-300" id="step-label-3">Confirm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/40 shadow-xl animate-slide-up" style="animation-delay: 0.1s;">
+
+      <!-- STEP 1: Attendee Info -->
+      <div id="step-1" class="step-content">
+        <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Attendee Information</h2>
+        <p class="text-[#1C2A3A]/60 mb-8">Who are these tickets for?</p>
+
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">First Name</label>
+              <input type="text" id="firstName" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="e.g. John">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Last Name</label>
+              <input type="text" id="lastName" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="e.g. Doe">
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Phone Number</label>
+            <input type="tel" id="phoneNumber" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="+1 (555) 000-0000">
+            <p class="text-[#1C2A3A]/50 mb-8 mt-1 ms-2 text-[12px]">We'll send SMS updates to this number</p>
+          </div>
+        </div>
+
+        <div class="mt-10 flex justify-end">
+          <button onclick="nextStep(1)" class="bg-[#1C2A3A] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 flex items-center gap-2">
+            Next Step
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Order Summary -->
+      <div id="step-2" class="step-content hidden opacity-0 translate-x-10 transition-all duration-300">
+        <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Order Summary</h2>
+        <p class="text-[#1C2A3A]/60 mb-8">Review your order and add coupons.</p>
+
+        <div class="bg-white/40 rounded-2xl p-6 border border-[#1C2A3A]/5 mb-8">
+          <div class="flex justify-between items-start mb-4 pb-4 border-b border-[#1C2A3A]/10">
+            <div>
+              <h3 class="font-bold text-[#1C2A3A] text-lg" id="summary-name"><%= order.selectedTicket.name %></h3>
+              <p class="text-sm text-[#1C2A3A]/50" id="summary-desc">Quantity: <span id="summary-qty"><%= order.selectedTicket.quantity %></span></p>
+            </div>
+            <p class="font-bold text-[#1C2A3A] text-xl">$<span id="summary-total"><%= order.selectedTicket.price %></span></p>
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1C2A3A]/60">Subtotal</span>
+              <span class="font-medium text-[#1C2A3A]">$<span id="subtotal"><%= order.pricing.subTotal %></span></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-[#1C2A3A]/60">Service Fee</span>
+              <span class="font-medium text-[#1C2A3A]">$<span id="service-fee"><%= order.pricing.serviceFee %></span></span>
+            </div>
+            <!-- Coupon Row (Hidden by default) -->
+            <div id="coupon-row" class="hidden flex justify-between text-sm text-green-600 font-medium">
+              <span>Discount</span>
+              <span>-$<span id="discount-amount">0.00</span></span>
+            </div>
+            <div class="flex justify-between text-xl font-heading font-bold pt-4 mt-2 border-t border-[#1C2A3A]/10">
+              <span class="text-[#1C2A3A]">Total</span>
+              <span class="text-[#1C2A3A]">$<span id="total"><%= order.pricing.totalAmount %></span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coupon Input -->
+        <div class="mb-8">
+          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Have a Coupon?</label>
+          <div class="flex gap-2">
+            <input type="text" id="couponCode" class="flex-1 bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all uppercase placeholder-[#1C2A3A]/30" placeholder="CODE123">
+            <button onclick="applyCoupon()" class="bg-[#1C2A3A]/10 text-[#1C2A3A] font-bold px-6 rounded-xl hover:bg-[#1C2A3A] hover:text-white transition-colors">Apply</button>
+          </div>
+          <p id="coupon-msg" class="hidden text-xs font-bold mt-2 ml-1"></p>
+        </div>
+
+        <div class="flex justify-between">
+          <button onclick="prevStep(2)" class="text-[#1C2A3A]/60 font-bold text-sm hover:text-[#1C2A3A] transition-colors px-4 py-4">
+            Back
+          </button>
+          <button onclick="nextStep(2)" class="bg-[#1C2A3A] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 flex items-center gap-2">
+            Next Step
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Confirm & Pay -->
+      <div id="step-3" class="step-content hidden opacity-0 translate-x-10 transition-all duration-300">
+        <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Final Confirmation</h2>
+        <p class="text-[#1C2A3A]/60 mb-8">Where should we send your tickets?</p>
+
+        <div class="mb-8">
+          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Email Address</label>
+          <input type="email" id="email" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="john.doe@example.com">
+          <p class="text-xs text-[#1C2A3A]/40 mt-2 ml-1">Your tickets and receipt will be sent here.</p>
+        </div>
+
+        <div class="flex justify-between">
+          <button onclick="prevStep(3)" class="text-[#1C2A3A]/60 font-bold text-sm hover:text-[#1C2A3A] transition-colors px-4 py-4">
+            Back
+          </button>
+          <button onclick="showPaymentModal()" class="bg-[#ED8842] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 flex items-center gap-2">
+            Confirm & Pay $<span id="btn-total">203.98</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl scale-95 transition-transform duration-300" id="paymentContent">
+      <h3 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Select Payment Method</h3>
+      <p class="text-[#1C2A3A]/60 mb-8">Choose how you'd like to pay for your tickets.</p>
+
+      <div class="space-y-4">
+        <!-- Wallet Payment -->
+        <button onclick="selectPaymentMethod('wallet')" class="payment-method w-full flex items-center justify-between p-5 rounded-xl border border-[#1C2A3A]/10 transition-all group">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <div class="text-left">
+              <span class="block font-bold text-[#1C2A3A]">My Wallet</span>
+              <span class="block text-xs text-[#1C2A3A]/50">Balance: <%= walletBalance %></span>
+            </div>
+          </div>
+          <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
+            <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
+          </div>
+        </button>
+
+        <!-- Razorpay -->
+        <button onclick="selectPaymentMethod('razorpay')" class="payment-method razorpay w-full flex items-center justify-between p-5 rounded-xl border border-[#1C2A3A]/10 transition-all group">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-[#3395FF]/10 flex items-center justify-center text-[#3395FF]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+              </svg>
+            </div>
+            <div class="text-left">
+              <span class="block font-bold text-[#1C2A3A]">Razorpay</span>
+              <span class="block text-xs text-[#1C2A3A]/50">Cards, UPI, Netbanking</span>
+            </div>
+          </div>
+          <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
+            <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
+          </div>
+        </button>
+      </div>
+
+      <button onclick="processPayment()" class="w-full mt-6 bg-[#ED8842] text-white rounded-xl py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 hidden" id="payButton">
+        Pay $203.98
+      </button>
+
+      <button onclick="closePaymentModal()" class="w-full mt-4 text-[#1C2A3A]/40 font-bold text-sm hover:text-[#1C2A3A] transition-colors py-2">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const orderData = <%- JSON.stringify(order) %>;
+
+    window.history.pushState(null, null, window.location.href);
+
+    window.addEventListener('popstate', function() {
+      // Immediately push the state back to keep them on the checkout page
+      window.history.pushState(null, null, window.location.href);
+
+      // Trigger your custom confirmation
+      confirmExit();
+    });
+
+    document.addEventListener('click', (e) => {
+      // If user clicks anything with class 'exit-link' or the main logo
+      if (e.target.closest('.exit-link') || e.target.closest('#navbar-logo')) {
+        e.preventDefault();
+        confirmExit();
+      }
+    });
+
+    let bookingData = {
+      ticketName: orderData.selectedTicket.name,
+      quantity: orderData.selectedTicket.quantity,
+      subtotal: orderData.selectedTicket.price * orderData.selectedTicket.quantity,
+      serviceFee: orderData.pricing.serviceFee,
+      total: orderData.pricing.totalAmount,
+      discount: orderData.pricing.discountAmount || 0,
+      eventId: orderData.eventId || '',
+      ticketId: orderData.selectedTicket.ticketId || '',
+      attendee: {},
+      orderId: orderData._id
+    };
+    let selectedPaymentMethod = null;
+    let timeLeft = 100000; // Timer set to 100 seconds
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+      populateSummary();
+      startTimer();
+    });
+
+    // Timer Logic
+    function startTimer() {
+      const display = document.getElementById('timer-display');
+      const timerContainer = document.getElementById('booking-timer');
+
+      const timer = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          display.textContent = "00:00";
+          timerContainer.classList.add('bg-red-600');
+
+          Swal.fire({
+            title: 'Booking Time Expired!',
+            text: 'Your booking time has expired. Please restart the booking process.',
+            icon: 'error',
+            confirmButtonText: 'Restart Booking',
+            customClass: {
+              confirmButton: 'swal2-confirm'
+            },
+            timer: 10000,
+            timerProgressBar: true
+          }).then(() => {
+            window.history.go(-1);
+          });
+          return;
+        }
+
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (timeLeft < 60) {
+          timerContainer.classList.remove('bg-[#1C2A3A]');
+          timerContainer.classList.add('bg-red-600');
+          display.classList.remove('text-[#ED8842]');
+          display.classList.add('text-white');
+        }
+
+        timeLeft--;
+      }, 1000);
+    }
+
+    function populateSummary() {
+      document.getElementById('summary-name').textContent = bookingData.ticketName;
+      document.getElementById('summary-qty').textContent = bookingData.quantity;
+      document.getElementById('summary-total').textContent = bookingData.subtotal.toFixed(2);
+      document.getElementById('subtotal').textContent = bookingData.subtotal.toFixed(2);
+      document.getElementById('service-fee').textContent = bookingData.serviceFee.toFixed(2);
+      document.getElementById('total').textContent = bookingData.total.toFixed(2);
+      document.getElementById('btn-total').textContent = bookingData.total.toFixed(2);
+      document.getElementById('payButton').innerHTML = `Pay $${bookingData.total.toFixed(2)}`;
+    }
+
+    function validateStep1() {
+      const fName = document.getElementById('firstName').value.trim();
+      const lName = document.getElementById('lastName').value.trim();
+      const phone = document.getElementById('phoneNumber').value.trim();
+      const cleanedPhone = phone.replace(/\D/g, '');
+
+      return fName !== '' && lName !== '' && cleanedPhone.length >= 10;
+    }
+
+    function validateEmail() {
+      const email = document.getElementById('email').value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function nextStep(step) {
+      if (step === 1) {
+        if (!validateStep1()) {
+          Swal.fire({
+            title: 'Incomplete Information',
+            text: 'Please fill in all attendee details with a valid phone number before proceeding.',
+            icon: 'warning',
+            confirmButtonText: 'OK',
+            customClass: {
+              confirmButton: 'swal2-confirm'
+            }
+          });
+          return;
+        }
+
+        bookingData.attendee = {
+          firstName: document.getElementById('firstName').value.trim(),
+          lastName: document.getElementById('lastName').value.trim(),
+          phoneNumber: document.getElementById('phoneNumber').value.trim()
+        };
+      }
+
+      if (step === 2) {
+        if (bookingData.discount > 0) {
+          bookingData.coupon = document.getElementById('couponCode').value.trim().toUpperCase();
+        }
+      }
+
+      const currentStepEl = document.getElementById(`step-${step}`);
+      currentStepEl.classList.add('opacity-0', '-translate-x-10');
+
+      setTimeout(() => {
+        currentStepEl.classList.add('hidden');
+        currentStepEl.classList.remove('-translate-x-10');
+
+        const next = step + 1;
+        const nextStepEl = document.getElementById(`step-${next}`);
+        nextStepEl.classList.remove('hidden');
+
+        void nextStepEl.offsetWidth;
+        nextStepEl.classList.remove('opacity-0', 'translate-x-10');
+
+        updateProgressBar(next);
+      }, 300);
+
+      currentStep = step + 1;
+    }
+
+    function prevStep(step) {
+      const currentStepEl = document.getElementById(`step-${step}`);
+      currentStepEl.classList.add('opacity-0', 'translate-x-10');
+
+      setTimeout(() => {
+        currentStepEl.classList.add('hidden');
+        currentStepEl.classList.remove('translate-x-10');
+
+        const prev = step - 1;
+        const prevStepEl = document.getElementById(`step-${prev}`);
+        prevStepEl.classList.remove('hidden');
+
+        void prevStepEl.offsetWidth;
+        prevStepEl.classList.remove('opacity-0', '-translate-x-10');
+
+        updateProgressBar(prev);
+      }, 300);
+
+      currentStep = step - 1;
+    }
+
+    function updateProgressBar(step) {
+      const progress = ((step - 1) / 2) * 100;
+      document.getElementById('progress-bar').style.width = `${progress}%`;
+
+      for (let i = 1; i <= 3; i++) {
+        const indicator = document.getElementById(`step-indicator-${i}`);
+        const label = document.getElementById(`step-label-${i}`);
+
+        if (i <= step) {
+          indicator.classList.remove('bg-white', 'text-[#1C2A3A]/40');
+          indicator.classList.add('bg-[#1C2A3A]', 'text-white');
+          label.classList.remove('text-[#1C2A3A]/40');
+          label.classList.add('text-[#1C2A3A]');
+        } else {
+          indicator.classList.remove('bg-[#1C2A3A]', 'text-white');
+          indicator.classList.add('bg-white', 'text-[#1C2A3A]/40');
+          label.classList.remove('text-[#1C2A3A]');
+          label.classList.add('text-[#1C2A3A]/40');
+        }
+      }
+    }
+
+    function applyCoupon() {
+      const code = document.getElementById('couponCode').value.trim().toUpperCase();
+      const msg = document.getElementById('coupon-msg');
+      const row = document.getElementById('coupon-row');
+
+      if (code === 'DISCOUNT10') {
+        const discount = 10.00;
+        bookingData.discount = discount;
+        bookingData.total = (bookingData.subtotal + bookingData.serviceFee) - discount;
+
+        document.getElementById('discount-amount').textContent = discount.toFixed(2);
+        document.getElementById('total').textContent = bookingData.total.toFixed(2);
+        document.getElementById('btn-total').textContent = bookingData.total.toFixed(2);
+        document.getElementById('payButton').innerHTML = `Pay $${bookingData.total.toFixed(2)}`;
+
+        row.classList.remove('hidden');
+        msg.textContent = 'Coupon Applied!';
+        msg.className = 'text-xs font-bold mt-2 ml-1 text-green-600';
+        msg.classList.remove('hidden');
+
+        Swal.fire({
+          title: 'Coupon Applied!',
+          text: '10% discount has been applied to your order.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          },
+          timer: 3000,
+          timerProgressBar: true
+        });
+      } else if (code === 'FREESHIP') {
+        const discount = bookingData.serviceFee;
+        bookingData.discount = discount;
+        bookingData.total = (bookingData.subtotal + bookingData.serviceFee) - discount;
+
+        document.getElementById('discount-amount').textContent = discount.toFixed(2);
+        document.getElementById('total').textContent = bookingData.total.toFixed(2);
+        document.getElementById('btn-total').textContent = bookingData.total.toFixed(2);
+        document.getElementById('payButton').innerHTML = `Pay $${bookingData.total.toFixed(2)}`;
+
+        row.classList.remove('hidden');
+        msg.textContent = 'Coupon Applied!';
+        msg.className = 'text-xs font-bold mt-2 ml-1 text-green-600';
+        msg.classList.remove('hidden');
+
+        Swal.fire({
+          title: 'Coupon Applied!',
+          text: 'Service fee has been waived with your coupon.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          },
+          timer: 3000,
+          timerProgressBar: true
+        });
+      } else {
+        Swal.fire({
+          title: 'Invalid Coupon',
+          text: 'The coupon code you entered is not valid. Please check and try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          }
+        });
+
+        msg.textContent = 'Invalid Coupon Code';
+        msg.className = 'text-xs font-bold mt-2 ml-1 text-red-500';
+        msg.classList.remove('hidden');
+        row.classList.add('hidden');
+      }
+    }
+
+    function showPaymentModal() {
+      if (!validateEmail()) {
+        Swal.fire({
+          title: 'Invalid Email',
+          text: 'Please enter a valid email address to receive your tickets.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          }
+        });
+        return;
+      }
+
+      bookingData.email = document.getElementById('email').value.trim();
+
+      const modal = document.getElementById('paymentModal');
+      const content = document.getElementById('paymentContent');
+      document.querySelector('main').style.filter = 'none';
+      modal.classList.remove('hidden');
+      requestAnimationFrame(() => { // Smoother than setTimeout(10)
+        modal.classList.remove('opacity-0');
+        content.classList.replace('scale-95', 'scale-100');
+      });
+    }
+
+    function closePaymentModal() {
+      const modal = document.getElementById('paymentModal');
+      const content = document.getElementById('paymentContent');
+
+      modal.classList.add('opacity-0');
+      content.classList.remove('scale-100');
+      content.classList.add('scale-95');
+
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    function selectPaymentMethod(method) {
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+        const dot = el.querySelector('.radio-indicator div');
+        dot.classList.add('bg-transparent');
+        dot.classList.remove('bg-[#1C2A3A]', 'bg-[#3395FF]');
+      });
+
+      const selectedEl = event.currentTarget;
+      selectedEl.classList.add('selected');
+      const indicatorDot = selectedEl.querySelector('.radio-indicator div');
+
+      if (method === 'wallet') {
+        indicatorDot.classList.remove('bg-transparent');
+        indicatorDot.classList.add('bg-[#1C2A3A]');
+      } else if (method === 'razorpay') {
+        indicatorDot.classList.remove('bg-transparent');
+        indicatorDot.classList.add('bg-[#3395FF]');
+      }
+
+
+      selectedPaymentMethod = method;
+      document.getElementById('payButton').classList.remove('hidden');
+    }
+
+
+    //auto cancel
+
+    async function confirmExit() {
+      const result = await Swal.fire({
+        title: 'Cancel Booking?',
+        text: "Your reserved tickets will be released, and you'll lose your spot.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, release tickets',
+        cancelButtonText: 'Stay on checkout',
+        customClass: {
+          confirmButton: 'swal2-confirm',
+          popup: 'swal2-popup'
+        }
+      });
+
+      if (result.isConfirmed) {
+        // Show loading state while releasing
+        Swal.fire({
+          title: 'Releasing tickets...',
+          didOpen: () => {
+            Swal.showLoading();
+          },
+          allowOutsideClick: false,
+          customClass: {
+            popup: 'swal2-popup'
+          }
+        });
+
+        try {
+          // Call your unreserve logic
+          await fetch(`/ticket/unreserve/${bookingData.orderId}`, {
+            method: 'POST'
+          });
+          window.location.href = `/events/${bookingData.eventId}`;
+        } catch (err) {
+          window.location.href = `/`;
+        }
+      }
+      return result; // Allows the popstate listener to see the outcome
+    }
+
+    // AJAX Payment Processing with Fetch API
+    function processPayment() {
+      if (!selectedPaymentMethod) {
+        Swal.fire({
+          title: 'No Payment Method Selected',
+          text: 'Please select a payment method to proceed with your booking.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          }
+        });
+        return;
+      }
+      const walletBalance = <%- walletBalance %>
+      if (selectedPaymentMethod === 'wallet' && walletBalance < bookingData.total) {
+        Swal.fire({
+          title: 'Payment Cannot Be Completed',
+          html: `Your wallet balance ($${walletBalance.toFixed(2)}) is insufficient for this transaction ($${bookingData.total.toFixed(2)}).<br><br>Please select another payment method.`,
+          icon: 'error',
+          confirmButtonText: 'Choose Another Method',
+          customClass: {
+            confirmButton: 'swal2-confirm'
+          }
+        });
+        return;
+      }
+
+      // Show loading state
+      Swal.fire({
+        title: 'Processing Payment',
+        html: 'Please wait while we process your payment...',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      // Prepare payment data
+      const paymentData = {
+        orderId: bookingData.orderId,
+        eventId: bookingData.eventId,
+        ticketId: bookingData.ticketId,
+        attendee: {
+          firstName: bookingData.attendee.firstName,
+          lastName: bookingData.attendee.lastName,
+          phone: bookingData.attendee.phoneNumber,
+          emailAddress: bookingData.email,
+        },
+        ticketName: bookingData.ticketName,
+        quantity: bookingData.quantity,
+        subtotal: bookingData.subtotal,
+        serviceFee: bookingData.serviceFee,
+        total: bookingData.total,
+        discount: bookingData.discount,
+        coupon: bookingData.coupon || null,
+        paymentMethod: selectedPaymentMethod
+      };
+      console.log(paymentData)
+      // Send AJAX POST request
+      fetch('/ticket/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(paymentData)
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => {
+              throw new Error(err.message || 'Payment processing failed');
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+            Swal.close();
+
+            // Show success message with actual booking ID from server
+            Swal.fire({
+                title: 'Payment Successful!',
+                html: `<p>Your booking is confirmed!</p>
+                 <p class="mt-1">Tickets have been sent to ${bookingData.email}</p>
+                 <p class="mt-1">SMS updates will be sent to ${bookingData.attendee.phoneNumber}</p>`,
+                icon: 'success',
+                confirmButtonText: 'View Confirmation',
+                customClass: {
+                  confirmButton: 'swal2-confirm'
+                }
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.href = '/user/my-tickets';
+                }
+              })
+              .catch(error => {
+                Swal.close();
+                Swal.fire({
+                  title: 'Payment Failed',
+                  text: error.message || 'There was an error processing your payment. Please try again.',
+                  icon: 'error',
+                  confirmButtonText: 'OK',
+                  customClass: {
+                    confirmButton: 'swal2-confirm'
+                  }
+                });
+              });
+          }
+  </script>
+</body>
+
+</html>

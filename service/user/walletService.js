@@ -4,46 +4,57 @@ import userDb from "../../model/userDb.js";
 import crypto from "crypto";
 import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
+import { availableMemory } from "process";
 
 export const walletDetails = async (userId) => {
-  const user = await userDb.findById(userId);
-  if (!user) throw new Error("User doesnt exists");
-  const walletInfo = await walletDb.findOne({ userId: user._id });
-  const transactions = await transactionDb.find({ walletId: walletInfo._id }).lean();
-  transactions.forEach((t) => {
-    t.date = formatDate(t.createdAt).date;
-  });
+  try {
+    const user = await userDb.findById(userId);
+    // console.log("user", user);
+    if (!user) throw new Error("User doesnt exists");
+    const walletInfo = await walletDb.findOne({ userId: user._id });
+    const transactions = await transactionDb.find({ walletId: walletInfo._id }).lean();
+    transactions.forEach((t) => {
+      t.date = formatDate(t.createdAt).date;
+    });
 
-  return { user, walletInfo, transactions };
+    return { user, walletInfo, transactions };
+  } catch (error) {
+    console.log("Error in walletDetails", error);
+  }
 };
 
 export const addMoneyOrder = async (userId, amount) => {
-  if (!amount || amount <= 0) {
-    throw new Error("Invalid Amount");
-  }
-  const wallet = await walletDb.findOne({ userId });
-  if (!wallet) {
-    throw new Error("Wallet not found");
-  }
+  try {
+    if (!amount || amount <= 0) {
+      throw new Error("Invalid Amount");
+    }
+    const wallet = await walletDb.findOne({ userId });
+    if (!wallet) {
+      throw new Error("Wallet not found");
+    }
 
-  const order = await razorpay.orders.create({
-    amount: amount * 100,
-    currency: "INR",
-    receipt: `wallet_${Date.now()}`,
-  });
-  const transactions = await transactionDb.create({
-    walletId: wallet._id,
-    type: "credit",
-    amount,
-    status: "PENDING",
-    description: "Add money to wallet",
-    razorpayOrderId: order.id,
-  });
-  return {
-    orderId: order.id,
-    amount: order.amount,
-    key: process.env.RAZORPAY_KEY_ID,
-  };
+    const order = await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR",
+      receipt: `wallet_${Date.now()}`,
+    });
+    const transactions = await transactionDb.create({
+      walletId: wallet._id,
+      paymentMethod: "Razorpay",
+      type: "credit",
+      amount,
+      status: "PENDING",
+      description: "Add money to wallet",
+      razorpayOrderId: order.id,
+    });
+    return {
+      orderId: order.id,
+      amount: order.amount,
+      key: process.env.RAZORPAY_KEY_ID,
+    };
+  } catch (error) {
+    console.log("Error in addMoney Order", error);
+  }
 };
 
 export const verifyRazorpayPayment = async (paymentData) => {
@@ -75,4 +86,23 @@ export const verifyRazorpayPayment = async (paymentData) => {
   });
 
   return { success: true, transaction };
+};
+
+export const refundWallet = async (userId, amount, reason) => {
+  const wallet = await walletDb.findOneAndUpdate(
+    { userId, userId },
+    {
+      $inc: { availableBalance: amount },
+    },
+    { new: true },
+  );
+  await transactionDb.create({
+    walletId: wallet._id,
+    userId: userId,
+    type: "credit",
+    amount: amount,
+    description: reason,
+    status: "COMPLETED",
+  });
+  console.log(`Refunded ${amount} to Wallet ${walletId} (User ${userId})`);
 };

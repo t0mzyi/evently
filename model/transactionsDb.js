@@ -2,10 +2,14 @@ import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema(
   {
+    paymentMethod: {
+      type: String,
+      enum: ["Razorpay", "Wallet"],
+    },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
     walletId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "wallet",
-      required: true,
     },
     eventId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,6 +28,10 @@ const transactionSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "PENDING",
+      enum: ["PENDING", "COMPLETED", "FAILED"],
+    },
+    failedReason: {
+      type: String,
     },
     couponId: {
       type: mongoose.Schema.Types.ObjectId,
