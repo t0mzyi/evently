@@ -44,7 +44,7 @@ import {
   ticketBooking,
   viewTicket,
 } from "../controller/user/ticketController.js";
-import { addMoney, showWallet, verifyPayment } from "../controller/user/walletController.js";
+import { addMoney, cancelPayment, showWallet, verifyPayment } from "../controller/user/walletController.js";
 import { unReserveTicket } from "../service/user/ticketsService.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
@@ -84,6 +84,7 @@ router.get("/dashboard", isAuth, getProfile);
 router.get("/dashboard/editProfile", isAuth, getEditProfile);
 router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
 router.get("/dashboard/hostDashboard", showHostDashboard);
+// router.get('/dashbaord/myBookings', )
 
 //VENUE
 router.get("/venues", showVenues);
@@ -118,6 +119,7 @@ router.post("ticket/unreserve/:orderId", unReserveTicket);
 router.get("/dashboard/wallet", showWallet);
 router.post("/wallet/addMoney", addMoney);
 router.post("/wallet/verifyPayment", verifyPayment);
+router.post("/wallet/cancelPayment", cancelPayment);
 
 router.get("/logout", isAuth, logout);
 export default router;

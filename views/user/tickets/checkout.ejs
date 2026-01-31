@@ -315,7 +315,7 @@
       <p class="text-[#1C2A3A]/60 mb-8">Choose how you'd like to pay for your tickets.</p>
 
       <div class="space-y-4">
-        <!-- Wallet Payment -->
+        <!-- payme Payment -->
         <button onclick="selectPaymentMethod('wallet')" class="payment-method w-full flex items-center justify-between p-5 rounded-xl border border-[#1C2A3A]/10 transition-all group">
           <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A]">
@@ -794,7 +794,7 @@
           firstName: bookingData.attendee.firstName,
           lastName: bookingData.attendee.lastName,
           phone: bookingData.attendee.phoneNumber,
-          emailAddress: bookingData.email,
+          email: bookingData.email,
         },
         ticketName: bookingData.ticketName,
         quantity: bookingData.quantity,
@@ -852,7 +852,11 @@
             customClass: {
               confirmButton: 'swal2-confirm'
             }
-          });
+          }).then(res => {
+            if (result.isConfirmed) {
+              window.location.href = `/events/${order.eventId}`
+            }
+          })
         });
     }
   </script>

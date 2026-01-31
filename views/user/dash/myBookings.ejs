@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            theme: {
+              primary: '#1C2A3A',
+              highlight: '#2C3E50',
+              secondary: '#1C2A3A',
+              accent: '#5C7C8A',
+              dark: '#1C2A3A',
+              surface: '#F9F7F5',
+            },
+            apple: {
+              bg: '#EAE0CF',
+              card: 'rgba(255, 255, 255, 0.6)',
+              text: '#1C2A3A',
+              secondary: '#5C7C8A',
+              accent: '#1C2A3A'
+            }
+          },
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+
+  <!-- Global Navigation -->
+  <%- include('../../partials/navBar') %>
+
+  <div class="flex pt-28 max-w-7xl mx-auto px-6 gap-8">
+    <!-- Sidebar Navigation -->
+    <aside class="w-64 shrink-0 hidden lg:block h-[calc(100vh-8rem)] sticky top-28">
+      <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-3xl rounded-[2rem] p-6 h-full flex flex-col justify-between shadow-sm">
+        <div>
+          <div class="flex items-center gap-4 px-2 mb-8">
+            <div class="w-12 h-12 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center font-heading text-lg">
+              JD
+            </div>
+            <div>
+              <p class="font-bold text-[#1C2A3A]">Jaiden</p>
+              <p class="text-xs text-[#1C2A3A]/60">Member</p>
+            </div>
+          </div>
+
+          <nav class="space-y-2">
+            <!-- Active Link -->
+            <a href="/user/my-bookings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-[#F9F7F5] border border-[#1C2A3A]/5 text-[#1C2A3A] font-medium transition-all shadow-sm nav-btn">
+              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
+                </path>
+              </svg>
+              <span>My Bookings</span>
+            </a>
+
+            <a href="/user/calendar" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all nav-btn">
+              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                </path>
+              </svg>
+              <span>Calendar</span>
+            </a>
+
+            <a href="/host-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all nav-btn">
+              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                </path>
+              </svg>
+              <span>Host Dashboard</span>
+            </a>
+
+            <a href="/user/profile" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all nav-btn">
+              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span>Profile</span>
+            </a>
+
+            <a href="/user/wallet" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all nav-btn">
+              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                </path>
+              </svg>
+              <span>Wallet</span>
+            </a>
+          </nav>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 w-full min-w-0">
+      <!-- Bookings Content -->
+      <div>
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8">
+          <div>
+            <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">My
+              tickets</h1>
+            <p class="text-[#1C2A3A]/60 font-sans">Manage your upcoming experiences.</p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Premium Ticket Card 1 -->
+          <div class="group w-full bg-[#f9f8f6] rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-xl transition-all duration-300 border border-[#1C2A3A]/5 relative">
+            <!-- Left Image Side -->
+            <div class="w-full md:w-1/3 h-56 md:h-auto relative overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Event">
+              <div class="absolute inset-0 bg-[#1C2A3A]/10 group-hover:bg-transparent transition-colors">
+              </div>
+              <div class="absolute top-4 left-4 bg-white/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/20">
+                <span class="text-[10px] font-bold text-white uppercase tracking-widest">Upcoming</span>
+              </div>
+            </div>
+
+            <!-- Ticket Dotted Line Separator -->
+            <div class="hidden md:flex flex-col justify-between py-3 bg-[#f9f8f6] relative z-10">
+              <div class="w-3 h-6 bg-[#EAE0CF] rounded-r-full -ml-1.5"></div>
+              <div class="h-full border-l-2 border-dashed border-[#1C2A3A]/10 mx-auto"></div>
+              <div class="w-3 h-6 bg-[#EAE0CF] rounded-r-full -ml-1.5"></div>
+            </div>
+
+            <!-- Right Content Side -->
+            <div class="flex-1 p-6 flex flex-col justify-between bg-[#f9f8f6]">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-heading text-[#1C2A3A] mb-1 leading-tight">Jazz
+                    under the Moonlight</h3>
+                  <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm font-sans mb-3">
+                    <div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                        </path>
+                      </svg> <span>Dec 24, 2024</span></div>
+                    <div class="hidden md:block w-1 h-1 rounded-full bg-current"></div>
+                    <div class="flex items-center gap-1.5"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg> <span>8:00 PM</span></div>
+                  </div>
+                  <div class="flex items-center gap-2 text-[#1C2A3A]/60 text-sm font-sans">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                      </path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>The Rooftop Lounge, NYC</span>
+                  </div>
+                </div>
+                <div class="text-right hidden md:block">
+                  <div class="bg-[#1C2A3A] text-white px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider mb-1">
+                    Seat A-24
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Action Area -->
+              <div class="flex items-center justify-between pt-4 border-t border-[#1C2A3A]/5 mt-4">
+                <div class="flex items-center gap-2">
+                  <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border border-white bg-gray-200"></div>
+                    <div class="w-6 h-6 rounded-full border border-white bg-gray-300"></div>
+                  </div>
+                  <span class="text-xs text-[#1C2A3A]/50">+2 friends</span>
+                </div>
+                <div class="flex gap-3">
+                  <a href="/cancel-ticket/tkt_8293" class="px-5 py-2 rounded-xl border border-red-200 text-sm font-medium text-red-600 hover:bg-red-50 transition-all">
+                    Cancel
+                  </a>
+                  <a href="/ticket" class="px-5 py-2 rounded-xl border border-[#1C2A3A]/10 text-sm font-medium text-[#1C2A3A] hover:bg-white transition-all">
+                    View Ticket
+                  </a>
+                  <button class="px-5 py-2 rounded-xl bg-[#1C2A3A] text-sm font-medium text-white hover:bg-[#1C2A3A]/90 transition-all shadow-lg shadow-[#1C2A3A]/10">
+                    Directions
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Premium Ticket Card 2 (Past) -->
+          <div class="group w-full bg-[#f9f8f6] rounded-[2rem] overflow-hidden flex flex-col md:flex-row shadow-sm hover:shadow-xl transition-all duration-300 border border-[#1C2A3A]/5 relative opacity-75 hover:opacity-100">
+            <div class="w-full md:w-1/3 h-56 md:h-auto relative overflow-hidden">
+              <div class="absolute inset-0 bg-[#1C2A3A]/40 z-10 flex items-center justify-center backdrop-blur-[1px]">
+                <span class="bg-white/20 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest backdrop-blur-md border border-white/20">Past</span>
+              </div>
+              <img src="https://images.unsplash.com/photo-1547826039-bfc35e0f1ea8?q=80&w=1000&auto=format&fit=crop" class="w-full h-full object-cover grayscale" alt="Event">
+            </div>
+
+            <div class="hidden md:flex flex-col justify-between py-3 bg-[#f9f8f6] relative z-10">
+              <div class="w-3 h-6 bg-[#EAE0CF] rounded-r-full -ml-1.5"></div>
+              <div class="h-full border-l-2 border-dashed border-[#1C2A3A]/10 mx-auto"></div>
+              <div class="w-3 h-6 bg-[#EAE0CF] rounded-r-full -ml-1.5"></div>
+            </div>
+
+            <div class="flex-1 p-6 flex flex-col justify-between bg-[#f9f8f6]">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="text-2xl md:text-3xl font-heading text-[#1C2A3A] mb-1 leading-tight hover:underline cursor-pointer">
+                    <a href="/view-past-event">Sculpture Masterclass</a>
+                  </h3>
+                  <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm font-sans mb-3">
+                    <div>Nov 15, 2024</div>
+                    <div class="hidden md:block w-1 h-1 rounded-full bg-current"></div>
+                    <div>10:00 AM</div>
+                  </div>
+                  <div class="flex items-center gap-2 text-[#1C2A3A]/60 text-sm font-sans">
+                    <span>Modern Art Gallery</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-4 border-t border-[#1C2A3A]/5 mt-4">
+                <span class="text-xs text-[#1C2A3A]/40 font-medium">Attended</span>
+                <a href="/view-past-event" class="px-5 py-2 rounded-xl border border-[#1C2A3A]/10 text-sm font-medium text-[#1C2A3A] hover:bg-white transition-all">
+                  Write Review
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+
+</html>

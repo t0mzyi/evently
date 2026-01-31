@@ -73,7 +73,6 @@ export const processCheckout = async (req, res) => {
   } catch (error) {
     console.log("Error in processCheckout", error.message);
     await unReserveTicket(req.body.orderId);
-
-    res.status(400).json({ success: false, message: error.message });
+    await res.status(400).json({ success: false, message: error.message });
   }
 };

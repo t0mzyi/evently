@@ -6,6 +6,7 @@ import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import ticketDb from "../../model/ticketDb.js";
 import { generateBookingId } from "../../utils/ticketIdGenerator.js";
+import { refundWallet } from "./walletService.js";
 
 export const ticketBookingRender = async (eventId) => {
   const event = await eventsDb.findById(eventId);
@@ -90,25 +91,31 @@ export const ticketBookingAndReserve = async (ticketDetails) => {
 
 //unreserve
 export const unReserveTicket = async (orderId) => {
-  const orderDetails = await orderDb.findByIdAndUpdate(
-    orderId,
-    { status: "FAILED", $unset: { expiresAt: "" } },
-    { new: true },
-  );
-  const ticketId = orderDetails.selectedTicket.ticketTypeId;
-  const quantity = orderDetails.selectedTicket.quantity;
-  const ticketUpdate = await eventsDb.findOneAndUpdate(
-    {
-      _id: orderDetails.eventId,
-      "ticketTypes._id": ticketId,
-    },
-    {
-      $inc: { "ticketTypes.$.quantityAvailable": quantity },
-    },
-    { new: true },
-  );
+  const order = await orderDb.findById(orderId);
 
-  console.log(`Inventory Restored: +${quantity} tickets for ${orderDetails.selectedTicket.name}`);
+  if (order.status != "FAILED") {
+    const orderDetails = await orderDb.findByIdAndUpdate(
+      orderId,
+      { status: "FAILED", $unset: { expiresAt: "" } },
+      { new: true },
+    );
+    const ticketId = orderDetails.selectedTicket.ticketTypeId;
+    const quantity = orderDetails.selectedTicket.quantity;
+    const ticketUpdate = await eventsDb.findOneAndUpdate(
+      {
+        _id: orderDetails.eventId,
+        "ticketTypes._id": ticketId,
+      },
+      {
+        $inc: { "ticketTypes.$.quantityAvailable": quantity },
+      },
+      { new: true },
+    );
+
+    console.log(`Inventory Restored: +${quantity} tickets for ${orderDetails.selectedTicket.name}`);
+  } else {
+    console.log(`Unreserve Called But nothing to restore`);
+  }
 };
 
 //
@@ -119,11 +126,11 @@ export const unReserveTicket = async (orderId) => {
 //
 
 export const finalizeOrder = async (orderDetails) => {
-  const { orderId, attendee, email, discount, coupon, paymentMethod } = orderDetails;
+  const { orderId, attendee, discount, coupon, paymentMethod } = orderDetails;
   const order = await orderDb.findById(orderId);
   const dateNow = new Date();
 
-  if (dateNow > order.expiresAt) {
+  if (dateNow > order.expiresAt || order.status == "FAILED") {
     throw new Error("Order expired");
   }
   //discount logic here
@@ -157,10 +164,11 @@ export const finalizeOrder = async (orderDetails) => {
     order.attendees = attendee;
     order.expiresAt = undefined;
     await order.save();
+
     try {
       await generateTickets(order);
     } catch (error) {
-      console.error("CRITICAL: Ticket Generation Failed. Initiating Refund.", error);
+      console.error("Error on generateTIckets.", error);
       await refundWallet(order.userId, totalAmountToPay, "Refund: System Error during Ticket Generation");
       order.status = "REFUNDED";
       await order.save();
@@ -179,14 +187,15 @@ export const generateTickets = async (order) => {
     .findOne({ eventId: event._id, ticketTypeId: order.ticketTypeId })
     .sort({ seatNumber: -1 });
 
-  const nextSeatNumber = lastTicket ? lastTicket.seatNumber + 1 : 1;
+  let nextSeatNumber = lastTicket ? lastTicket.seatNumber + 1 : 1;
+
   const holderDetails = {
     firstName: order.attendees.firstName,
     lastName: order.attendees.lastName,
     phone: order.attendees.phone,
-    emailAddress: order.attendees.emailAddress,
+    email: order.attendees.email,
   };
-  const newTickets = [];
+  let newTickets = [];
   for (let i = 0; i < order.selectedTicket.quantity; i++) {
     const uniqueId = generateBookingId();
     newTickets.push({
