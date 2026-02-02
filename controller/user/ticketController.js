@@ -1,7 +1,9 @@
 import orderDb from "../../model/ordersDb.js";
+import ticketDb from "../../model/ticketDb.js";
 import walletDb from "../../model/walletDb.js";
 import {
   finalizeOrder,
+  groupedTickets,
   ticketBookingAndReserve,
   ticketBookingRender,
   unReserveTicket,
@@ -22,6 +24,16 @@ export const cancelTicket = (req, res) => {
 };
 export const viewTicket = (req, res) => {
   res.render("user/tickets/ticket");
+};
+
+export const showMybookings = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const tickets = await groupedTickets(userId);
+    res.render("user/dash/myBookings", { tickets });
+  } catch (error) {
+    console.log("Error in rendering my Bookings", error);
+  }
 };
 
 export const ticketBooking = async (req, res) => {
@@ -74,5 +86,16 @@ export const processCheckout = async (req, res) => {
     console.log("Error in processCheckout", error.message);
     await unReserveTicket(req.body.orderId);
     await res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const viewOrderTickets = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const tickets = await ticketDb.find({ orderId }).populate("eventId");
+    console.log(tickets);
+    res.render("user/tickets/ticket", { tickets });
+  } catch (error) {
+    res.redirect("/dashboard/myBookings");
   }
 };

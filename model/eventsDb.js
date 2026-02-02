@@ -101,7 +101,6 @@ const eventsSchema = new mongoose.Schema(
 
     rejectionReason: {
       type: String,
-      default: null,
     },
 
     isFeatured: {

@@ -82,12 +82,6 @@ export const ticketBookingAndReserve = async (ticketDetails) => {
 };
 
 //
-//
-//
-//
-//
-//
-//
 
 //unreserve
 export const unReserveTicket = async (orderId) => {
@@ -120,10 +114,6 @@ export const unReserveTicket = async (orderId) => {
 
 //
 //
-//
-//
-//
-//
 
 export const finalizeOrder = async (orderDetails) => {
   const { orderId, attendee, discount, coupon, paymentMethod } = orderDetails;
@@ -135,7 +125,7 @@ export const finalizeOrder = async (orderDetails) => {
   }
   //discount logic here
   const totalAmountToPay = order.pricing.totalAmount;
-
+  let walletId = null;
   if (paymentMethod == "wallet") {
     const walletUpdate = await walletDb.findOneAndUpdate(
       {
@@ -150,6 +140,7 @@ export const finalizeOrder = async (orderDetails) => {
       await order.save();
       throw new Error("Insufficient wallet balance");
     }
+    walletId = walletUpdate._id;
     await transactionDb.create({
       walletId: walletUpdate._id,
       eventId: order.eventId,
@@ -169,7 +160,9 @@ export const finalizeOrder = async (orderDetails) => {
       await generateTickets(order);
     } catch (error) {
       console.error("Error on generateTIckets.", error);
-      await refundWallet(order.userId, totalAmountToPay, "Refund: System Error during Ticket Generation");
+      if (walletId) {
+        await refundWallet(walletId, order.userId, totalAmountToPay, order._id, order.eventId);
+      }
       order.status = "REFUNDED";
       await order.save();
       throw new Error("Booking failed during ticket generation. Your wallet has been refunded.");
@@ -213,4 +206,31 @@ export const generateTickets = async (order) => {
   }
   await ticketDb.insertMany(newTickets);
   console.log(`Generated ${newTickets.length} tickets. IDs: ${newTickets.map((t) => t.ticketId).join(", ")}`);
+};
+
+export const groupedTickets = async (userId) => {
+  const allTickets = await ticketDb.find({ userId: userId }).populate("eventId").sort({ createdAt: -1 }).lean();
+  if (!allTickets || allTickets.length == 0) return [];
+  const grouped = allTickets.reduce((acc, tk) => {
+    const orderId = tk.orderId;
+    if (!acc[orderId]) {
+      acc[orderId] = {
+        orderId: tk.orderId,
+        event: tk.eventId,
+        seatTier: tk.seatTier,
+        seats: [],
+        totalPaid: 0,
+        ticketCount: 0,
+        status: tk.isUsed ? "Used" : new Date(tk.eventId.startDate) < new Date() ? "Past" : "Upcoming",
+      };
+    }
+    acc[orderId].seats.push(tk.seatNumber);
+    acc[orderId].totalPaid += tk.purchasePrice;
+    acc[orderId].ticketCount += 1;
+    return acc;
+  }, {});
+  const objToArray = Object.values(grouped);
+  objToArray.forEach((b) => (b.event.startDate = formatDate(b.event.startDate)));
+  console.log("grp", objToArray);
+  return objToArray;
 };

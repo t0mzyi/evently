@@ -41,7 +41,9 @@ import {
   cancelTicket,
   checkoutPage,
   processCheckout,
+  showMybookings,
   ticketBooking,
+  viewOrderTickets,
   viewTicket,
 } from "../controller/user/ticketController.js";
 import { addMoney, cancelPayment, showWallet, verifyPayment } from "../controller/user/walletController.js";
@@ -84,7 +86,7 @@ router.get("/dashboard", isAuth, getProfile);
 router.get("/dashboard/editProfile", isAuth, getEditProfile);
 router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
 router.get("/dashboard/hostDashboard", showHostDashboard);
-// router.get('/dashbaord/myBookings', )
+router.get("/dashboard/myBookings", showMybookings);
 
 //VENUE
 router.get("/venues", showVenues);
@@ -114,6 +116,7 @@ router.get("/ticket/view", viewTicket);
 router.get("/ticket/checkout/:orderId", checkoutPage);
 router.post("/ticket/checkout", processCheckout);
 router.post("ticket/unreserve/:orderId", unReserveTicket);
+router.get("/tickets/:orderId", viewOrderTickets);
 
 //wallet
 router.get("/dashboard/wallet", showWallet);
