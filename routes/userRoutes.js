@@ -49,6 +49,7 @@ import {
 } from "../controller/user/ticketController.js";
 import { addMoney, cancelPayment, showWallet, verifyPayment } from "../controller/user/walletController.js";
 import { unReserveTicket } from "../service/user/ticketsService.js";
+import { showCalender } from "../controller/user/calenderController.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
@@ -88,6 +89,7 @@ router.get("/dashboard/editProfile", isAuth, getEditProfile);
 router.patch("/dashboard/editProfile", isAuth, upload.single("avatar"), editProfile);
 router.get("/dashboard/hostDashboard", showHostDashboard);
 router.get("/dashboard/myBookings", showMybookings);
+router.get("/dashboard/calendar", showCalender);
 
 //VENUE
 router.get("/venues", showVenues);
