@@ -4,12 +4,12 @@ const orderSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
       required: true,
     },
     eventId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Event",
+      ref: "events",
       required: true,
     },
     selectedTicket: {
@@ -43,6 +43,14 @@ const orderSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       default: () => new Date(Date.now() + 5 * 60 * 1000),
+    },
+    cancelledTicketsCount: {
+      type: Number,
+      default: 0,
+    },
+    refundedAmount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },

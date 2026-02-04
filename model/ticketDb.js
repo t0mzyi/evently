@@ -17,6 +17,10 @@ const ticketSchema = new mongoose.Schema(
       ref: "events",
       required: true,
     },
+    ticketName: {
+      type: String,
+      required: true,
+    },
     ticketTypeId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -30,6 +34,11 @@ const ticketSchema = new mongoose.Schema(
     seatNumber: {
       type: Number,
       required: true,
+    },
+    status: {
+      type: String,
+      enum: ["VALID", "CANCELLED", "USED"],
+      default: "VALID",
     },
     isUsed: {
       type: Boolean,

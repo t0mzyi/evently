@@ -15,11 +15,6 @@ const walletSchema = new mongoose.Schema(
       default: 0,
     },
 
-    pendingBalance: {
-      type: mongoose.Schema.Types.Decimal128,
-      default: 0,
-    },
-
     totalEarnings: {
       type: mongoose.Schema.Types.Decimal128,
       default: 0,

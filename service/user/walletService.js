@@ -160,3 +160,27 @@ export const updateTransactionStatus = async (orderId, status) => {
     console.error("Error updating transaction status:", error);
   }
 };
+
+export const addMoneyWallet = async (userId, amount, description, order) => {
+  const walletUpdate = await walletDb.findOneAndUpdate(
+    { userId: userId },
+    {
+      $inc: { availableBalance: amount, totalEarnings: amount },
+    },
+    { new: true },
+  );
+  if (walletUpdate) {
+    await transactionDb.create({
+      walletId: walletUpdate._id,
+      userId: userId,
+      eventId: order.eventId,
+      orderId: order._id,
+      type: "credit",
+      amount: amount,
+      description: description,
+      status: "COMPLETED",
+    });
+  } else {
+    throw new Error(`Wallet update failed ${userId}`);
+  }
+};

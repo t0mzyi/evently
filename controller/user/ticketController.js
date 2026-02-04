@@ -2,6 +2,7 @@ import orderDb from "../../model/ordersDb.js";
 import ticketDb from "../../model/ticketDb.js";
 import walletDb from "../../model/walletDb.js";
 import {
+  cancelTickets,
   finalizeOrder,
   groupedTickets,
   ticketBookingAndReserve,
@@ -19,8 +20,15 @@ export const bookTicket = async (req, res) => {
     console.log("Error in ticketBooking", error);
   }
 };
-export const cancelTicket = (req, res) => {
-  res.render("user/tickets/cancel");
+export const showCancelTicket = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const userId = req.session.user;
+    const tickets = await cancelTickets(orderId, userId);
+    res.render("user/tickets/cancel", { tickets });
+  } catch (error) {
+    res.redirect(`/dashboard/myBookings?status=error&message${error.message}`);
+  }
 };
 export const viewTicket = (req, res) => {
   res.render("user/tickets/ticket");
@@ -85,7 +93,7 @@ export const processCheckout = async (req, res) => {
   } catch (error) {
     console.log("Error in processCheckout", error.message);
     await unReserveTicket(req.body.orderId);
-    await res.status(400).json({ success: false, message: error.message });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -93,9 +101,20 @@ export const viewOrderTickets = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const tickets = await ticketDb.find({ orderId }).populate("eventId");
-    console.log(tickets);
+    // console.log(tickets);
     res.render("user/tickets/ticket", { tickets });
   } catch (error) {
     res.redirect("/dashboard/myBookings");
+  }
+};
+
+export const ticketCancelAndRefund = async (req, res) => {
+  try {
+    const orderId = req.body.orderId;
+    const cancelTicketsIds = req.body.ticketIds;
+    console.log("ooo", orderId, cancelTicketsIds);
+    return res.status(200).json({ success: true });
+  } catch (error) {
+    console.log("Error in ticketCancelation", error);
   }
 };

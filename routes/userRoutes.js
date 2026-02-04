@@ -38,11 +38,12 @@ import { categories } from "../controller/user/categoryController.js";
 import { bookmarks, toggleBookmark } from "../controller/user/bookmarksController.js";
 import {
   bookTicket,
-  cancelTicket,
   checkoutPage,
   processCheckout,
+  showCancelTicket,
   showMybookings,
   ticketBooking,
+  ticketCancelAndRefund,
   viewOrderTickets,
   viewTicket,
 } from "../controller/user/ticketController.js";
@@ -111,12 +112,13 @@ router.post("/toggleBookmark/:eventId", toggleBookmark);
 //ticket
 router.get("/bookTickets/:eventId", bookTicket);
 router.post("/bookTickets", ticketBooking);
-router.get("/ticket/cancel", cancelTicket);
+router.get("/tickets/cancel/:orderId", showCancelTicket);
 router.get("/ticket/view", viewTicket);
 router.get("/ticket/checkout/:orderId", checkoutPage);
 router.post("/ticket/checkout", processCheckout);
 router.post("ticket/unreserve/:orderId", unReserveTicket);
 router.get("/tickets/:orderId", viewOrderTickets);
+router.post("tickets/cancel", ticketCancelAndRefund);
 
 //wallet
 router.get("/dashboard/wallet", showWallet);

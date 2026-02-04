@@ -6,7 +6,7 @@ import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import ticketDb from "../../model/ticketDb.js";
 import { generateBookingId } from "../../utils/ticketIdGenerator.js";
-import { refundWallet } from "./walletService.js";
+import { addMoneyWallet, refundWallet } from "./walletService.js";
 
 export const ticketBookingRender = async (eventId) => {
   const event = await eventsDb.findById(eventId);
@@ -158,6 +158,11 @@ export const finalizeOrder = async (orderDetails) => {
 
     try {
       await generateTickets(order);
+      const event = await eventsDb.findById(order.eventId);
+      if (event && event.adminId) {
+        const hostEarnings = order.pricing.subTotal;
+        await addMoneyWallet(event.adminId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
+      }
     } catch (error) {
       console.error("Error on generateTIckets.", error);
       if (walletId) {
@@ -195,6 +200,7 @@ export const generateTickets = async (order) => {
       orderId: order._id,
       userId: order.userId,
       eventId: order.eventId,
+      ticketName: order.selectedTicket.name,
       ticketTypeId: order.selectedTicket.ticketTypeId,
       seatTier: seatTier,
       seatNumber: nextSeatNumber++,
@@ -233,4 +239,17 @@ export const groupedTickets = async (userId) => {
   objToArray.forEach((b) => (b.event.startDate = formatDate(b.event.startDate)));
   console.log("grp", objToArray);
   return objToArray;
+};
+
+export const cancelTickets = async (orderId, userId) => {
+  const tickets = await ticketDb.find({ orderId: orderId }).populate("eventId", "title");
+  if (!tickets) throw Error("No tickets available");
+  if (tickets[0].userId.toString() !== userId) throw new Error("Unauthorised");
+
+  tickets.forEach((t) => {
+    const totalPaid = parseFloat(t.purchasePrice.toString());
+    t.basePrice = Math.round((totalPaid / 1.025) * 100) / 100;
+  });
+  console.log(tickets);
+  return tickets;
 };
