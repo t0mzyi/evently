@@ -116,9 +116,9 @@ router.get("/tickets/cancel/:orderId", showCancelTicket);
 router.get("/ticket/view", viewTicket);
 router.get("/ticket/checkout/:orderId", checkoutPage);
 router.post("/ticket/checkout", processCheckout);
-router.post("ticket/unreserve/:orderId", unReserveTicket);
+router.post("/ticket/unreserve/:orderId", unReserveTicket);
 router.get("/tickets/:orderId", viewOrderTickets);
-router.post("tickets/cancel", ticketCancelAndRefund);
+router.post("/tickets/cancel", ticketCancelAndRefund);
 
 //wallet
 router.get("/dashboard/wallet", showWallet);

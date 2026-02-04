@@ -6,7 +6,7 @@ import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import ticketDb from "../../model/ticketDb.js";
 import { generateBookingId } from "../../utils/ticketIdGenerator.js";
-import { addMoneyWallet, refundWallet } from "./walletService.js";
+import { addMoneyWallet, debitWallet, refundWallet } from "./walletService.js";
 
 export const ticketBookingRender = async (eventId) => {
   const event = await eventsDb.findById(eventId);
@@ -242,7 +242,7 @@ export const groupedTickets = async (userId) => {
 };
 
 export const cancelTickets = async (orderId, userId) => {
-  const tickets = await ticketDb.find({ orderId: orderId }).populate("eventId", "title");
+  const tickets = await ticketDb.find({ orderId: orderId, status: "VALID" }).populate("eventId", "title");
   if (!tickets) throw Error("No tickets available");
   if (tickets[0].userId.toString() !== userId) throw new Error("Unauthorised");
 
@@ -250,6 +250,70 @@ export const cancelTickets = async (orderId, userId) => {
     const totalPaid = parseFloat(t.purchasePrice.toString());
     t.basePrice = Math.round((totalPaid / 1.025) * 100) / 100;
   });
-  console.log(tickets);
+  // console.log(tickets);
   return tickets;
+};
+
+export const ticketCancelAndRefunder = async (body) => {
+  console.log("body", body);
+  const order = await orderDb.findById(body.orderId).populate("eventId", "title hostId");
+  const hasAccess = order.userId.toString() === body.userId.toString();
+  if (!hasAccess) throw new Error("Unauthorised");
+
+  const ticketsCount = body.cancelTicketsIds.length;
+  const pricePerTicket = (order.pricing.subTotal - order.pricing.discountAmount) / order.selectedTicket.quantity;
+  const totalRefundAmount = pricePerTicket * ticketsCount;
+  for (const ticketId of body.cancelTicketsIds) {
+    const ticket = await ticketDb.findOne({
+      _id: ticketId,
+      orderId: body.orderId,
+      status: "VALID",
+    });
+
+    if (ticket) {
+      ticket.status = "CANCELLED";
+      await ticket.save();
+      console.log(`Ticket ${ticketId} status updated to CANCELLED`);
+      await eventsDb.findOneAndUpdate(
+        { _id: order.eventId._id, "ticketTypes._id": order.selectedTicket.ticketTypeId },
+        { $inc: { "ticketTypes.$.quantityAvailable": 1 } },
+      );
+    } else {
+      console.log(`Warning: Ticket ${ticketId} not found or already cancelled.`);
+    }
+  }
+  const updatedOrder = await orderDb.findByIdAndUpdate(
+    body.orderId,
+    {
+      $inc: {
+        cancelledTicketsCount: ticketsCount,
+        refundedAmount: totalRefundAmount,
+      },
+    },
+    { new: true },
+  );
+  if (updatedOrder.cancelledTicketsCount >= order.selectedTicket.quantity) {
+    updatedOrder.status = "REFUNDED";
+    await updatedOrder.save();
+  }
+  await addMoneyWallet(
+    order.userId,
+    totalRefundAmount,
+    `Refund for ${ticketsCount} cancelled ticket(s) from Order #${order._id}`,
+    order,
+  );
+
+  console.log(`Money refunded for cancellation ${totalRefundAmount}`);
+
+  await debitWallet(
+    order.eventId.hostId,
+    totalRefundAmount,
+    `Reversal for cancelled tickets - Order #${order._id}`,
+    order,
+  );
+  return {
+    success: true,
+    refundAmount: totalRefundAmount,
+    isFullyRefunded: updatedOrder.status === "REFUNDED",
+  };
 };

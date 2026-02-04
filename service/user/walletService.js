@@ -184,3 +184,28 @@ export const addMoneyWallet = async (userId, amount, description, order) => {
     throw new Error(`Wallet update failed ${userId}`);
   }
 };
+
+export const debitWallet = async (userId, amount, description, order) => {
+  const walletUpdate = await walletDb.findOneAndUpdate(
+    { userId: userId },
+    {
+      $inc: { availableBalance: -amount, totalEarnings: -amount },
+    },
+    { new: true },
+  );
+  if (walletUpdate) {
+    await transactionDb.create({
+      walletId: walletUpdate._id,
+      userId: userId,
+      eventId: order.eventId,
+      orderId: order._id,
+      type: "debit",
+      amount: amount,
+      description: description,
+      status: "COMPLETED",
+    });
+    console.log(`Money debited from ${userId} ${amount} for ${description}`);
+  } else {
+    throw new Error(`Wallet update failed ${userId}`);
+  }
+};

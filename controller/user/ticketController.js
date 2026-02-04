@@ -7,6 +7,7 @@ import {
   groupedTickets,
   ticketBookingAndReserve,
   ticketBookingRender,
+  ticketCancelAndRefunder,
   unReserveTicket,
 } from "../../service/user/ticketsService.js";
 
@@ -100,7 +101,7 @@ export const processCheckout = async (req, res) => {
 export const viewOrderTickets = async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    const tickets = await ticketDb.find({ orderId }).populate("eventId");
+    const tickets = await ticketDb.find({ orderId, status: "VALID" }).populate("eventId");
     // console.log(tickets);
     res.render("user/tickets/ticket", { tickets });
   } catch (error) {
@@ -112,9 +113,12 @@ export const ticketCancelAndRefund = async (req, res) => {
   try {
     const orderId = req.body.orderId;
     const cancelTicketsIds = req.body.ticketIds;
-    console.log("ooo", orderId, cancelTicketsIds);
+    const userId = req.session.user;
+    const refundedOrder = await ticketCancelAndRefunder({ orderId, cancelTicketsIds, userId });
+    // console.log("ooo", orderId, cancelTicketsIds);
     return res.status(200).json({ success: true });
   } catch (error) {
     console.log("Error in ticketCancelation", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
