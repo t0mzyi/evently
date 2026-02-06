@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>All Events — Evently</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discover Events — Evently</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <link rel="stylesheet" href="/assets/css/styles.css">
   <script>
     tailwind.config = {
       theme: {
@@ -15,17 +15,8 @@
             theme: {
               primary: "#1C2A3A",
               highlight: "#2C3E50",
-              secondary: "#1C2A3A",
-              accent: "#5C7C8A",
-              dark: "#1C2A3A",
+              accent: "#ED8842",
               surface: "#F9F7F5",
-            },
-            apple: {
-              bg: "#EAE0CF",
-              card: "rgba(255, 255, 255, 0.6)",
-              text: "#1C2A3A",
-              secondary: "#5C7C8A",
-              accent: "#1C2A3A",
             },
           },
           fontFamily: {
@@ -37,133 +28,278 @@
     };
   </script>
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
+    .bookmark-btn {
+      transition: all 0.2s ease;
+      z-index: 10;
     }
 
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+    .bookmark-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .event-card {
+      transition: all 0.3s ease;
+      border: 1px solid rgba(28, 42, 58, 0.05);
+    }
+
+    .event-card:hover {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      transform: translateY(-5px);
+    }
+
+    .filter-active {
+      box-shadow: 0 0 0 3px rgba(237, 136, 66, 0.3);
     }
   </style>
 </head>
 
-<body class="bg-[#EAE0CF] text-[#1C2A3A]">
-  <!-- Navigation -->
-  <%- include('../../partials/navbar') %>
-  <%- include('../../partials/toast') %>
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+  <!-- Navigation Bar -->
+  <%- include('../../partials/navBar') %>
+  <%- include('../../partials/doodles') %>
 
-  <!-- Page Header & Search Only -->
-  <div class="pt-40 px-6 max-w-7xl mx-auto">
-    <div class="flex flex-col md:flex-row justify-between items-end mb-12">
-      <div>
-        <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-4 text-[#1C2A3A]">
-          Explore events
-        </h1>
-        <p class="text-[#1C2A3A]/60 font-sans">
-          Find the perfect experience for your taste.
-        </p>
-      </div>
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+    <div class="text-center mb-10 max-w-2xl mx-auto">
+      <h1 class="text-5xl md:text-7xl font-heading font-medium tracking-tight mb-6 text-[#1C2A3A]">Discover Events <br /><span class="text-[#1C2A3A]/40">Find Your Perfect Experience</span></h1>
+      <p class="text-lg text-[#1C2A3A]/60 font-sans leading-relaxed">Explore our curated collection of exciting events. From concerts to workshops, find the perfect experience for your taste.</p>
     </div>
 
-    <!-- Search Bar Only -->
-    <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-md rounded-2xl p-4 mb-12 w-full max-w-2xl mx-auto">
-      <form action="" method="GET" class="relative">
-        <input type="text" name="q" placeholder="Search events..." value="<%= typeof q !== 'undefined' ? q : '' %>" class="w-full h-12 pl-12 pr-4 bg-[#F9F7F5] border-none rounded-xl text-[#1C2A3A] placeholder:text-[#1C2A3A]/40 focus:outline-none focus:ring-1 focus:ring-[#1C2A3A]/20 font-sans" />
-        <button type="submit" class="absolute left-4 top-3.5 w-5 h-5 text-[#1C2A3A]/40">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </button>
-      </form>
-    </div>
-
-    <!-- Events Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
-      <% for(let i = 0; i < events.length; i++) { %>
-      <div class="bg-[#B8B2A6] rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative group cursor-pointer" onclick="window.location.href='/events/<%= events[i]._id %>'">
-
-        <div class="h-[280px] relative">
-          <img src="<%= events[i].galleryImages[0] %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="<%= events[i].title %>" />
-          <% if (userBookmarks) { %>
-          <% const isBookmarked = userBookmarks.includes(events[i]._id.toString()); %>
-
-          <button id="bookmark-btn-<%= events[i]._id %>" onclick="event.stopPropagation(); handleBookmarkToggle('<%= events[i]._id %>','<%=events[i].title%>')" class="absolute top-4 right-4 z-10 p-2 backdrop-blur-md rounded-full transition-all duration-300 shadow-lg border border-white/30 <%= isBookmarked ? 'bg-[#ED8842] text-white' : 'bg-white/20 text-white hover:bg-white/40' %>">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="<%= isBookmarked ? 'currentColor' : 'none' %>" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+    <div class="mb-12 max-w-4xl mx-auto">
+      <form id="filterForm" method="GET" action="/events" class="space-y-6">
+        <input type="hidden" name="page" value="1">
+        <div class="relative">
+          <input type="text" name="q" id="searchInput" value="<%= q %>" placeholder="Search events by name or description..." class="w-full py-3 px-6 pr-12 rounded-full bg-[#F9F7F5] border border-[#1C2A3A]/10 text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842]" />
+          <% if (q) { %>
+          <button type="button" id="clearSearch" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#1C2A3A]/40 hover:text-[#1C2A3A] transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
           <% } %>
-          <div class="absolute bottom-0 left-0 p-6 w-full bg-gradient-to-t from-black/80 to-transparent">
-            <h3 class="text-3xl font-heading text-white lowercase">
-              <%= events[i].title %>
-            </h3>
-            <div class="flex gap-2 mt-2">
-              <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-wider text-white">
-                <%= events[i].categoryId.name %>
-              </span>
-            </div>
-          </div>
         </div>
 
-        <div class="p-6">
-          <p class="text-[#1C2A3A]/70 text-xs leading-relaxed mb-8 font-sans">
-            <%= events[i].description.substring(0, 100) + '...' %>
-          </p>
-          <%
-      let lowestPrice = 0;
-      if (events[i].ticketTypes && events[i].ticketTypes.length) {
-        lowestPrice = Math.min(...events[i].ticketTypes.map(t => t.price));
-      }
-    %>
-          <div class="absolute bottom-6 right-0 bg-[#ED8842] py-2 pl-4 pr-6 rounded-l-full flex items-center shadow-md">
-            <span class="text-white font-heading text-xs tracking-tight">
-              <%= lowestPrice === 0 ? "Free" : "Starting from $" + lowestPrice %>
-            </span>
+        <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Category:</span>
+            <select name="category" id="categoryFilter" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#ED8842] <%= category !== 'all' ? 'filter-active' : '' %>">
+              <option value="all" <%= category === 'all' ? 'selected' : '' %>>All Categories</option>
+              <% categories.forEach(cat => { %>
+              <option value="<%= cat._id %>" <%= category === cat._id.toString() ? 'selected' : '' %>><%= cat.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60">Sort:</span>
+            <select name="sortBy" id="sortFilter" class="bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#ED8842]">
+              <option value="date-desc" <%= sortBy === 'date-desc' ? 'selected' : '' %>>Date: Newest First</option>
+              <option value="date-asc" <%= sortBy === 'date-asc' ? 'selected' : '' %>>Date: Oldest First</option>
+              <option value="price-asc" <%= sortBy === 'price-asc' ? 'selected' : '' %>>Price: Low to High</option>
+              <option value="price-desc" <%= sortBy === 'price-desc' ? 'selected' : '' %>>Price: High to Low</option>
+              <option value="name-asc" <%= sortBy === 'name-asc' ? 'selected' : '' %>>Name: A-Z</option>
+              <option value="name-desc" <%= sortBy === 'name-desc' ? 'selected' : '' %>>Name: Z-A</option>
+            </select>
           </div>
         </div>
+      </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      <% if (events && events.length > 0) { %>
+      <% events.forEach(event => { 
+          const isBookmarked = userBookmarks && userBookmarks.includes(event._id.toString());
+          const venueAddress = event.venue?.address || '';
+          const categoryName = event.categoryId?.name || 'Event';
+          const priceDisplay = event.priceDisplay || 'FREE';
+          const dateDisplay = event.dateDisplay || new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        %>
+      <div class="event-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5">
+        <div class="h-64 overflow-hidden relative">
+          <!-- Bookmark button -->
+          <button class="bookmark-btn absolute top-4 right-4 p-1.5 bg-white rounded-full shadow-md z-10" data-event-id="<%= event._id %>">
+            <% if (isBookmarked) { %>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+              <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+            </svg>
+            <% } else { %>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+            </svg>
+            <% } %>
+          </button>
+          <a href="/events/<%= event._id %>">
+            <img src="<%= event.galleryImages && event.galleryImages[0] ? event.galleryImages[0] : '/images/default-event.jpg' %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<%= event.title %>" />
+          </a>
+        </div>
+        <div class="p-8">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1"><%= event.title %></h3>
+              <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1"><%= venueAddress %></p>
+            </div>
+            <div class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm"><%= categoryName %></div>
+          </div>
+          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed mb-6 line-clamp-3">
+            <%= event.description ? event.description.substring(0, 120) + (event.description.length > 120 ? '...' : '') : '' %>
+          </p>
+          <div class="flex justify-between items-center mb-6">
+            <div class="text-2xl font-heading font-bold text-[#ED8842]"><%= priceDisplay %></div>
+            <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <span><%= dateDisplay %></span>
+            </div>
+          </div>
+          <a href="/events/<%= event._id %>" class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest text-[#1C2A3A]">View Event</a>
+        </div>
+      </div>
+      <% }) %>
+      <% } else { %>
+      <div class="col-span-full text-center py-20">
+        <p class="text-xl text-[#1C2A3A]/40 font-heading">No events found. Try adjusting your filters.</p>
       </div>
       <% } %>
     </div>
-  </div>
-</body>
-<script>
-  async function handleBookmarkToggle(id, title) {
-    try {
-      const response = await fetch(`/toggleBookmark/${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+
+    <% if (totalPages && totalPages > 1) { %>
+    <div class="max-w-7xl mx-auto px-6 py-12 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">
+        Showing <strong><%= events ? events.length : 0 %></strong> of <strong><%= totalPages * 9 %></strong> events
+      </p>
+
+      <div class="flex items-center gap-1 order-1 sm:order-2">
+        <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a>
+        <% } else { %>
+        <span class="px-2 py-2 text-[#1C2A3A]/30 cursor-not-allowed">&laquo;</span>
+        <% } %>
+
+        <% if (currentPage > 2) { %>
+        <a href="?page=1&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
+        <% if (currentPage > 3) { %>
+        <span class="px-2 py-2 text-[#1C2A3A]/30">...</span>
+        <% } %>
+        <% } %>
+
+        <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= currentPage - 1 %></a>
+        <% } %>
+
+        <span class="px-4 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= currentPage %></span>
+
+        <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= currentPage + 1 %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages - 1) { %>
+        <% if (currentPage < totalPages - 2) { %>
+        <span class="px-2 py-2 text-[#1C2A3A]/30">...</span>
+        <% } %>
+        <a href="?page=<%= totalPages %>&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= totalPages %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>&q=<%= encodeURIComponent(q || '') %>&category=<%= encodeURIComponent(category || 'all') %>&sortBy=<%= encodeURIComponent(sortBy || 'date-desc') %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a>
+        <% } else { %>
+        <span class="px-2 py-2 text-[#1C2A3A]/30 cursor-not-allowed">&raquo;</span>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+  </main>
+  <%- include('../../partials/footer') %>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterForm = document.getElementById('filterForm');
+      const searchInput = document.getElementById('searchInput');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const sortFilter = document.getElementById('sortFilter');
+      const clearSearchBtn = document.getElementById('clearSearch');
+
+      // Auto-submit when category changes
+      categoryFilter?.addEventListener('change', function() {
+        filterForm.querySelector('input[name="page"]').value = '1';
+        filterForm.submit();
       });
-      const result = await response.json();
 
-      const btn = document.getElementById(`bookmark-btn-${id}`);
-      if (result.action === 'Added') {
-        // remove "unbookmarked" styles
-        btn.classList.remove('bg-white/20', 'hover:bg-white/40');
+      // Auto-submit when sort changes
+      sortFilter?.addEventListener('change', function() {
+        filterForm.querySelector('input[name="page"]').value = '1';
+        filterForm.submit();
+      });
 
-        // add "bookmarked" styles
-        btn.classList.add('bg-[#ED8842]', 'text-white');
-        svg.setAttribute('fill', 'currentColor');
-      }
+      // Clear search button
+      clearSearchBtn?.addEventListener('click', function() {
+        searchInput.value = '';
+        filterForm.querySelector('input[name="page"]').value = '1';
+        filterForm.submit();
+      });
 
-      if (result.action === 'Removed') {
-        // remove "bookmarked" styles
-        btn.classList.remove('bg-[#ED8842]');
+      // Search with Enter key
+      searchInput?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          filterForm.querySelector('input[name="page"]').value = '1';
+          filterForm.submit();
+        }
+      });
 
-        // restore "unbookmarked" styles
-        btn.classList.add('bg-white/20', 'hover:bg-white/40');
-        svg.setAttribute('fill', 'none');
-      }
-    } catch (err) {
-      console.error('Bookmark failed:', err);
-    }
-  }
-</script>
+      // Bookmark toggle functionality
+      document.querySelectorAll('.bookmark-btn').forEach(button => {
+        button.addEventListener('click', async function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          const eventId = this.dataset.eventId;
+          const icon = this.querySelector('svg');
+          const isCurrentlyBookmarked = icon.getAttribute('fill') === 'currentColor';
+
+          // Optimistic UI update
+          if (isCurrentlyBookmarked) {
+            icon.outerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+              </svg>`;
+          } else {
+            icon.outerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+              </svg>`;
+          }
+
+          try {
+            const response = await fetch(`/toggleBookmark/${eventId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('Failed to toggle bookmark');
+          } catch (error) {
+            console.error('Error toggling bookmark:', error);
+            // Revert UI on error
+            if (isCurrentlyBookmarked) {
+              icon.outerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                  <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                </svg>`;
+            } else {
+              icon.outerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>`;
+            }
+          }
+        });
+      });
+    });
+  </script>
+</body>
 
 </html>

@@ -8,16 +8,176 @@ import venueDb from "../../model/venueDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import { venueDetails } from "./venueService.js";
 
-export const allEvents = async (query) => {
-  let queryFilter = { status: "approved" };
+export const allEvents = async (
+  query,
+  page = 1,
+  limit = 9,
+  sortBy = "date",
+  order = "desc",
+  categoryFilter = "all",
+) => {
+  try {
+    // Build query filter
+    let queryFilter = { status: "approved" };
 
-  if (query.trim()) {
-    const searchRegex = new RegExp(query.trim(), "i");
-    queryFilter.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
+    // Search filter
+    if (query.trim()) {
+      const searchRegex = new RegExp(query.trim(), "i");
+      queryFilter.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
+    }
+
+    // Category filter
+    if (categoryFilter !== "all") {
+      queryFilter.categoryId = categoryFilter;
+    }
+
+    // Calculate skip value for pagination
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalEvents = await eventsDb.countDocuments(queryFilter);
+
+    // Build sort options
+    let sortOptions = {};
+    switch (sortBy) {
+      case "date":
+        sortOptions = { startDate: order === "asc" ? 1 : -1 };
+        break;
+      case "name":
+        sortOptions = { title: order === "asc" ? 1 : -1 };
+        break;
+      default:
+        sortOptions = { startDate: order === "asc" ? 1 : -1 };
+    }
+
+    // Fetch events with basic population
+    let events = await eventsDb
+      .find(queryFilter)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit)
+      .populate("categoryId", "name")
+      .populate({
+        path: "venueId",
+        select: "name address city ",
+        match: { status: "active" },
+      })
+      .lean();
+
+    // Process each event in JavaScript
+    const processedEvents = events.map((event) => {
+      let venueInfo = {
+        name: "TBD",
+        address: "",
+      };
+
+      if (event.venueType === "custom" && event.venueDetails) {
+        venueInfo = {
+          name: event.venueDetails.name,
+          address: event.venueDetails.address,
+          city: event.venueDetails.city,
+        };
+      } else if (event.venueId) {
+        venueInfo = {
+          name: event.venueId.name || "Venue",
+          address: event.venueId.address || "",
+          city: event.venueId.city || "",
+        };
+      }
+
+      let minPrice = 50;
+      let maxPrice = 50;
+      let hasFreeTickets = false;
+
+      if (event.ticketTypes && event.ticketTypes.length > 0) {
+        // Filter active tickets
+        const activeTickets = event.ticketTypes.filter((t) => t.isActive);
+
+        // Separate free and paid tickets
+        const freeTickets = activeTickets.filter((t) => t.isFree || t.price === 0);
+        const paidTickets = activeTickets.filter((t) => !t.isFree && t.price > 0);
+
+        if (freeTickets.length > 0) {
+          hasFreeTickets = true;
+          minPrice = 0;
+        }
+
+        if (paidTickets.length > 0) {
+          const prices = paidTickets.map((t) => t.price);
+          minPrice = hasFreeTickets ? 0 : Math.min(...prices);
+          maxPrice = Math.max(...prices);
+        } else if (!hasFreeTickets) {
+          // No active paid tickets and no free tickets
+          minPrice = 50; // fallback
+          maxPrice = 50;
+        }
+      }
+
+      // Format price display
+      const priceDisplay =
+        hasFreeTickets && maxPrice > 0
+          ? "FREE" // If there's at least one free ticket
+          : minPrice === 0
+            ? "FREE"
+            : minPrice === maxPrice
+              ? `$${minPrice}`
+              : `$${minPrice} - $${maxPrice}`;
+
+      const startDate = new Date(event.startDate);
+      const endDate = event.endDate ? new Date(event.endDate) : null;
+
+      let dateDisplay = startDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      if (endDate && endDate.getTime() !== startDate.getTime()) {
+        if (startDate.getFullYear() === endDate.getFullYear()) {
+          if (startDate.getMonth() === endDate.getMonth()) {
+            dateDisplay = `${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${endDate.getDate()}, ${endDate.getFullYear()}`;
+          } else {
+            dateDisplay = `${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })} - ${endDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+          }
+        } else {
+          dateDisplay = `${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} - ${endDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+        }
+      }
+
+      return {
+        _id: event._id,
+        title: event.title,
+        description: event.description,
+        startDate: event.startDate,
+        endDate: event.endDate,
+        galleryImages: event.galleryImages || [],
+        status: event.status,
+        categoryId: event.categoryId,
+        venue: venueInfo,
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        priceDisplay: priceDisplay,
+        dateDisplay: dateDisplay,
+        hasFreeTickets: hasFreeTickets,
+        ticketCount: event.ticketTypes ? event.ticketTypes.length : 0,
+      };
+    });
+
+    if (sortBy === "price") {
+      processedEvents.sort((a, b) => {
+        if (order === "asc") {
+          return a.minPrice - b.minPrice;
+        } else {
+          return b.minPrice - a.minPrice;
+        }
+      });
+    }
+
+    return { events: processedEvents, totalEvents };
+  } catch (error) {
+    console.error("Error in allEvents service:", error);
+    throw error;
   }
-  const events = await eventsDb.find(queryFilter).populate("categoryId", "name");
-
-  return events;
 };
 
 export const singleEventFinder = async (eventId) => {

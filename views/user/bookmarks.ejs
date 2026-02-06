@@ -47,6 +47,7 @@
   <!-- Navigation -->
   <%- include('../partials/navbar') %>
   <%- include('../partials/toast') %>
+  <%- include('../partials/doodles') %>
 
   <!-- Page Header -->
   <div class="pt-40 px-6 max-w-7xl mx-auto">
@@ -129,29 +130,30 @@
       </div>
 
       <%}%>
-
 </body>
-<script>
-async function removeBookmark(id,name){
-// console.log(id,name)
-    try{
-        const response = await fetch(`/toggleBookmark/${id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-      const result = await response.json();
-      if(result.status){
-        window.location.href = `/bookmarks?status=success&message=SuccesFully removed ${name} from bookmarks`
-      }else{
-        window.location.href = `/bookmarks?status=error&message=${result.message}`
 
-      }
-    }catch(err){
-         window.location.href = `/bookmarks?status=error&message= ${result.message}`
+      <script>
+        async function removeBookmark(id, name) {
+          // console.log(id,name)
+          try {
+            const response = await fetch(`/toggleBookmark/${id}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+            });
+            const result = await response.json();
+            if (result.status) {
+              window.location.href = `/bookmarks?status=success&message=SuccesFully removed ${name} from bookmarks`
+            } else {
+              window.location.href = `/bookmarks?status=error&message=${result.message}`
 
-    }
-}
-</script>
+            }
+          } catch (err) {
+            window.location.href = `/bookmarks?status=error&message= ${result.message}`
+
+          }
+        }
+      </script>
+
 </html>

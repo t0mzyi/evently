@@ -4,209 +4,331 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Categories — Evently</title>
+  <title>Discover Events — Evently</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#EAE0CF',
+            charcoal: '#1C2A3A',
+            amber: '#ED8842',
+            sand: '#F9F7F5'
+          },
+          fontFamily: {
+            heading: ["Fraunces", "serif"],
+            sans: ["Inter", "sans-serif"],
+          }
+        },
+      },
+    };
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
-    .category-card {
-      transition: transform 0.2s, box-shadow 0.2s;
+    .category-nav {
+      scrollbar-width: thin;
+      scrollbar-color: #ED8842 #F9F7F5;
     }
 
-    .category-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    .category-nav::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .category-nav::-webkit-scrollbar-track {
+      background: #F9F7F5;
+      border-radius: 10px;
+    }
+
+    .category-nav::-webkit-scrollbar-thumb {
+      background-color: #ED8842;
+      border-radius: 10px;
+      border: 2px solid #F9F7F5;
+    }
+
+    .active-category {
+      background: linear-gradient(90deg, rgba(237, 136, 66, 0.15) 0%, rgba(237, 136, 66, 0) 100%);
+      border-left: 3px solid #ED8842;
+      color: #1C2A3A;
     }
 
     .event-card {
-      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(28, 42, 58, 0.06);
+      transition: all 0.3s ease;
+      border-radius: 1.25rem;
+      overflow: hidden;
     }
 
     .event-card:hover {
-      background-color: rgba(255, 255, 255, 0.7);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 25px -8px rgba(0, 0, 0, 0.12);
+      border-color: rgba(237, 136, 66, 0.2);
     }
 
-    .prev-btn:disabled,
-    .next-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .price-tag {
+      background: linear-gradient(120deg, #ED8842, #D46A2A);
+      box-shadow: 0 4px 12px rgba(237, 136, 66, 0.3);
+    }
+
+    .date-badge {
+      background: rgba(28, 42, 58, 0.04);
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+    }
+
+    .hero-bg {
+      background: linear-gradient(135deg, rgba(28, 42, 58, 0.8) 0%, rgba(237, 136, 66, 0.1) 100%), url('https://images.unsplash.com/photo-1470770903676-69b9820d348e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+      background-size: cover;
+      background-position: center;
+      clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+    }
+
+    .category-icon {
+      font-size: 1.5rem;
+      min-width: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 </head>
 
-<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-  <!-- Navbar -->
-  <%- include('../../partials/navbar') %>
+<body class="bg-cream text-charcoal min-h-screen">
+  <!-- Navigation Bar -->
+  <%- include('../../partials/navBar') %>
+  <%- include('../../partials/doodles') %>
 
-  <main class="pt-32 pb-16 px-4 sm:px-6">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-heading font-bold tracking-tight mb-4">Discover Events</h1>
-        <p class="text-xl text-[#1C2A3A]/70 max-w-2xl mx-auto">
-          Browse events by category. Find something exciting happening near you!
-        </p>
-      </div>
+  <!-- Hero Section -->
+  <section class="hero-bg pt-36 pb-20 px-4 sm:px-6">
+    <div class="max-w-3xl mx-auto text-center text-white">
+      <h1 class="text-4xl md:text-5xl font-heading font-black tracking-tight mb-4">
+        Discover Your <span class="text-amber">Perfect Event</span>
+      </h1>
+      <p class="text-lg opacity-90 max-w-xl mx-auto">
+        Browse handpicked experiences organized by category. Find your next unforgettable moment.
+      </p>
+    </div>
+  </section>
 
-      <!-- Categories List -->
-      <div class="space-y-12">
-        <% categories.forEach(cat => { %>
-        <div class="category-card bg-white/70 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/40 shadow-sm">
+  <main class="py-12 px-4 sm:px-6 -mt-12 relative z-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Category Sidebar -->
+        <aside class="lg:w-64 w-full bg-white/80 backdrop-blur-sm rounded-2xl p-5 shadow-sm border border-charcoal/5 sticky top-24 h-fit category-nav">
+          <h2 class="font-heading font-bold text-lg mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            Categories
+          </h2>
+
+          <div class="space-y-1 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+            <% categories.forEach((cat, index) => { %>
+            <button class="category-btn flex items-center justify-between w-full px-4 py-3 rounded-xl text-left transition-all hover:bg-amber/10 <%= index === 0 ? 'active-category font-medium' : 'text-charcoal/70' %>" data-category="<%= cat._id %>" data-index="<%= index %>">
+              <div class="flex items-center gap-3">
+                <span class="category-icon"><%= cat.iconUrl || '✨' %></span>
+                <span><%= cat.name %></span>
+              </div>
+              <span class="text-sm bg-charcoal/5 text-charcoal px-2.5 py-0.5 rounded-full min-w-[26px] text-center">
+                <%= cat.events.length %>
+              </span>
+            </button>
+            <% }) %>
+          </div>
+        </aside>
+
+        <!-- Events Content -->
+        <section class="flex-1">
           <!-- Category Header -->
-          <div class="flex items-center gap-4 mb-6">
-            <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-              <span class="text-2xl"><%= cat.iconUrl %></span>
-            </div>
-            <div>
-              <h2 class="text-2xl font-heading font-bold tracking-tight"><%= cat.name %></h2>
-              <p class="text-[#1C2A3A]/60 text-sm">
-                <%= cat.events.length %> event<%= cat.events.length !== 1 ? 's' : '' %>
-              </p>
-            </div>
+          <div class="mb-8">
+            <h2 id="current-category-name" class="text-3xl font-heading font-bold flex items-center gap-3">
+              <span id="current-category-icon" class="text-2xl"><%= categories[0]?.iconUrl || '✨' %></span>
+              <span id="current-category-title"><%= categories[0]?.name || 'All Events' %></span>
+            </h2>
+            <p id="current-category-count" class="text-charcoal/70 mt-1">
+              <%= categories[0]?.events?.length || 0 %> extraordinary experience<%= (categories[0]?.events?.length || 0) !== 1 ? 's' : '' %>
+            </p>
           </div>
 
-          <!-- Events Section -->
-          <div class="relative">
-            <% if (cat.events.length === 0) { %>
-            <!-- No Events Message -->
-            <div class="text-center py-12">
-              <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.497-.867-6.29-2.336M18 8a6 6 0 10-12 0 6 6 0 0012 0z"></path>
-                </svg>
-              </div>
-              <h3 class="text-lg font-medium text-[#1C2A3A]/80 mb-2">No events scheduled</h3>
-              <p class="text-[#1C2A3A]/60 max-w-md mx-auto">
-                Check back later or explore other categories for exciting events!
-              </p>
-            </div>
-            <% } else { %>
-            <!-- Events Carousel -->
-            <div class="events-container" data-category="<%= cat._id %>">
-              <div class="events-wrapper flex transition-transform duration-300 ease-in-out">
-                <% cat.events.forEach(event => { %>
-                <div class="event-card w-full sm:w-[320px] flex-shrink-0 mr-6 last:mr-0">
-                  <a href="/events/<%= event._id %>" class="block">
-                    <div class="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
-                      <!-- First Gallery Image -->
-                      <% if (event.galleryImages && event.galleryImages.length > 0) { %>
-                      <div class="h-48 overflow-hidden">
-                        <img src="<%= event.galleryImages[0] %>" alt="<%= event.title %>" class="w-full h-full object-cover">
-                      </div>
-                      <% } else { %>
-                      <!-- Fallback if no images -->
-                      <div class="h-48 bg-gray-100 flex items-center justify-center">
-                        <div class="text-5xl text-gray-300">🖼️</div>
-                      </div>
-                      <% } %>
-
-                      <!-- Event Info -->
-                      <div class="p-4">
-                        <h3 class="font-heading font-medium text-lg mb-2 line-clamp-1"><%= event.title %></h3>
-                        <p class="text-[#1C2A3A]/70 text-sm line-clamp-2">
-                          <%= event.description %>
-                        </p>
-                      </div>
-                    </div>
-                  </a>
+          <!-- Events Grid -->
+          <div id="events-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% if (categories[0]?.events?.length > 0) { %>
+            <% categories[0].events.forEach(event => { 
+                const priceDisplay = event.priceDisplay || 'FREE';
+                const date = new Date(event.startDate);
+                const day = date.toLocaleDateString('en-US', { weekday: 'short' });
+                const month = date.toLocaleDateString('en-US', { month: 'short' });
+                const dateNum = date.getDate();
+              %>
+            <article class="event-card overflow-hidden group">
+              <div class="relative h-48 overflow-hidden">
+                <img src="<%= event.galleryImages?.[0] || '/images/default-event.jpg' %>" alt="<%= event.title %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                <div class="absolute top-3 right-3 z-10">
+                  <span class="price-tag px-3.5 py-1 rounded-full text-white font-bold text-base shadow-sm">
+                    <%= priceDisplay %>
+                  </span>
                 </div>
-                <% }) %>
               </div>
-
-              <!-- Navigation Buttons (always rendered, hidden by JS if not needed) -->
-              <button class="prev-btn absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-colors z-10 hidden md:block">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-              </button>
-              <button class="next-btn absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white/80 shadow-md flex items-center justify-center hover:bg-white transition-colors z-10 hidden md:block">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-              </button>
+              <div class="p-5">
+                <h3 class="text-lg font-heading font-bold mb-3 line-clamp-1"><%= event.title %></h3>
+                <div class="flex justify-between items-center mb-4">
+                  <div class="date-badge text-sm font-medium text-charcoal/80">
+                    <div class="font-bold"><%= day %></div>
+                    <div class="text-xs uppercase tracking-wider"><%= month %> <%= dateNum %></div>
+                  </div>
+                </div>
+                <a href="/events/<%= event._id %>" class="block w-full py-2.5 bg-charcoal text-white text-center rounded-xl text-sm font-medium hover:bg-amber hover:text-charcoal transition-colors">
+                  Discover →
+                </a>
+              </div>
+            </article>
+            <% }) %>
+            <% } else { %>
+            <div class="col-span-full bg-sand rounded-2xl p-12 text-center">
+              <div class="inline-block mb-5">
+                <div class="w-14 h-14 rounded-xl bg-amber/10 flex items-center justify-center mx-auto">
+                  <svg class="w-7 h-7 text-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-2xl font-heading font-medium mb-2">No events scheduled</h3>
+              <p class="text-charcoal/70 max-w-md mx-auto">
+                We're curating magical experiences for this category. Check back soon!
+              </p>
             </div>
             <% } %>
           </div>
-        </div>
-        <% }) %>
+        </section>
       </div>
     </div>
   </main>
-
+  <%- include('../../partials/footer') %>
   <script>
-    // Initialize carousels
-    function initCarousels() {
-      document.querySelectorAll('.events-container').forEach(container => {
-        const wrapper = container.querySelector('.events-wrapper');
-        const prevBtn = container.querySelector('.prev-btn');
-        const nextBtn = container.querySelector('.next-btn');
-        const eventCards = container.querySelectorAll('.event-card');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Store categories data safely in a hidden element
+      const categoriesData = <%= JSON.stringify(categories.map(cat => ({
+        _id: cat._id.toString(),
+        name: cat.name,
+        iconUrl: cat.iconUrl || '✨',
+        events: cat.events.map(event => ({
+          _id: event._id.toString(),
+          title: event.title,
+          galleryImages: event.galleryImages,
+          priceDisplay: event.priceDisplay || 'FREE',
+          startDate: event.startDate
+        }))
+      }))) %>;
 
-        // Detect mobile dynamically
-        const isMobile = window.innerWidth < 768;
-        const visibleCount = isMobile ? 1 : 2;
-        const totalEvents = eventCards.length;
+      // DOM elements
+      const categoryButtons = document.querySelectorAll('.category-btn');
+      const eventsContainer = document.getElementById('events-container');
+      const categoryNameEl = document.getElementById('current-category-title');
+      const categoryIconEl = document.getElementById('current-category-icon');
+      const categoryCountEl = document.getElementById('current-category-count');
 
-        let currentIndex = 0;
+      // Category button click handlers
+      categoryButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Update active state
+          categoryButtons.forEach(btn => {
+            btn.classList.remove('active-category', 'font-medium');
+            btn.classList.add('text-charcoal/70');
+          });
+          this.classList.add('active-category', 'font-medium');
+          this.classList.remove('text-charcoal/70');
 
-        // Hide buttons if not needed
-        if (totalEvents <= visibleCount) {
-          if (prevBtn) prevBtn.classList.add('hidden');
-          if (nextBtn) nextBtn.classList.add('hidden');
+          // Get category index and data
+          const categoryIndex = parseInt(this.dataset.index);
+          const category = categoriesData[categoryIndex];
+
+          // Update header
+          categoryNameEl.textContent = category.name;
+          categoryIconEl.innerHTML = category.iconUrl;
+          categoryCountEl.textContent = `${category.events.length} extraordinary experience${category.events.length !== 1 ? 's' : ''}`;
+
+          // Render events
+          renderEvents(category.events);
+
+          // Smooth scroll to top of events
+          document.querySelector('main').scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        });
+      });
+
+      // Render events function
+      function renderEvents(events) {
+        eventsContainer.innerHTML = '';
+
+        if (events.length === 0) {
+          eventsContainer.innerHTML = `
+            <div class="col-span-full bg-sand rounded-2xl p-12 text-center">
+              <div class="inline-block mb-5">
+                <div class="w-14 h-14 rounded-xl bg-amber/10 flex items-center justify-center mx-auto">
+                  <svg class="w-7 h-7 text-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 class="text-2xl font-heading font-medium mb-2">No events scheduled</h3>
+              <p class="text-charcoal/70 max-w-md mx-auto">
+                We're curating magical experiences for this category. Check back soon!
+              </p>
+            </div>
+          `;
           return;
         }
 
-        // Show buttons (they're hidden by default on mobile via Tailwind)
-        if (prevBtn) prevBtn.classList.remove('hidden');
-        if (nextBtn) nextBtn.classList.remove('hidden');
-
-        function updateCarousel() {
-          const cardWidth = 320; // Matches sm:w-[320px]
-          const gap = 24; // Matches mr-6 (1.5rem = 24px)
-          const offset = -currentIndex * (cardWidth + gap);
-          wrapper.style.transform = `translateX(${offset}px)`;
-
-          if (prevBtn) prevBtn.disabled = currentIndex === 0;
-          if (nextBtn) nextBtn.disabled = currentIndex >= totalEvents - visibleCount;
-        }
-
-        if (prevBtn) {
-          prevBtn.addEventListener('click', () => {
-            if (currentIndex > 0) {
-              currentIndex--;
-              updateCarousel();
-            }
+        // Render each event
+        events.forEach(event => {
+          const date = new Date(event.startDate);
+          const day = date.toLocaleDateString('en-US', {
+            weekday: 'short'
           });
-        }
-
-        if (nextBtn) {
-          nextBtn.addEventListener('click', () => {
-            if (currentIndex < totalEvents - visibleCount) {
-              currentIndex++;
-              updateCarousel();
-            }
+          const month = date.toLocaleDateString('en-US', {
+            month: 'short'
           });
-        }
+          const dateNum = date.getDate();
 
-        updateCarousel();
-      });
-    }
-
-    // Initialize on load
-    document.addEventListener('DOMContentLoaded', initCarousels);
-
-    // Handle window resize
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        // Re-initialize carousels
-        document.querySelectorAll('.events-container').forEach(container => {
-          const wrapper = container.querySelector('.events-wrapper');
-          wrapper.style.transform = 'translateX(0)';
+          const eventCard = document.createElement('article');
+          eventCard.className = 'event-card overflow-hidden group';
+          eventCard.innerHTML = `
+            <div class="relative h-48 overflow-hidden">
+              <img 
+                src="${event.galleryImages?.[0] || '/images/default-event.jpg'}" 
+                alt="${event.title}" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                loading="lazy"
+              >
+              <div class="absolute top-3 right-3 z-10">
+                <span class="price-tag px-3.5 py-1 rounded-full text-white font-bold text-base shadow-sm">
+                  ${event.priceDisplay}
+                </span>
+              </div>
+            </div>
+            <div class="p-5">
+              <h3 class="text-lg font-heading font-bold mb-3 line-clamp-1">${event.title}</h3>
+              <div class="flex justify-between items-center mb-4">
+                <div class="date-badge text-sm font-medium text-charcoal/80">
+                  <div class="font-bold">${day}</div>
+                  <div class="text-xs uppercase tracking-wider">${month} ${dateNum}</div>
+                </div>
+              </div>
+              <a href="/events/${event._id}" class="block w-full py-2.5 bg-charcoal text-white text-center rounded-xl text-sm font-medium hover:bg-amber hover:text-charcoal transition-colors">
+                Discover →
+              </a>
+            </div>
+          `;
+          eventsContainer.appendChild(eventCard);
         });
-        initCarousels();
-      }, 250);
+      }
     });
   </script>
 </body>

@@ -17,12 +17,73 @@ import { userBookmarks } from "../../service/user/bookmarksService.js";
 
 export const showAllEvents = async (req, res) => {
   const query = req.query.q || "";
-  const events = await allEvents(query);
-  let bookmarks = false;
-  if (req.session.user) {
-    bookmarks = await userBookmarks(req.session.user);
+  const page = parseInt(req.query.page) || 1;
+  const limit = 9;
+  const sortByParam = req.query.sortBy || "date-desc";
+  const categoryFilter = req.query.category || "all";
+
+  try {
+    // Parse the combined sortBy parameter (e.g., "date-desc", "price-asc")
+    let sortBy = "date";
+    let order = "desc";
+
+    if (sortByParam.includes("-")) {
+      const [field, direction] = sortByParam.split("-");
+      sortBy = field;
+      order = direction;
+    }
+
+    const { events, totalEvents } = await allEvents(query, page, limit, sortBy, order, categoryFilter);
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    let bookmarks = { eventIds: [] };
+    if (req.session.user) {
+      bookmarks = await userBookmarks(req.session.user);
+    }
+
+    const categories = await eventsDb.aggregate([
+      { $match: { status: "approved" } },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "categoryDoc",
+        },
+      },
+      { $unwind: "$categoryDoc" },
+      {
+        $group: {
+          _id: "$categoryId",
+          name: { $first: "$categoryDoc.name" },
+        },
+      },
+      { $sort: { name: 1 } },
+    ]);
+
+    return res.render("user/events/events", {
+      events,
+      q: query,
+      userBookmarks: bookmarks.eventIds || [],
+      currentPage: page,
+      totalPages,
+      sortBy: sortByParam,
+      category: categoryFilter,
+      categories,
+    });
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return res.status(500).render("user/events/events", {
+      events: [],
+      q: query,
+      userBookmarks: [],
+      currentPage: 1,
+      totalPages: 0,
+      sortBy: "date-desc",
+      category: "all",
+      categories: [],
+    });
   }
-  return res.render("user/events/events", { events, q: query, userBookmarks: bookmarks.eventIds });
 };
 
 export const showSingleEvent = async (req, res) => {
