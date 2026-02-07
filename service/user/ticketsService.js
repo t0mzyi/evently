@@ -215,7 +215,11 @@ export const generateTickets = async (order) => {
 };
 
 export const groupedTickets = async (userId) => {
-  const allTickets = await ticketDb.find({ userId: userId }).populate("eventId").sort({ createdAt: -1 }).lean();
+  const allTickets = await ticketDb
+    .find({ userId: userId, status: "VALID" })
+    .populate("eventId")
+    .sort({ createdAt: -1 })
+    .lean();
   if (!allTickets || allTickets.length == 0) return [];
   const grouped = allTickets.reduce((acc, tk) => {
     const orderId = tk.orderId;

@@ -32,7 +32,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  req.session.user = "79607a76389f2bdb6c08d745";
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, must-revalidate");
   res.set("Pragma", "no-cache");
   res.set("Expires", "0");

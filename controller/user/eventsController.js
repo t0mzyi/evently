@@ -8,6 +8,8 @@ import {
   eventCreator,
   hostEventViewer,
   newEvent,
+  payAndPublishEvent,
+  payEventRender,
   singleEventFinder,
   updateEventer,
 } from "../../service/user/eventsService.js";
@@ -42,7 +44,7 @@ export const showAllEvents = async (req, res) => {
     }
 
     const categories = await eventsDb.aggregate([
-      { $match: { status: "approved" } },
+      { $match: { status: "live" } },
       {
         $lookup: {
           from: "categories",
@@ -97,7 +99,7 @@ export const showSingleEvent = async (req, res) => {
 export const showCreateEvent = async (req, res) => {
   try {
     const { categories, venues } = await eventCreator();
-    res.render("user/events/create-event", { categories, venues });
+    res.render("user/events/create-Event", { categories, venues });
   } catch (error) {
     console.error("Error loading create event page:", error);
     res.status(500).send("Unable to load event creation form.");
@@ -249,5 +251,46 @@ export const updateEvent = async (req, res) => {
   } catch (error) {
     console.error("Error in update event controller:", error);
     return res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const payandpublish = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.session.user;
+    const details = await payEventRender(eventId, userId);
+    console.log(details);
+    res.render("user/events/payEvent", { details });
+  } catch (error) {
+    console.error("Error in payAndPublish", error);
+  }
+};
+
+export const handlepayAndPublish = async (req, res) => {
+  try {
+    const { eventId } = req.body;
+    const userId = req.session.user;
+
+    if (!eventId || !userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Event ID and user ID are required",
+      });
+    }
+
+    const result = await payAndPublishEvent(eventId, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Event published successfully",
+      newBalance: result.newBalance,
+      transactionId: result.transactionId,
+    });
+  } catch (error) {
+    console.error("Payment error:", error);
+    res.status(400).json({
+      success: false,
+      message: error.message || "Failed to process payment",
+    });
   }
 };

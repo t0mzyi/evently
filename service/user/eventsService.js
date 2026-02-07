@@ -5,8 +5,10 @@ import categoryDb from "../../model/categoryDb.js";
 import eventsDb from "../../model/eventsDb.js";
 import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
+import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import { venueDetails } from "./venueService.js";
+import { debitWallet } from "./walletService.js";
 
 export const allEvents = async (
   query,
@@ -18,7 +20,7 @@ export const allEvents = async (
 ) => {
   try {
     // Build query filter
-    let queryFilter = { status: "approved" };
+    let queryFilter = { status: "live" };
 
     // Search filter
     if (query.trim()) {
@@ -306,6 +308,24 @@ export const newEvent = async (body, files) => {
   // Handle venue
   if (venueType === "iconic") {
     if (!venueId) throw new Error("Venue selection error");
+    const venue = await venueDb.findById(venueId);
+    if (!venue) throw new Error("Venue not found");
+    const eventStartDateStr = start.toISOString().split("T")[0];
+    const eventEndDateStr = end.toISOString().split("T")[0];
+    for (const bookedSlot of venue.bookedOn) {
+      const bookedDate = new Date(bookedSlot);
+      const bookedDateStr = bookedDate.toISOString().split("T")[0];
+      if (bookedDateStr === eventStartDateStr || bookedDateStr === eventEndDateStr) {
+        throw new Error(`Venue is already booked on ${bookedDateStr}. Please select different dates.`);
+      }
+    }
+    await venueDb.findByIdAndUpdate(venueId, {
+      $push: {
+        bookedOn: {
+          $each: [start, end],
+        },
+      },
+    });
     event.venueId = venueId;
   } else if (venueType === "custom") {
     if (!custom_name || !custom_address || !custom_city || !custom_state) {
@@ -455,4 +475,79 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
   const updatedEvent = await eventsDb.findByIdAndUpdate(eventId, body, { new: true, runValidators: true });
 
   return updatedEvent;
+};
+
+export const payEventRender = async (eventId, userId) => {
+  const event = await eventsDb.findById(eventId);
+  if (!event) throw new Error("Event not found");
+  if (event.hostId != userId) throw new Error("Unauthorised");
+  if (event.status == "live") throw new Error("Event is already live");
+
+  const wallet = await walletDb.findOne({ userId: event.hostId });
+  const walletBalance = wallet.availableBalance.toString();
+  const hours = (event.endDate - event.startDate) / (1000 * 60 * 60);
+  let venueFee = 0;
+  if (event.venueType == "custom") venueFee = 0;
+  else {
+    const venue = await venueDb.findById(event.venueId);
+    const pricePerHour = venue.costPerHour;
+    venueFee = pricePerHour * hours;
+  }
+
+  // console.log(walletBalance);
+  const eventFee = hours * 4;
+  return { event, walletBalance, venueFee, eventFee };
+};
+
+export const payAndPublishEvent = async (eventId, userId) => {
+  const event = await eventsDb.findById(eventId);
+  if (!event) throw new Error("Event not found");
+  if (event.hostId.toString() !== userId) {
+    throw new Error("Unauthorized");
+  }
+  if (event.status === "live") {
+    throw new Error("Event is already live");
+  }
+  const wallet = await walletDb.findOne({ userId: event.hostId });
+  if (!wallet) throw new Error("Wallet not found");
+
+  const walletBalance = wallet.availableBalance.toString();
+
+  // Calculate fees
+  const hours = (event.endDate - event.startDate) / (1000 * 60 * 60);
+  let venueFee = 0;
+
+  if (event.venueType !== "custom") {
+    const venue = await venueDb.findById(event.venueId);
+    if (!venue) throw new Error("Venue not found");
+    venueFee = venue.costPerHour * hours;
+  }
+
+  const eventFee = hours * 4;
+  const totalAmount = venueFee + eventFee;
+
+  if (walletBalance < totalAmount) {
+    throw new Error(
+      `Insufficient balance. Required: $${totalAmount.toFixed(2)}, Available: $${walletBalance.toFixed(2)}`,
+    );
+  }
+
+  try {
+    // Debit wallet
+    const debitResult = await debitWallet(event.hostId, totalAmount, "Event publishing fees");
+
+    event.status = "live";
+    event.publishedAt = new Date();
+    await event.save();
+
+    return {
+      newBalance: walletBalance - totalAmount,
+      transactionId: debitResult.transactionId,
+      totalAmount,
+      venueFee,
+      eventFee,
+    };
+  } catch (error) {
+    throw new Error(`Payment failed: ${error.message}`);
+  }
 };

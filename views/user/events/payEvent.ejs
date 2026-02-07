@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pay Event Fees — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            'apple-bg': '#EAE0CF',
+            'apple-card': 'rgba(255, 255, 255, 0.6)',
+            'apple-text': '#1C2A3A',
+            'success': '#10B981',
+            'error': '#EF4444',
+            'wallet-bg': '#F8F4E9',
+            'wallet-accent': '#D4A76A',
+            'insufficient': '#FEE2E2'
+          },
+          animation: {
+            'swirl-in': 'swirl-in 0.6s ease-out forwards',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 3s ease-in-out infinite',
+            'checkmark-draw': 'checkmark-draw 0.5s ease-out forwards 0.3s',
+            'error-icon': 'error-icon 0.3s ease-out forwards',
+            'modal-pop': 'modal-pop 0.4s ease-out forwards',
+            'balance-pulse': 'balance-pulse 2s ease-in-out infinite',
+            'amount-update': 'amount-update 0.3s ease-out',
+            'error-swirl': 'error-swirl 0.6s ease-out forwards'
+          },
+          keyframes: {
+            'swirl-in': {
+              '0%': {
+                transform: 'rotate(-180deg) scale(0)',
+                opacity: '0'
+              },
+              '100%': {
+                transform: 'rotate(0deg) scale(1)',
+                opacity: '1'
+              }
+            },
+            'float': {
+              '0%, 100%': {
+                transform: 'translateY(0)'
+              },
+              '50%': {
+                transform: 'translateY(-10px)'
+              }
+            },
+            'checkmark-draw': {
+              '0%': {
+                strokeDashoffset: '100'
+              },
+              '100%': {
+                strokeDashoffset: '0'
+              }
+            },
+            'error-icon': {
+              '0%': {
+                transform: 'scale(0.5)',
+                opacity: '0'
+              },
+              '50%': {
+                transform: 'scale(1.1)',
+                opacity: '1'
+              },
+              '100%': {
+                transform: 'scale(1)',
+                opacity: '1'
+              }
+            },
+            'modal-pop': {
+              '0%': {
+                transform: 'scale(0.8)',
+                opacity: '0'
+              },
+              '100%': {
+                transform: 'scale(1)',
+                opacity: '1'
+              }
+            },
+            'balance-pulse': {
+              '0%, 100%': {
+                boxShadow: '0 0 0 0 rgba(212, 167, 106, 0.4)'
+              },
+              '50%': {
+                boxShadow: '0 0 0 8px rgba(212, 167, 106, 0)'
+              }
+            },
+            'amount-update': {
+              '0%': {
+                transform: 'scale(1)',
+                color: '#1C2A3A'
+              },
+              '50%': {
+                transform: 'scale(1.05)',
+                color: '#D4A76A'
+              },
+              '100%': {
+                transform: 'scale(1)',
+                color: '#1C2A3A'
+              }
+            },
+            'error-swirl': {
+              '0%': {
+                transform: 'rotate(0) scale(0.5)',
+                opacity: '0'
+              },
+              '30%': {
+                transform: 'rotate(180deg) scale(1.2)',
+                opacity: '1'
+              },
+              '100%': {
+                transform: 'rotate(360deg) scale(1)',
+                opacity: '0.8'
+              }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* ... (same as before - keep all your existing styles) ... */
+    .checkmark-path {
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.7);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      opacity: 0.7;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .error-cross {
+      stroke-dasharray: 50;
+      stroke-dashoffset: 50;
+    }
+
+    .payment-loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(26, 42, 58, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top: 5px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .confetti {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background-color: #f00;
+      border-radius: 0;
+    }
+
+    .wallet-balance-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .wallet-balance-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(212, 167, 106, 0.15) 0%, rgba(212, 167, 106, 0) 70%);
+      z-index: 0;
+    }
+
+    .wallet-balance-amount {
+      position: relative;
+      z-index: 1;
+      animation: balance-pulse 2s infinite;
+    }
+
+    .amount-updating {
+      animation: amount-update 0.4s ease-out;
+    }
+
+    .fee-item {
+      transition: all 0.3s ease;
+    }
+
+    .fee-item:hover {
+      background-color: rgba(234, 224, 207, 0.3);
+    }
+
+    .total-highlight {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .total-highlight::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 167, 106, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .total-highlight.update::after {
+      transform: translateX(100%);
+    }
+
+    .insufficient-balance {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+      border-color: #fecaca !important;
+    }
+
+    .insufficient-warning {
+      color: #EF4444;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .error-swirl {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #EF4444;
+      font-weight: bold;
+      font-size: 1.5rem;
+      animation: error-swirl 0.8s ease-out;
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    .wallet-pay-button:disabled {
+      background: #9CA3AF;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .wallet-pay-button:disabled:hover {
+      transform: none !important;
+    }
+  </style>
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen pb-16">
+
+  <!-- Header -->
+  <header class="fixed top-0 w-full z-50 bg-[#EAE0CF]/90 backdrop-blur-md border-b border-[#1C2A3A]/5">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="/create-event" class="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#1C2A3A]/60 hover:text-[#1C2A3A] transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back
+      </a>
+      <div class="text-xl font-heading font-bold">Event Confirmation</div>
+      <div class="w-20"></div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 pt-32 grid grid-cols-1 md:grid-cols-2 gap-12">
+
+    <!-- Fee Summary -->
+    <div class="space-y-8">
+      <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 shadow-sm border border-white/40">
+        <h2 class="text-lg font-heading text-[#1C2A3A] mb-6">Fee Summary</h2>
+
+        <div class="flex gap-4 mb-8">
+          <div class="w-20 h-20 rounded-xl bg-[#1C2A3A]/5 flex items-center justify-center shrink-0">
+            <svg class="w-8 h-8 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z">
+              </path>
+            </svg>
+          </div>
+          <div>
+            <h3 class="font-heading text-xl text-[#1C2A3A] leading-tight mb-1" id="event-name"></h3>
+            <p class="text-sm text-[#1C2A3A]/60 mb-2">Publishing Fee</p>
+          </div>
+        </div>
+
+        <div class="border-t border-[#1C2A3A]/10 pt-6 space-y-4">
+          <div class="fee-item flex justify-between items-center group">
+            <div>
+              <p class="font-bold text-[#1C2A3A]">Venue Booking Fee</p>
+              <p class="text-xs text-[#1C2A3A]/60">Reservation Deposit</p>
+            </div>
+            <span class="font-medium text-[#1C2A3A] fee-amount" id="venue-fee">$500.00</span>
+          </div>
+
+          <div class="fee-item flex justify-between items-center group">
+            <div>
+              <p class="font-bold text-[#1C2A3A]">Event Creation Fee</p>
+              <p class="text-xs text-[#1C2A3A]/60">Platform Service Charge</p>
+            </div>
+            <span class="font-medium text-[#1C2A3A] fee-amount" id="creation-fee">$50.00</span>
+          </div>
+        </div>
+
+        <div class="border-t border-[#1C2A3A]/10 pt-6 mt-6 flex justify-between items-center total-highlight" id="total-container">
+          <p class="font-heading text-xl text-[#1C2A3A]">Total Due</p>
+          <p class="font-heading text-2xl text-[#1C2A3A]" id="total-due">$550.00</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 justify-center text-[#1C2A3A]/40 text-xs font-bold uppercase tracking-widest">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+          </path>
+        </svg>
+        Secure Payment Processing
+      </div>
+    </div>
+
+    <!-- Wallet Payment Section -->
+    <div>
+      <h2 class="text-2xl font-heading text-[#1C2A3A] mb-6">Wallet Payment</h2>
+
+      <div class="wallet-balance-card bg-[#F8F4E9] border-2 border-[#D4A76A]/30 backdrop-blur-xl rounded-[2rem] p-8 shadow-sm mb-8 relative" id="wallet-balance-card">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60">Available Balance</p>
+            <p class="font-heading text-3xl font-bold mt-1 wallet-balance-amount" id="wallet-balance-display">$750.00</p>
+          </div>
+          <div class="bg-[#D4A76A]/10 p-2 rounded-lg">
+            <svg class="w-6 h-6 text-[#D4A76A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="bg-white/60 rounded-xl p-4 mt-4">
+          <div class="flex justify-between text-sm mb-2">
+            <span class="font-medium">Amount Due</span>
+            <span class="font-bold text-[#1C2A3A] wallet-amount-due" id="wallet-amount-due">$550.00</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="font-medium">Remaining Balance</span>
+            <span class="wallet-remaining-balance font-bold" id="remaining-balance">$200.00</span>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-6 border-t border-[#D4A76A]/30">
+          <p class="text-sm font-medium text-[#1C2A3A]/80">Pay directly from your Evently wallet balance</p>
+        </div>
+      </div>
+
+      <button id="wallet-pay-button" class="w-full py-4 bg-[#1C2A3A] text-white rounded-2xl font-bold text-lg hover:bg-[#2C3E50] transition-all shadow-xl shadow-[#1C2A3A]/20 transform hover:-translate-y-1 relative overflow-hidden group">
+        <span class="relative z-10">Pay <span id="wallet-pay-amount">$550.00</span> from Wallet</span>
+        <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+      </button>
+
+      <p class="text-xs text-center text-[#1C2A3A]/40 mt-4">
+        No transaction fees when using wallet balance. Event publishes instantly upon payment.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- Payment Loader -->
+  <div id="payment-loader" class="payment-loader">
+    <div class="spinner"></div>
+    <div class="text-xl font-bold mb-2">Processing Payment</div>
+    <div class="text-center max-w-md px-4">
+      <p>Please wait while we securely process your payment. Do not close this window.</p>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 animate-modal-pop relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#10B981]/10 rounded-full"></div>
+      <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#10B981]/10 rounded-full"></div>
+
+      <div class="relative z-10 text-center py-4">
+        <div class="swirl-animation inline-block mb-6">
+          <div class="relative">
+            <svg class="w-24 h-24 mx-auto text-[#10B981]" viewBox="0 0 100 100">
+              <circle class="checkmark-path" cx="50" cy="50" r="40" fill="none" stroke="#10B981" stroke-width="6" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" />
+              <path class="checkmark-path" d="M35 50l10 10 20-20" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="50" stroke-dashoffset="50" />
+            </svg>
+          </div>
+        </div>
+
+        <h3 class="text-3xl font-heading font-bold text-[#1C2A3A] mb-2">Payment Successful!</h3>
+        <p class="text-lg text-[#1C2A3A]/80 mb-6">Your event has been published successfully. You'll receive a confirmation email shortly.</p>
+
+        <div class="space-y-3">
+          <div class="bg-[#EAE0CF]/50 rounded-xl p-4 text-left">
+            <div class="flex justify-between text-sm mb-1">
+              <span>Transaction ID:</span>
+              <span class="font-mono font-bold" id="transaction-id">TXN-9876543210</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span>Amount Paid:</span>
+              <span class="font-bold" id="success-amount">$550.00</span>
+            </div>
+            <div class="flex justify-between text-sm mt-2 pt-2 border-t border-[#1C2A3A]/10">
+              <span>Payment Method:</span>
+              <span id="payment-method-used" class="font-bold">Wallet</span>
+            </div>
+          </div>
+
+          <button id="done-btn" class="w-full py-3 bg-[#1C2A3A] text-white rounded-xl font-bold text-lg hover:bg-[#2C3E50] transition-all shadow-md">
+            Done
+          </button>
+
+          <button id="view-event-btn" class="w-full py-3 bg-white border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl font-bold hover:bg-[#EAE0CF] transition-all">
+            View Event Details
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Modal -->
+  <div id="error-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+    <div class="bg-white rounded-3xl p-8 max-w-md w-full mx-4 animate-modal-pop relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-40 h-40 bg-[#EF4444]/10 rounded-full"></div>
+      <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-[#EF4444]/10 rounded-full"></div>
+
+      <div class="relative z-10 text-center py-4">
+        <div class="inline-block mb-6">
+          <svg class="w-24 h-24 mx-auto text-[#EF4444]" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#EF4444" stroke-width="6" />
+            <path class="error-cross" d="M30 30l40 40M70 30L30 70" fill="none" stroke="#EF4444" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+
+        <h3 class="text-3xl font-heading font-bold text-[#1C2A3A] mb-2">Payment Failed</h3>
+        <p id="error-message-text" class="text-lg text-[#1C2A3A]/80 mb-6">We couldn't process your payment. Please try again or contact support.</p>
+
+        <div class="space-y-3">
+          <button id="try-again-btn" class="w-full py-3 bg-[#1C2A3A] text-white rounded-xl font-bold text-lg hover:bg-[#2C3E50] transition-all shadow-md">
+            Try Again
+          </button>
+
+          <button class="w-full py-3 bg-white border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl font-bold hover:bg-[#EAE0CF] transition-all">
+            Contact Support
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const walletPayButton = document.getElementById('wallet-pay-button');
+      const paymentLoader = document.getElementById('payment-loader');
+      const successModal = document.getElementById('success-modal');
+      const errorModal = document.getElementById('error-modal');
+      const doneBtn = document.getElementById('done-btn');
+      const tryAgainBtn = document.getElementById('try-again-btn');
+      const viewEventBtn = document.getElementById('view-event-btn');
+      const paymentMethodUsed = document.getElementById('payment-method-used');
+      const transactionIdElement = document.getElementById('transaction-id');
+
+      // Auto-calculation elements
+      const venueFeeElement = document.getElementById('venue-fee');
+      const creationFeeElement = document.getElementById('creation-fee');
+      const totalDueElement = document.getElementById('total-due');
+      const totalContainer = document.getElementById('total-container');
+      const walletAmountDueElement = document.getElementById('wallet-amount-due');
+      const walletPayAmountElement = document.getElementById('wallet-pay-amount');
+      const successAmountElement = document.getElementById('success-amount');
+
+      // Wallet elements
+      const walletBalanceDisplay = document.getElementById('wallet-balance-display');
+      const remainingBalanceElement = document.getElementById('remaining-balance');
+      const walletBalanceCard = document.getElementById('wallet-balance-card');
+      const eventNameElement = document.getElementById('event-name');
+
+      // Helper function to safely convert strings to numbers
+      function safeParseFloat(value) {
+        if (typeof value === 'number') return value;
+        if (typeof value === 'string') {
+          const cleaned = value.replace(/[^\d.-]/g, '');
+          const num = parseFloat(cleaned);
+          return isNaN(num) ? 0 : num;
+        }
+        return 0;
+      }
+
+      // Payment values (passed from backend as STRINGS)
+      const venueFee = safeParseFloat(<%- JSON.stringify(details.venueFee) %>);
+      const creationFee = safeParseFloat(<%- JSON.stringify(details.eventFee) %>);
+      let walletBalance = safeParseFloat(<%- JSON.stringify(details.walletBalance) %>);
+      const eventName = <%- JSON.stringify(details.event.title) %>;
+      const eventId = <%- JSON.stringify(details.event._id) %>;
+
+      // Set event name
+      eventNameElement.textContent = eventName;
+
+      // Calculate total function (venue + creation, no tax)
+      function calculateTotal() {
+        return venueFee + creationFee;
+      }
+
+      // Format currency function
+      function formatCurrency(amount) {
+        const numAmount = typeof amount === 'number' ? amount : parseFloat(amount);
+        return `$${numAmount.toFixed(2)}`;
+      }
+
+      // Check if wallet has sufficient balance
+      function hasSufficientBalance() {
+        return walletBalance >= calculateTotal();
+      }
+
+      // Update all amount displays
+      function updateAmountDisplays() {
+        const total = calculateTotal();
+
+        [totalDueElement, walletAmountDueElement, walletPayAmountElement].forEach(el => {
+          if (el) {
+            el.classList.add('amount-updating');
+            setTimeout(() => el.classList.remove('amount-updating'), 400);
+          }
+        });
+
+        totalContainer.classList.add('update');
+        setTimeout(() => totalContainer.classList.remove('update'), 500);
+
+        venueFeeElement.textContent = formatCurrency(venueFee);
+        creationFeeElement.textContent = formatCurrency(creationFee);
+        totalDueElement.textContent = formatCurrency(total);
+        walletAmountDueElement.textContent = formatCurrency(total);
+        walletPayAmountElement.textContent = formatCurrency(total);
+        successAmountElement.textContent = formatCurrency(total);
+
+        const remainingBalance = walletBalance - total;
+        remainingBalanceElement.textContent = formatCurrency(remainingBalance);
+        walletBalanceDisplay.textContent = formatCurrency(walletBalance);
+
+        updateWalletBalanceState();
+        return total;
+      }
+
+      // Update wallet UI state based on balance sufficiency
+      function updateWalletBalanceState() {
+        const total = calculateTotal();
+        const isSufficient = hasSufficientBalance();
+
+        walletBalanceCard.classList.remove('insufficient-balance');
+        walletPayButton.disabled = false;
+
+        let warningElement = document.getElementById('balance-warning');
+        if (warningElement) warningElement.remove();
+
+        if (!isSufficient) {
+          walletBalanceCard.classList.add('insufficient-balance');
+          walletPayButton.disabled = true;
+
+          warningElement = document.createElement('div');
+          warningElement.id = 'balance-warning';
+          warningElement.className = 'insufficient-warning mt-4 text-center';
+          warningElement.innerHTML = `
+            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            Insufficient balance. Need ${formatCurrency(total - walletBalance)} more.
+          `;
+          walletBalanceCard.querySelector('.mt-6').parentNode.insertBefore(warningElement, walletBalanceCard.querySelector('.mt-6'));
+
+          showErrorSwirl("Insufficient wallet balance!");
+        }
+      }
+
+      // Show error swirl animation
+      function showErrorSwirl(message) {
+        document.querySelectorAll('.error-swirl').forEach(el => el.remove());
+        const swirl = document.createElement('div');
+        swirl.className = 'error-swirl fixed inset-0 flex items-center justify-center';
+        swirl.innerHTML = `
+          <div class="text-center bg-white/90 backdrop-blur-sm rounded-2xl p-6 shadow-xl border-2 border-[#EF4444]/30 max-w-xs mx-4">
+            <div class="flex justify-center mb-3">
+              <svg class="w-12 h-12 text-[#EF4444]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <p class="font-bold text-lg text-[#EF4444]">${message}</p>
+          </div>
+        `;
+        document.body.appendChild(swirl);
+        setTimeout(() => {
+          swirl.style.opacity = '0';
+          swirl.style.transform = 'scale(0.8)';
+          setTimeout(() => {
+            if (document.body.contains(swirl)) document.body.removeChild(swirl);
+          }, 300);
+        }, 2000);
+      }
+
+      // Initialize amounts
+      const totalAmount = updateAmountDisplays();
+
+      // ✅ WALLET PAYMENT HANDLER WITH AJAX POST
+      walletPayButton.addEventListener('click', async function(e) {
+        e.preventDefault();
+
+        // Final balance check
+        if (!hasSufficientBalance()) {
+          showErrorSwirl("Insufficient wallet balance!");
+          showErrorModal(`Your wallet balance (${formatCurrency(walletBalance)}) is less than the total amount due (${formatCurrency(calculateTotal())}).`);
+          return;
+        }
+
+        // Show loader
+        paymentLoader.style.display = 'flex';
+
+        try {
+          // ✅ AJAX POST REQUEST TO SERVER
+          const response = await fetch('/payAndPublish', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest' // Optional: for server-side detection
+            },
+            body: JSON.stringify({
+              eventId: eventId,
+              amount: calculateTotal(),
+              venueFee: venueFee,
+              eventFee: creationFee
+            })
+          });
+
+          const result = await response.json();
+
+          // Hide loader
+          paymentLoader.style.display = 'none';
+
+          if (response.ok && result.success) {
+            // Update UI with new balance
+            walletBalance = result.newBalance;
+            walletBalanceDisplay.textContent = formatCurrency(walletBalance);
+            remainingBalanceElement.textContent = formatCurrency(walletBalance - calculateTotal());
+
+            // Update success modal
+            transactionIdElement.textContent = result.transactionId || 'TXN-' + Date.now();
+            paymentMethodUsed.textContent = 'Wallet';
+
+            // Show success
+            showSuccessModal();
+          } else {
+            // Handle known errors
+            const errorMessage = result.message || 'Payment processing failed. Please try again.';
+            showErrorModal(errorMessage);
+          }
+        } catch (error) {
+          // Hide loader
+          paymentLoader.style.display = 'none';
+
+          // Handle network errors
+          console.error('Payment error:', error);
+          showErrorModal('Network error. Please check your connection and try again.');
+        }
+      });
+
+      // Modal handlers
+      doneBtn.addEventListener('click', () => {
+        successModal.classList.add('hidden');
+        window.location.href = '/events';
+      });
+
+      viewEventBtn.addEventListener('click', () => {
+        successModal.classList.add('hidden');
+        window.location.href = `/events/${eventId}`;
+      });
+
+      tryAgainBtn.addEventListener('click', () => {
+        errorModal.classList.add('hidden');
+      });
+
+      // Close modals on outside click
+      [successModal, errorModal].forEach(modal => {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            modal.classList.add('hidden');
+            if (modal === successModal) {
+              window.location.href = '/my-events';
+            }
+          }
+        });
+      });
+
+      // Success modal with animation
+      function showSuccessModal() {
+        createConfetti();
+        successModal.classList.remove('hidden');
+
+        const paths = successModal.querySelectorAll('.checkmark-path');
+        paths.forEach(path => {
+          const length = path.getTotalLength();
+          path.style.strokeDasharray = length;
+          path.style.strokeDashoffset = length;
+        });
+
+        setTimeout(() => {
+          paths.forEach(path => {
+            path.style.transition = 'stroke-dashoffset 0.5s ease-out';
+            path.style.strokeDashoffset = '0';
+          });
+        }, 100);
+      }
+
+      // Error modal
+      function showErrorModal(message) {
+        document.getElementById('error-message-text').innerText = message;
+        errorModal.classList.remove('hidden');
+
+        const cross = errorModal.querySelector('.error-cross');
+        if (cross) {
+          const length = cross.getTotalLength();
+          cross.style.strokeDasharray = length;
+          cross.style.strokeDashoffset = length;
+          cross.getBoundingClientRect();
+          cross.style.transition = 'stroke-dashoffset 0.4s ease-out';
+          cross.style.strokeDashoffset = '0';
+        }
+      }
+
+      // Confetti animation
+      function createConfetti() {
+        const colors = ['#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#D4A76A'];
+        const confettiCount = 150;
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'fixed inset-0 pointer-events-none z-50';
+        document.body.appendChild(confettiContainer);
+
+        for (let i = 0; i < confettiCount; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          const size = Math.random() * 10 + 5;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+          confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+          const startX = Math.random() * 100;
+          const startY = Math.random() * 20 - 20;
+          confetti.style.left = `${startX}%`;
+          confetti.style.top = `${startY}%`;
+          const rotation = Math.random() * 360;
+          confetti.style.transform = `rotate(${rotation}deg)`;
+          confettiContainer.appendChild(confetti);
+
+          const duration = Math.random() * 3 + 2;
+          const endX = startX + (Math.random() - 0.5) * 30;
+          const endY = Math.random() * 100 + 100;
+
+          confetti.animate([{
+              transform: `translate(0, 0) rotate(${rotation}deg)`,
+              opacity: 1
+            },
+            {
+              transform: `translate(${(endX - startX)}%, ${endY}%) rotate(${rotation + 720}deg)`,
+              opacity: 0
+            }
+          ], {
+            duration: duration * 1000,
+            delay: Math.random() * 1000,
+            easing: 'cubic-bezier(0,0,0.2,1)'
+          });
+        }
+
+        setTimeout(() => {
+          if (document.body.contains(confettiContainer)) {
+            document.body.removeChild(confettiContainer);
+          }
+        }, 5000);
+      }
+
+      // Ripple effect
+      walletPayButton.addEventListener('click', function(e) {
+        if (this.disabled) return;
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+      });
+
+      // Initial wallet balance state check
+      updateWalletBalanceState();
+    });
+  </script>
+</body>
+
+</html>

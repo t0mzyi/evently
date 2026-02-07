@@ -16,13 +16,13 @@ export const resetPasswordGuard = (req, res, next) => {
 };
 
 export const isAuth = async (req, res, next) => {
-  // if (req.session.user) {
-  //   const user = await userDb.findById(req.session.user);
-  //   if (!user.isBlocked) {
-  //     return next();
-  //   }
-  // }
-  // return res.redirect(`/signIn?status=error&message=${encodeURIComponent("Please login")}`);
+  if (req.session.user) {
+    const user = await userDb.findById(req.session.user);
+    if (!user.isBlocked) {
+      return next();
+    }
+  }
+  return res.redirect(`/signIn?status=error&message=${encodeURIComponent("Please login")}`);
   next();
 };
 

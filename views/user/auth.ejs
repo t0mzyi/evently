@@ -347,6 +347,10 @@
           showError(fields.lastName, errors.lastName, "REQUIRED");
           valid = false;
         }
+        if (!fields.email.value.trim()) {
+          showError(fields.email, errors.email, "EMAIL REQUIRED");
+          valid = false;
+        }
         if (!isValidEmail(fields.email.value)) {
           showError(fields.email, errors.email, "INVALID EMAIL");
           valid = false;

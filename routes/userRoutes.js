@@ -28,6 +28,8 @@ import { showVenues, singleVenue } from "../controller/user/venueController.js";
 import {
   createEvent,
   editEvent,
+  handlepayAndPublish,
+  payandpublish,
   showAllEvents,
   showCreateEvent,
   showSingleEvent,
@@ -103,6 +105,8 @@ router.get("/editEvent/:eventId", isAuth, editEvent);
 router.post("/createEvent", isAuth, uploadEvent.array("galleryImages", 10), createEvent);
 router.put("/editEvent/:eventId", isAuth, uploadEvent.array("galleryImages", 10), updateEvent);
 router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
+router.get("/payAndPublish/:eventId", payandpublish);
+router.post("/payAndPublish", handlepayAndPublish);
 
 //cat
 router.get("/categories", categories);

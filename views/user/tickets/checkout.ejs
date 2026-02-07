@@ -341,14 +341,15 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
               </svg>
             </div>
-            <div class="text-left">
+            <!-- <div class="text-left">
               <span class="block font-bold text-[#1C2A3A]">Razorpay</span>
               <span class="block text-xs text-[#1C2A3A]/50">Cards, UPI, Netbanking</span>
             </div>
           </div>
-          <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
-            <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
-          </div>
+          -->
+            <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
+              <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
+            </div>
         </button>
       </div>
 
@@ -397,7 +398,7 @@
       orderId: orderData._id
     };
     let selectedPaymentMethod = null;
-    let timeLeft = 100000; // Timer set to 100 seconds
+    let timeLeft = 300; // Timer set to 100 seconds
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', () => {
@@ -838,7 +839,7 @@
             }
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = '/user/my-tickets';
+              window.location.href = '/dashboard/myBookings';
             }
           })
         })

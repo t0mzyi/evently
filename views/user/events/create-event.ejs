@@ -363,6 +363,7 @@
     }
 
     // Modal search
+    // Modal search
     [document.getElementById('modal-search'), modalStart, modalEnd].forEach(el => {
       el.addEventListener('input', () => {
         const start = modalStart.value;
@@ -371,28 +372,34 @@
           modalResults.innerHTML = '<p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select dates to check listed availability.</p>';
           return;
         }
+
+        // ✅ Get date strings from frontend inputs
+        const eventStartDateStr = start.split('T')[0]; // Extract YYYY-MM-DD from datetime-local
+        const eventEndDateStr = end.split('T')[0];
+
         const filtered = venues.filter(v => v.name.toLowerCase().includes(document.getElementById('modal-search').value.toLowerCase()));
         modalResults.innerHTML = filtered.map(v => {
           const bookedIntervals = v.bookedOn || [];
-          const isOverlapping = bookedIntervals.some(interval => {
-            const [bookedStart, bookedEnd] = interval;
-            return new Date(start) < new Date(bookedEnd) && new Date(end) > new Date(bookedStart);
+          const isOverlapping = bookedIntervals.some(bookedSlot => {
+            const bookedDate = new Date(bookedSlot);
+            const bookedDateStr = bookedDate.toISOString().split('T')[0];
+            return bookedDateStr === eventStartDateStr || bookedDateStr === eventEndDateStr;
           });
           const available = !isOverlapping;
           return `
-            <div class="flex items-center justify-between p-4 bg-white/60 rounded-2xl border border-[#1C2A3A]/5">
-              <div class="flex items-center gap-4">
-                <img src="${v.image_url?.[0] || ''}" class="w-12 h-12 rounded-xl object-cover">
-                <div>
-                  <h4 class="text-sm font-bold text-[#1C2A3A]">${v.name}</h4>
-                  <p class="text-[10px] text-[#1C2A3A]/50">${v.address}</p>
-                </div>
-              </div>
-              ${available ? 
-                `<button type="button" onclick="confirmVenue('${v._id}', '${v.name.replace(/'/g, "\\'")}')" class="px-5 py-2 bg-[#1C2A3A] text-white text-[10px] font-bold rounded-xl transition-all hover:scale-105">Select</button>` : 
-                `<span class="text-[10px] font-bold text-red-400 uppercase bg-red-50 rounded-xl px-3 py-1">Booked</span>`
-              }
-            </div>`;
+        <div class="flex items-center justify-between p-4 bg-white/60 rounded-2xl border border-[#1C2A3A]/5">
+          <div class="flex items-center gap-4">
+            <img src="${v.image_url?.[0] || ''}" class="w-12 h-12 rounded-xl object-cover">
+            <div>
+              <h4 class="text-sm font-bold text-[#1C2A3A]">${v.name}</h4>
+              <p class="text-[10px] text-[#1C2A3A]/50">${v.address}</p>
+            </div>
+          </div>
+          ${available ? 
+            `<button type="button" onclick="confirmVenue('${v._id}', '${v.name.replace(/'/g, "\\'")}')" class="px-5 py-2 bg-[#1C2A3A] text-white text-[10px] font-bold rounded-xl transition-all hover:scale-105">Select</button>` : 
+            `<span class="text-[10px] font-bold text-red-400 uppercase bg-red-50 rounded-xl px-3 py-1">Booked</span>`
+          }
+        </div>`;
         }).join('');
       });
     });
