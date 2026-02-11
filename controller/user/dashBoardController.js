@@ -1,5 +1,5 @@
 import userDb from "../../model/userDb.js";
-import { userDetails } from "../../service/admin/AdashService.js";
+import { userDetails } from "../../service/admin/dashService.js";
 import { updateProfileService, userFinder } from "../../service/user/dashBoardService.js";
 
 export const getProfile = async (req, res) => {

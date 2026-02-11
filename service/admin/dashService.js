@@ -2,7 +2,7 @@ import eventsDb from "../../model/eventsDb.js";
 import userDb from "../../model/userDb.js";
 
 export const userDetails = async (page, searchQuery, sort, onlyActive) => {
-  const limits = 1;
+  const limits = 5;
 
   const filter = {};
   if (searchQuery) {
@@ -19,18 +19,17 @@ export const userDetails = async (page, searchQuery, sort, onlyActive) => {
   else if (sort == "oldest") sortOptions = { createdAt: 1 };
   else if (sort == "name-asc") sortOptions = { firstName: 1 };
   else if (sort == "name-desc") sortOptions = { firstName: -1 };
-  const [blockedUsers, activeUsers, hosts, users, totalFilteredUser] =
-    await Promise.all([
-      userDb.countDocuments({ isBlocked: true }),
-      userDb.countDocuments({ isBlocked: false }),
-      userDb.countDocuments({ isHost: true }),
-      userDb
-        .find(filter)
-        .sort(sortOptions)
-        .skip((page - 1) * limits)
-        .limit(limits),
-      userDb.countDocuments(filter),
-    ]);
+  const [blockedUsers, activeUsers, hosts, users, totalFilteredUser] = await Promise.all([
+    userDb.countDocuments({ isBlocked: true }),
+    userDb.countDocuments({ isBlocked: false }),
+    userDb.countDocuments({ isHost: true }),
+    userDb
+      .find(filter)
+      .sort(sortOptions)
+      .skip((page - 1) * limits)
+      .limit(limits),
+    userDb.countDocuments(filter),
+  ]);
 
   return {
     blockedUsers,

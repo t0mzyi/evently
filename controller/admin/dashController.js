@@ -1,4 +1,4 @@
-import { blockAndUnblock, eventDetails, userDetails, userProfile } from "../../service/admin/AdashService.js";
+import { blockAndUnblock, eventDetails, userDetails, userProfile } from "../../service/admin/dashService.js";
 
 export const getDash = async (req, res) => {
   const users = await userDetails();

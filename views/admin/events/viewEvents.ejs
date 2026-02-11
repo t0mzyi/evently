@@ -7,7 +7,6 @@
   <title>
     <%= event.title %>— Evently Admin
   </title>
-  <!-- Fixed: removed trailing spaces in URLs -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/styles.css" />
   <script>
@@ -20,6 +19,12 @@
               highlight: '#2C3E50',
               accent: '#ED8842',
               surface: '#F9F7F5'
+            },
+            status: {
+              pending: '#ED8842',
+              payment: '#3B82F6',
+              live: '#10B981',
+              rejected: '#EF4444'
             }
           },
           fontFamily: {
@@ -30,42 +35,178 @@
       }
     };
   </script>
-  <!-- Fixed: removed trailing spaces -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* CRITICAL: All @apply converted to standard CSS for Tailwind CDN */
+    .tab-btn {
+      padding-left: 1rem;
+      padding-right: 1rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+    }
+
+    .tab-btn.active {
+      background-color: #ED8842;
+      color: white;
+    }
+
+    .tab-btn:not(.active):hover {
+      background-color: rgba(28, 42, 58, 0.05);
+    }
+
+    .attendee-card {
+      background-color: white;
+      border-radius: 0.75rem;
+      border-width: 1px;
+      border-color: rgba(28, 42, 58, 0.08);
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 200ms;
+    }
+
+    .attendee-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .ticket-badge {
+      padding-left: 0.625rem;
+      padding-right: 0.625rem;
+      padding-top: 0.125rem;
+      padding-bottom: 0.125rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .status-badge.confirmed {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #047857;
+      border-width: 1px;
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .status-badge.cancelled {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #b91c1c;
+      border-width: 1px;
+      border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .avatar-initial {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 9999px;
+      background-color: rgba(237, 136, 66, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #ED8842;
+      font-size: 0.875rem;
+    }
+
+    .number-badge {
+      width: 1.75rem;
+      height: 1.75rem;
+      border-radius: 9999px;
+      background-color: rgba(28, 42, 58, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #1C2A3A;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .attendee-item {
+      margin-bottom: 0.75rem;
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 1.25rem;
+    }
+
+    .search-input {
+      width: 100%;
+      padding-left: 1rem;
+      padding-right: 2.5rem;
+      padding-top: 0.625rem;
+      padding-bottom: 0.625rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-width: 1px;
+      border-color: rgba(28, 42, 58, 0.1);
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .search-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(237, 136, 66, 0.4);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(28, 42, 58, 0.4);
+      width: 1rem;
+      height: 1rem;
+      pointer-events: none;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .space-y-3>*+* {
+      margin-top: 0.75rem;
+    }
+
+    .cancelled-text {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .border-ticket-default {
+      border-left-width: 4px;
+      border-left-color: rgba(28, 42, 58, 0.2);
+    }
+
+    .border-ticket-cancelled {
+      border-left-width: 4px;
+      border-left-color: rgba(239, 68, 68, 0.3);
+    }
+  </style>
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans">
   <%- include('../../partials/toast') %>
   <%- include('../../partials/doodles') %>
-  <!-- Admin Navbar -->
-  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
-      <div class="flex items-center gap-6">
-        <span class="text-xl font-bold tracking-tight text-white font-heading">evently
-          admin</span>
-        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
-          <a href="/admin/dashboard" class="hover:text-white transition-colors">Dashboard</a>
-          <a href="/admin/events" class="text-white">Events</a>
-          <a href="/admin/users" class="hover:text-white transition-colors">Users</a>
-          <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
-          <a href="/admin/categories" class="hover:text-white transition-colors">Categories</a>
-          <a href="/admin/wallet" class="hover:text-white transition-colors">Wallet</a>
-          <a href="/admin/coupons" class="hover:text-white transition-colors">Coupons</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="text-white/70 text-sm">Admin</span>
-        <a href="/" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-            </path>
-          </svg>
-        </a>
-      </div>
-    </nav>
-  </div>
+  <%- include('../../partials/adminNavbar') %>
 
   <div class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
     <!-- Breadcrumbs & Header -->
@@ -80,25 +221,23 @@
           <h1 class="text-3xl md:text-4xl font-heading font-medium tracking-tight mb-2 flex items-center gap-3">
             <%= event.title %>
             <% if (event.status === 'approved') { %>
-            <span class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-green-500/20">Approved</span>
+            <span class="px-3 py-1 bg-green-500/10 text-blue-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-blue-500/20">Host payment Pending</span>
             <% } else if (event.status === 'pending') { %>
             <span class="px-3 py-1 bg-yellow-500/10 text-yellow-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-yellow-500/20">Pending</span>
+            <% } else if (event.status === 'live') { %>
+            <span class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-green-500/20">Event is live</span>
             <% } else if (event.status === 'rejected') { %>
             <span class="px-3 py-1 bg-red-500/10 text-red-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-red-500/20">Rejected</span>
-            <% } else { %><span class="px-3 py-1 bg-gray-500/10 text-gray-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-gray-500/20">
+            <% } else { %>
+            <span class="px-3 py-1 bg-gray-500/10 text-gray-700 rounded-full text-xs font-bold uppercase tracking-wider font-sans border border-gray-500/20">
               <%= event.status %>
             </span>
-
             <% } %>
           </h1>
           <p class="text-[#1C2A3A]/60 flex items-center gap-2">
-            <span>ID:
-              <%= event.id %>
-            </span>
+            <span>ID: <%= event.id %></span>
             <span>•</span>
-            <span>Created on
-              <%= event.formatedDate %>
-            </span>
+            <span>Created on <%= event.formatedDate %></span>
           </p>
         </div>
         <div class="flex gap-3">
@@ -115,7 +254,6 @@
             </svg>
             Reject
           </button>
-
           <% } else if(event.status === "approved"){ %>
           <button onclick="rejectEventHandler()" class="px-6 py-2 bg-red-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,22 +261,21 @@
             </svg>
             Reject
           </button>
-          <% } else if(event.status === "rejected") {%>
+          <% } else if(event.status === "rejected") { %>
           <button onclick="approveEventHandler()" class="px-6 py-2 bg-green-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-green-600/20 hover:bg-green-700 transition-all flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
             </svg>
             Approve
           </button>
-          <%}%>
-          <% if (!event.isBlocked) { %><button onclick="rejectEventHandler()" class="px-6 py-2 bg-red-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all flex items-center gap-2">
+          <% } %>
+          <% if (!event.isBlocked) { %>
+          <button onclick="rejectEventHandler()" class="px-6 py-2 bg-red-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-              </path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
             Block
           </button>
-
           <% } %>
         </div>
       </div>
@@ -154,104 +291,77 @@
 
         <!-- About Event -->
         <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
-          <h2 class="text-xl font-heading font-bold mb-4">About this
-            Event</h2>
-          <p class="text-[#1C2A3A]/80 leading-relaxed">
-            <%= event.description %>
-          </p>
+          <h2 class="text-xl font-heading font-bold mb-4">About this Event</h2>
+          <p class="text-[#1C2A3A]/80 leading-relaxed"><%= event.description %></p>
 
           <div class="mt-8 grid grid-cols-2 gap-6">
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Start Date & Time</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= event.Sdate %>
-                <%= event.Stime %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Start Date & Time</p>
+              <p class="font-medium text-[#1C2A3A]"><%= event.Sdate %> <%= event.Stime %></p>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                End Date & Time</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= event.Edate %>
-                <%= event.Etime %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">End Date & Time</p>
+              <p class="font-medium text-[#1C2A3A]"><%= event.Edate %> <%= event.Etime %></p>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Category</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= event.categoryId.name %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Category</p>
+              <p class="font-medium text-[#1C2A3A]"><%= event.categoryId.name %></p>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Ticket type</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Ticket type</p>
               <% if (event.isFree) { %>
-              <p class="font-medium text-[#1C2A3A]">Free tickets -
-                <%= event.totalCapacity %>
-                capacity
-              </p>
+              <p class="font-medium text-[#1C2A3A]">Free tickets - <%= event.totalCapacity %> capacity</p>
               <% } else { %>
-              <p class="font-medium text-[#1C2A3A]">Paid -
-                <%= event.totalCapacity %>
-                capacity
-              </p>
-
+              <p class="font-medium text-[#1C2A3A]">Paid - <%= event.totalCapacity %> capacity</p>
               <% } %>
             </div>
           </div>
         </div>
 
         <!-- Ticket Types (only if not free) -->
-        <% if (!event.isFree && event.ticketTypes && event.ticketTypes.length
-          >0) { %>
+        <% if (!event.isFree && event.ticketTypes && event.ticketTypes.length > 0) { %>
         <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
-          <h2 class="text-xl font-heading font-bold mb-4">Ticket Types
-          </h2>
+          <h2 class="text-xl font-heading font-bold mb-4">Ticket Types</h2>
           <div class="mt-6 space-y-4">
             <% event.ticketTypes.forEach(ticket => { %>
             <div class="flex justify-between items-center pb-3 border-b border-[#1C2A3A]/10 last:border-0">
               <div>
-                <p class="font-medium text-[#1C2A3A]">
-                  <%= ticket.name %>
-                </p>
-                <p class="text-xs text-[#1C2A3A]/60 mt-1">
-                  <%= ticket.quantityAvailable %>
-                  available • Total:
-                  <%= ticket.quantityTotal %>
-                </p>
+                <p class="font-medium text-[#1C2A3A]"><%= ticket.name %></p>
+                <p class="text-xs text-[#1C2A3A]/60 mt-1"><%= ticket.quantityAvailable %> available • Total: <%= ticket.quantityTotal %></p>
               </div>
               <div class="text-right">
                 <p class="font-bold text-[#1C2A3A]">
                   <% if (ticket.price === 0) { %>
                   Free
-                  <% } else { %>$
-                  <%= ticket.price.toFixed(2) %>
-
+                  <% } else { %>$<%= ticket.price.toFixed(2) %>
                   <% } %>
                 </p>
               </div>
             </div>
             <% }); %>
           </div>
-        </div>
 
+          <!-- View All Attendees Button - DYNAMIC COUNT -->
+          <div class="mt-8 pt-6 border-t border-[#1C2A3A]/10">
+            <button onclick="openAttendeesModal()" class="w-full px-6 py-3 bg-[#ED8842] text-white rounded-xl font-bold hover:bg-[#D97706] transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+              View All Attendees (<%= attendees ? attendees.length : 0 %>)
+            </button>
+          </div>
+        </div>
         <% } %>
+
         <!-- Venue Details -->
         <% if (event.venueType === 'iconic' && venueDetails) { %>
         <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
-          <h2 class="text-xl font-heading font-bold mb-4">Venue
-            details</h2>
-          <p class="text-[#1C2A3A]/80 leading-relaxed">Iconic Venue
-          </p>
+          <h2 class="text-xl font-heading font-bold mb-4">Venue details</h2>
+          <p class="text-[#1C2A3A]/80 leading-relaxed">Iconic Venue</p>
           <div class="mt-8 grid grid-cols-2 gap-6">
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Name</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.name %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Name</p>
+              <p class="font-medium text-[#1C2A3A]"><%= venueDetails.name %></p>
             </div>
             <div>
               <a href="/venues/<%= venueDetails._id %>">
@@ -262,443 +372,726 @@
             </div>
           </div>
         </div>
-
-        <% } else {%>
+        <% } else if (venueDetails) { %>
         <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
-          <h2 class="text-xl font-heading font-bold mb-4">Venue
-            details</h2>
-          <p class="text-[#1C2A3A]/80 leading-relaxed">Iconic Venue
-          </p>
+          <h2 class="text-xl font-heading font-bold mb-4">Venue details</h2>
+          <p class="text-[#1C2A3A]/80 leading-relaxed">Custom Venue</p>
           <div class="mt-8 grid grid-cols-2 gap-6">
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Name</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.name %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Name</p>
+              <p class="font-medium text-[#1C2A3A]"><%= venueDetails.name %></p>
             </div>
             <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Address</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.address %>
-              </p>
-            </div>
-
-            <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                City</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.city %>
-              </p>
-            </div>
-
-            <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                State</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.state %>
-              </p>
-            </div>
-
-            <div>
-              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">
-                Map_url</p>
-              <p class="font-medium text-[#1C2A3A]">
-                <%= venueDetails.address %>
-              </p>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Address</p>
+              <p class="font-medium text-[#1C2A3A]"><%= venueDetails.address %></p>
             </div>
             <div>
-              <a href="/venues/<%= venueDetails.mapLink %>">
-                <button class="px-6 py-2 bg-blue-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-500/20 hover:bg-blue-600 transition-all">
-                  Map_url
-                </button>
-              </a>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">City</p>
+              <p class="font-medium text-[#1C2A3A]"><%= venueDetails.city %></p>
+            </div>
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">State</p>
+              <p class="font-medium text-[#1C2A3A]"><%= venueDetails.state %></p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-1">Map URL</p>
+              <a href="<%= venueDetails.mapLink %>" target="_blank" class="font-medium text-blue-600 hover:underline break-all"><%= venueDetails.mapLink %></a>
             </div>
           </div>
         </div>
-        <%}%>
-          <!-- Reviews -->
-          <div
-            class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
-            <div class="flex items-center justify-between mb-6">
-              <h2 class="text-xl font-heading font-bold">User Reviews
-              </h2>
-              <span
-                class="text-sm font-bold bg-[#1C2A3A]/5 px-3 py-1 rounded-lg text-[#1C2A3A]/60">
-                <%= event.reviewCount || 0 %>Reviews
-        </span>
-      </div>
-      <% if (event.reviewList && event.reviewList.length > 0) { %>
-      <div class="space-y-6">
-        <% event.reviewList.forEach(review => { %>
-        <div class="border-b border-[#1C2A3A]/10 pb-6 last:border-0 last:pb-0">
-          <div class="flex justify-between items-start mb-2">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center text-xs font-bold">
-                <%= review.user.charAt(0).toUpperCase() %>
-              </div>
-              <span class="font-bold text-sm text-[#1C2A3A]">
-                <%= review.user %>
-              </span>
-            </div>
-            <div class="flex text-yellow-500">
-              <% for (let i = 0; i < 5; i++) { %>
-              <svg class="w-4 h-4<%= i < review.rating ? 'fill-current' : 'text-[#1C2A3A]/10' %>" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
-                </path>
-              </svg>
+        <% } %>
 
+        <!-- Reviews -->
+        <% if(event.status === 'live'){ %>
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 border border-white/40 shadow-sm">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-heading font-bold">User Reviews</h2>
+            <span class="text-sm font-bold bg-[#1C2A3A]/5 px-3 py-1 rounded-lg text-[#1C2A3A]/60"><%= event.reviewCount || 0 %> Reviews</span>
+          </div>
+          <% if (event.reviewList && event.reviewList.length > 0) { %>
+          <div class="space-y-6">
+            <% event.reviewList.forEach(review => { %>
+            <div class="border-b border-[#1C2A3A]/10 pb-6 last:border-0 last:pb-0">
+              <div class="flex justify-between items-start mb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center text-xs font-bold"><%= review.user.charAt(0).toUpperCase() %></div>
+                  <span class="font-bold text-sm text-[#1C2A3A]"><%= review.user %></span>
+                </div>
+                <div class="flex text-yellow-500">
+                  <% for (let i = 0; i < 5; i++) { %>
+                  <svg class="w-4 h-4 <%= i < review.rating ? 'fill-current' : 'text-[#1C2A3A]/10' %>" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                  </svg>
+                  <% } %>
+                </div>
+              </div>
+              <p class="text-sm text-[#1C2A3A]/70"><%= review.comment %></p>
+            </div>
+            <% }); %>
+          </div>
+          <% } else { %>
+          <div class="text-center py-8">
+            <p class="text-[#1C2A3A]/40 italic">No reviews yet for this event.</p>
+          </div>
+          <% } %>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Right Column: Sidebar -->
+      <div class="space-y-6">
+        <!-- Performance Stats -->
+        <div class="bg-[#1C2A3A] text-white rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+          <h3 class="text-sm font-bold uppercase tracking-widest text-white/60 mb-6">Performance</h3>
+          <div class="space-y-6 relative z-10">
+            <div>
+              <p class="text-3xl font-heading font-bold"><%= ticket.sold %></p>
+              <p class="text-xs text-white/60 uppercase tracking-wider">Tickets Sold</p>
+              <div class="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                <div class="h-full bg-emerald-400 w-[<%= Math.min(100, (event.ticketsSold / event.totalCapacity) * 100) || 0 %>%]"></div>
+              </div>
+            </div>
+            <div class="flex justify-between items-start">
+
+              <div>
+                <p class="text-3xl font-heading font-bold">₹<%= totalEarnings %></p>
+                <p class="text-xs text-white/60 uppercase tracking-wider">Total Revenue</p>
+              </div>
+
+              <div class="text-right">
+                <p class="text-3xl font-heading font-bold">₹<%= hostEarnings %></p>
+                <p class="text-xs text-white/60 uppercase tracking-wider">Host Earnings</p>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Host Info -->
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/40 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4">Organizer Details</h3>
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm border border-orange-200 overflow-hidden">
+              <img src="<%= event.hostId.avatarUrl %>" alt="Host avatar" class="w-full h-full object-cover">
+            </div>
+            <div>
+              <p class="font-bold text-[#1C2A3A]"><%= event.hostId.firstName %> <%= event.hostId.lastName%></p>
+              <p class="text-xs text-[#1C2A3A]/60">Host ID: <%= event.hostId._id %></p>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <a href="/admin/users/<%= event.hostId._id%>" class="block w-full py-2 px-4 rounded-xl border border-[#1C2A3A]/10 text-center text-sm font-bold text-[#1C2A3A] hover:bg-white transition-colors">
+              View Host Profile
+            </a>
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=<%= event.hostId.emailAddress %>" class="block w-full py-2 px-4 rounded-xl border border-[#1C2A3A]/10 text-center text-sm font-bold text-[#1C2A3A] hover:bg-white transition-colors" target="_blank" rel="noopener noreferrer">
+              Contact Host
+            </a>
+          </div>
+        </div>
+
+        <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/40 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4">Featuring</h3>
+          <div class="space-y-2">
+            <% if(!event.isFeatured) { %>
+            <div class="flex flex-col gap-3 p-3 rounded-xl transition-colors">
+              <span class="text-sm font-medium">Event is Not Featured</span>
+              <button onclick="featureEventHandler()" class="px-6 py-2 bg-blue-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all gap-2">
+                Feature Event
+              </button>
+            </div>
+            <% } else { %>
+            <div class="flex flex-col gap-3 p-3 rounded-xl transition-colors">
+              <span class="text-sm font-medium">Event is Featured</span>
+              <span class="text-sm font-medium">Until: <%= event.featuredUntil %></span>
+              <button onclick="unfeatureEventHandler()" class="px-6 py-2 bg-red-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all gap-2">
+                UnFeature Event
+              </button>
+            </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Modal (existing) -->
+    <div id="actionModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+      <div onclick="event.stopPropagation()" class="bg-white rounded-2xl p-6 w-[90%] max-w-md">
+        <h2 id="modalTitle" class="text-lg font-bold mb-3"></h2>
+        <p id="modalDescription" class="text-sm text-gray-600 mb-4"></p>
+        <div id="modalInputWrapper" class="mb-5 hidden">
+          <label id="modalInputLabel" class="block text-sm font-semibold mb-2"></label>
+          <input id="modalInput" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+        </div>
+        <div id="modalError" class="hidden text-sm text-red-600 bg-red-100 border border-red-200 rounded-lg px-3 py-2 mb-4"></div>
+        <div class="flex justify-end gap-3">
+          <button onclick="closeActionModal()" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
+          <button id="modalConfirmBtn" class="px-4 py-2 bg-blue-900 text-white rounded-lg">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendees Modal (DYNAMIC TICKET TYPES FROM event.ticketTypes) -->
+    <div id="attendeesModal" class="fixed inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm hidden items-center justify-center z-50">
+      <div onclick="event.stopPropagation()" class="bg-white/90 rounded-[2rem] p-6 w-[95%] max-w-4xl max-h-[90vh] flex flex-col border border-white/30">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-4 pb-4 border-b border-[#1C2A3A]/10">
+          <div>
+            <h2 class="text-2xl font-heading font-bold text-[#1C2A3A]">Event Attendees</h2>
+            <p class="text-[#1C2A3A]/60 mt-1 text-sm">Total attendees: <span class="font-bold" id="totalAttendeesCount"><%= attendees ? attendees.length : 0 %></span></p>
+          </div>
+          <button onclick="closeAttendeesModal()" class="w-9 h-9 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center hover:bg-[#1C2A3A]/20 transition-colors">
+            <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Status Summary Badges (OVERALL for entire event) -->
+        <div class="flex flex-wrap gap-3 mb-5 pb-4 border-b border-[#1C2A3A]/10">
+          <div class="px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-xl">
+            <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60">Valid Tickets</p>
+            <p class="text-xl font-heading font-bold text-emerald-700 mt-1"><%= attendees ? attendees.filter(a => a.status === 'VALID').length : 0 %></p>
+          </div>
+          <div class="px-4 py-2 bg-red-50 border border-red-200 rounded-xl">
+            <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60">Cancelled Tickets</p>
+            <p class="text-xl font-heading font-bold text-red-700 mt-1"><%= attendees ? attendees.filter(a => a.status === 'CANCELLED').length : 0 %></p>
+          </div>
+          <div class="px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl">
+            <p class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/60">Total Revenue</p>
+            <p class="text-xl font-heading font-bold text-blue-700 mt-1">$<%= attendees ? attendees.filter(a => a.status === 'VALID').reduce((sum, a) => sum + a.purchasePrice, 0).toFixed(2) : '0.00' %></p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <input type="text" id="attendeeSearch" class="search-input" placeholder="Search attendees by name..." onkeyup="filterAttendees()">
+          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+
+        <!-- Ticket Type Tabs (FROM event.ticketTypes, matched by _id) -->
+        <div class="mb-6 border-b border-[#1C2A3A]/10 pb-3">
+          <nav class="flex flex-wrap gap-2">
+            <button onclick="switchAttendeeTab('all')" class="tab-btn active px-4 py-2 text-sm font-bold rounded-xl bg-[#ED8842] text-white">
+              All Attendees (<%= attendees ? attendees.length : 0 %>)
+            </button>
+            <%
+              // Generate tabs from event.ticketTypes (not from attendees)
+              if (event && event.ticketTypes) {
+                event.ticketTypes.forEach(ticketType => {
+                  // Count attendees matching this ticket type by _id
+                  const count = attendees ? attendees.filter(a => 
+                    a.ticketTypeId && 
+                    a.ticketTypeId.toString() === ticketType._id.toString()
+                  ).length : 0;
+                  const tabId = `ticket-${ticketType._id.toString()}`;
+            %>
+            <button onclick="switchAttendeeTab('<%= tabId %>')" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl text-[#1C2A3A]/70 hover:bg-[#1C2A3A]/5">
+              <%= ticketType.name %> (<%= count %>)
+            </button>
+            <% 
+                });
+              }
+            %>
+          </nav>
+        </div>
+
+        <!-- Tab Content (DYNAMIC ATTENDEES FILTERED BY ticketTypeId) -->
+        <div class="flex-1 overflow-y-auto mb-6">
+          <!-- ALL ATTENDEES TAB -->
+          <div id="tab-all" class="tab-content active">
+            <div class="space-y-3">
+              <% if (attendees && attendees.length > 0) { %>
+              <% attendees.forEach((attendee, index) => { 
+                  const borderColorClass = attendee.status === 'CANCELLED' ? 'border-ticket-cancelled' : 'border-ticket-default';
+                  const statusText = attendee.status === 'VALID' ? 'Confirmed' : attendee.status;
+                  const statusClass = attendee.status === 'VALID' ? 'status-badge confirmed' : 'status-badge cancelled';
+                  const initial = attendee.holderDetails.firstName.charAt(0).toUpperCase();
+                  const isCancelled = attendee.status === 'CANCELLED';
+                %>
+              <div class="attendee-item" data-name="<%= attendee.holderDetails.firstName %> <%= attendee.holderDetails.lastName %>">
+                <div class="attendee-card <%= borderColorClass %>">
+                  <div class="p-5">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                      <div class="flex items-start gap-4">
+                        <div class="number-badge"><%= index + 1 %></div>
+                        <div class="flex-shrink-0">
+                          <div class="avatar-initial"><%= initial %></div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="flex flex-wrap items-start gap-2 mb-1">
+                            <h3 class="text-lg font-heading font-bold <%= isCancelled ? 'cancelled-text' : 'text-[#1C2A3A]' %>">
+                              <%= attendee.holderDetails.firstName %> <%= attendee.holderDetails.lastName %>
+                            </h3>
+                            <span class="ticket-badge bg-[#1C2A3A]/5 text-[#1C2A3A] border border-[#1C2A3A]/10">
+                              <%= attendee.ticketName %>
+                            </span>
+                          </div>
+                          <p class="text-[#1C2A3A]/70 mb-2 <%= isCancelled ? 'cancelled-text' : '' %>"><%= attendee.holderDetails.email %></p>
+                          <div class="flex flex-wrap items-center gap-4 text-sm text-[#1C2A3A]/70">
+                            <div class="flex items-center gap-1.5">
+                              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                              </svg>
+                              <span class="<%= isCancelled ? 'cancelled-text' : '' %>"><%= attendee.holderDetails.phone %></span>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                              </svg>
+                              <span class="<%= isCancelled ? 'cancelled-text' : '' %>">Ticket ID: <%= attendee.ticketId %></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0 w-full md:w-auto md:text-right">
+                        <div class="font-heading font-bold text-xl <%= isCancelled ? 'cancelled-text' : 'text-[#1C2A3A]' %>">
+                          <%= attendee.purchasePrice === 0 ? 'Free' : '$' + attendee.purchasePrice.toFixed(2) %>
+                        </div>
+                        <div class="text-xs text-[#1C2A3A]/60 mt-0.5">
+                          <%= new Date(attendee.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                        </div>
+                        <div class="mt-2">
+                          <span class="<%= statusClass %> px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <%= statusText %>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+              <% } else { %>
+              <div class="text-center py-12">
+                <div class="mx-auto w-16 h-16 rounded-full bg-[#ED8842]/10 flex items-center justify-center mb-4">
+                  <svg class="w-8 h-8 text-[#ED8842]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-xl font-heading font-bold text-[#1C2A3A] mb-2">No Attendees Yet</h3>
+                <p class="text-[#1C2A3A]/60">No tickets have been purchased for this event.</p>
+              </div>
               <% } %>
             </div>
           </div>
-          <p class="text-sm text-[#1C2A3A]/70">
-            <%= review.comment %>
-          </p>
-        </div>
-        <% }); %>
-      </div>
-      <% } else { %>
-      <div class="text-center py-8">
-        <p class="text-[#1C2A3A]/40 italic">No reviews yet for
-          this event.</p>
-      </div>
 
-      <% } %>
-    </div>
-  </div>
-
-  <!-- Right Column: Sidebar -->
-  <div class="space-y-6">
-    <!-- Performance Stats -->
-    <div class="bg-[#1C2A3A] text-white rounded-[2rem] p-6 shadow-xl relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none">
-      </div>
-      <h3 class="text-sm font-bold uppercase tracking-widest text-white/60 mb-6">
-        Performance</h3>
-      <div class="space-y-6 relative z-10">
-        <div>
-          <p class="text-3xl font-heading font-bold">
-            <%= ticket.sold %>
-          </p>
-          <p class="text-xs text-white/60 uppercase tracking-wider">
-            Tickets Sold</p>
-          <div class="w-full h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
-            <div class="h-full bg-emerald-400 w-[<%= Math.min(100, (event.ticketsSold / event.totalCapacity) * 100) || 0 %>%]">
+          <!-- DYNAMIC TICKET TYPE TABS (FILTERED BY ticketTypeId) -->
+          <%
+            if (event && event.ticketTypes) {
+              event.ticketTypes.forEach(ticketType => {
+                const tabId = `ticket-${ticketType._id.toString()}`;
+                const filteredAttendees = attendees ? attendees.filter(a => 
+                  a.ticketTypeId && 
+                  a.ticketTypeId.toString() === ticketType._id.toString()
+                ) : [];
+          %>
+          <div id="tab-<%= tabId %>" class="tab-content hidden">
+            <div class="space-y-3">
+              <% if (filteredAttendees.length > 0) { %>
+              <% filteredAttendees.forEach((attendee, index) => { 
+                  const borderColorClass = attendee.status === 'CANCELLED' ? 'border-ticket-cancelled' : 'border-ticket-default';
+                  const statusText = attendee.status === 'VALID' ? 'Confirmed' : attendee.status;
+                  const statusClass = attendee.status === 'VALID' ? 'status-badge confirmed' : 'status-badge cancelled';
+                  const initial = attendee.holderDetails.firstName.charAt(0).toUpperCase();
+                  const isCancelled = attendee.status === 'CANCELLED';
+                %>
+              <div class="attendee-item" data-name="<%= attendee.holderDetails.firstName %> <%= attendee.holderDetails.lastName %>">
+                <div class="attendee-card <%= borderColorClass %>">
+                  <div class="p-5">
+                    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                      <div class="flex items-start gap-4">
+                        <div class="number-badge"><%= index + 1 %></div>
+                        <div class="flex-shrink-0">
+                          <div class="avatar-initial"><%= initial %></div>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <div class="flex flex-wrap items-start gap-2 mb-1">
+                            <h3 class="text-lg font-heading font-bold <%= isCancelled ? 'cancelled-text' : 'text-[#1C2A3A]' %>">
+                              <%= attendee.holderDetails.firstName %> <%= attendee.holderDetails.lastName %>
+                            </h3>
+                            <span class="ticket-badge bg-[#1C2A3A]/5 text-[#1C2A3A] border border-[#1C2A3A]/10">
+                              <%= ticketType.name %>
+                            </span>
+                          </div>
+                          <p class="text-[#1C2A3A]/70 mb-2 <%= isCancelled ? 'cancelled-text' : '' %>"><%= attendee.holderDetails.email %></p>
+                          <div class="flex flex-wrap items-center gap-4 text-sm text-[#1C2A3A]/70">
+                            <div class="flex items-center gap-1.5">
+                              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                              </svg>
+                              <span class="<%= isCancelled ? 'cancelled-text' : '' %>"><%= attendee.holderDetails.phone %></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex-shrink-0 w-full md:w-auto md:text-right">
+                        <div class="font-heading font-bold text-xl <%= isCancelled ? 'cancelled-text' : 'text-[#1C2A3A]' %>">
+                          <%= attendee.purchasePrice === 0 ? 'Free' : '$' + attendee.purchasePrice.toFixed(2) %>
+                        </div>
+                        <div class="text-xs text-[#1C2A3A]/60 mt-0.5">
+                          <%= new Date(attendee.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) %>
+                        </div>
+                        <div class="mt-2">
+                          <span class="<%= statusClass %> px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <%= statusText %>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+              <% } else { %>
+              <div class="text-center py-8 text-[#1C2A3A]/60">No attendees with "<%= ticketType.name %>" tickets found</div>
+              <% } %>
             </div>
           </div>
-        </div>
-        <div>
-          <p class="text-3xl font-heading font-bold">$
-            <%= event.revenue || 0 %>
-          </p>
-          <p class="text-xs text-white/60 uppercase tracking-wider">
-            Total Revenue</p>
+          <%
+              });
+            }
+          %>
         </div>
 
-      </div>
-    </div>
-
-    <!-- Host Info -->
-    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/40 shadow-sm">
-      <h3 class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4">
-        Organizer Details</h3>
-      <div class="flex items-center gap-4 mb-4">
-        <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm border border-orange-200 overflow-hidden">
-
-          <img src="<%= event.hostId.avatarUrl %>" alt="Host avatar" class="w-full h-full object-cover">
-        </div>
-        <div>
-          <p class="font-bold text-[#1C2A3A]">
-            <%= event.hostId.firstName %> <%= event.hostId.lastName%>
-          </p>
-          <p class="text-xs text-[#1C2A3A]/60">Host ID:
-            <%= event.hostId._id %>
-          </p>
-        </div>
-      </div>
-      <div class="space-y-3">
-        <a href="/admin/users/<%= event.hostId._id%>" class="block w-full py-2 px-4 rounded-xl border border-[#1C2A3A]/10 text-center text-sm font-bold text-[#1C2A3A] hover:bg-white transition-colors">
-          View Host Profile
-        </a>
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=<%= event.hostId.emailAddress %>" class="block w-full py-2 px-4 rounded-xl border border-[#1C2A3A]/10 text-center text-sm font-bold text-[#1C2A3A] hover:bg-white transition-colors" target="_blank" rel="noopener noreferrer">
-          Contact Host
-        </a>
-      </div>
-    </div>
-
-
-    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-6 border border-white/40 shadow-sm">
-      <h3 class="text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4">
-        Featuring</h3>
-      <div class="space-y-2">
-        <%if(!event.isFeatured){%>
-        <div class="flex flex-col gap-3 p-3 rounded-xl transition-colors">
-          <span class="text-sm font-medium">Event is Not Featured</span>
-          <button onclick="featureEventHandler()" class="px-6 py-2 bg-blue-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all gap-2">
-            Feature Event
+        <!-- Modal Footer -->
+        <div class="pt-4 border-t border-[#1C2A3A]/10 flex justify-between items-center">
+          <p class="text-sm text-[#1C2A3A]/60">Showing <span class="font-bold" id="visibleAttendeesCount"><%= attendees ? attendees.length : 0 %></span> of <span id="totalAttendeesDisplay"><%= attendees ? attendees.length : 0 %></span> attendees</p>
+          <button onclick="closeAttendeesModal()" class="px-5 py-2 bg-[#1C2A3A] text-white rounded-xl font-bold hover:bg-[#2C3E50] transition-colors">
+            Close
           </button>
         </div>
-        <%}else { %>
-        <div class="flex flex-col gap-3 p-3 rounded-xl transition-colors">
-          <span class="text-sm font-medium">Event is Featured</span>
-          <span class="text-sm font-medium">Until : <%= event.featuredUntil%></span>
-
-          <button onclick="unfeatureEventHandler()" class="px-6 py-2 bg-red-900 text-white rounded-xl text-sm font-bold shadow-lg shadow-red-600/20 hover:bg-red-700 transition-all gap-2">
-            UnFeature Event
-          </button>
-        </div>
-        <%}%>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
-    <div id="actionModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-      <div onclick="event.stopPropagation()" class="bg-white rounded-2xl p-6 w-[90%] max-w-md">
-
-    <h2 id="modalTitle" class="text-lg font-bold mb-3"></h2>
-
-    <p id="modalDescription" class="text-sm text-gray-600 mb-4"></p>
-
-    <!-- Optional input -->
-    <div id="modalInputWrapper" class="mb-5 hidden">
-      <label id="modalInputLabel" class="block text-sm font-semibold mb-2"></label>
-      <input id="modalInput" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-    </div>
-
-    <div id="modalError" class="hidden text-sm text-red-600 bg-red-100 border border-red-200 rounded-lg px-3 py-2 mb-4"></div>
-
-    <div class="flex justify-end gap-3">
-      <button onclick="closeActionModal()" class="px-4 py-2 bg-gray-200 rounded-lg">Cancel</button>
-      <button id="modalConfirmBtn" class="px-4 py-2 bg-blue-900 text-white rounded-lg">Confirm</button>
-    </div>
-
   </div>
-</div>
-
 </body>
-<script>    
-  function openActionModal({ 
-  title, 
-  description, 
-  showInput = false, 
-  inputLabel = "", 
-  inputType = "text", 
-  confirmCallback 
-}) {
-  const modal = document.getElementById("actionModal");
-  const modalTitle = document.getElementById("modalTitle");
-  const modalDesc = document.getElementById("modalDescription");
-  const inputWrapper = document.getElementById("modalInputWrapper");
-  const inputLabelEl = document.getElementById("modalInputLabel");
-  const input = document.getElementById("modalInput");
-  const errorEl = document.getElementById("modalError");
-  const confirmBtn = document.getElementById("modalConfirmBtn");
+<script>
+  function openActionModal({
+    title,
+    description,
+    showInput = false,
+    inputLabel = "",
+    inputType = "text",
+    confirmCallback
+  }) {
+    const modal = document.getElementById("actionModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDescription");
+    const inputWrapper = document.getElementById("modalInputWrapper");
+    const inputLabelEl = document.getElementById("modalInputLabel");
+    const input = document.getElementById("modalInput");
+    const errorEl = document.getElementById("modalError");
+    const confirmBtn = document.getElementById("modalConfirmBtn");
 
-  // Show modal
-  modal.classList.remove("hidden");
-  modal.classList.add("flex");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    modalTitle.textContent = title;
+    modalDesc.textContent = description;
+    errorEl.classList.add("hidden");
+    errorEl.textContent = "";
 
-  // Set dynamic content
-  modalTitle.textContent = title;
-  modalDesc.textContent = description;
-  errorEl.classList.add("hidden");
-  errorEl.textContent = "";
+    if (showInput) {
+      inputWrapper.classList.remove("hidden");
+      inputLabelEl.textContent = inputLabel;
+      input.type = inputType;
+      input.value = "";
+    } else {
+      inputWrapper.classList.add("hidden");
+    }
 
-  if (showInput) {
-    inputWrapper.classList.remove("hidden");
-    inputLabelEl.textContent = inputLabel;
-    input.type = inputType;
-    input.value = "";
-  } else {
-    inputWrapper.classList.add("hidden");
+    confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+    const newConfirmBtn = document.getElementById("modalConfirmBtn");
+    newConfirmBtn.addEventListener("click", () => {
+      const value = showInput ? input.value : null;
+      confirmCallback(value, errorEl);
+    });
   }
 
-  // Remove old click listeners
-  confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-  const newConfirmBtn = document.getElementById("modalConfirmBtn");
+  function closeActionModal() {
+    const modal = document.getElementById("actionModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    const errorEl = document.getElementById("modalError");
+    errorEl.classList.add("hidden");
+    errorEl.textContent = "";
+  }
 
-  // Confirm button callback
-  newConfirmBtn.addEventListener("click", () => {
-    const value = showInput ? input.value : null;
-    confirmCallback(value, errorEl);
+  // Attendees Modal Functions
+  function openAttendeesModal() {
+    const modal = document.getElementById("attendeesModal");
+    modal.classList.remove("hidden");
+    modal.classList.add("flex");
+    document.body.style.overflow = "hidden";
+
+    // Reset search
+    document.getElementById('attendeeSearch').value = '';
+
+    // Reset to "All Attendees" tab
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active', 'bg-[#ED8842]', 'text-white');
+      btn.classList.add('text-[#1C2A3A]/70');
+    });
+    document.querySelector('.tab-btn:first-child').classList.add('active', 'bg-[#ED8842]', 'text-white');
+    document.querySelector('.tab-btn:first-child').classList.remove('text-[#1C2A3A]/70');
+
+    // Show all tab, hide others
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+      content.classList.remove('active');
+    });
+    document.getElementById('tab-all').classList.remove('hidden');
+    document.getElementById('tab-all').classList.add('active');
+
+    // Reset counts
+    const totalAttendees = document.querySelectorAll('.attendee-item[data-name]').length;
+    document.getElementById('totalAttendeesCount').textContent = totalAttendees;
+    const visibleInTab = document.getElementById('tab-all').querySelectorAll('.attendee-item').length;
+    document.getElementById('visibleAttendeesCount').textContent = visibleInTab;
+    document.getElementById('totalAttendeesDisplay').textContent = visibleInTab;
+  }
+
+  function closeAttendeesModal() {
+    const modal = document.getElementById("attendeesModal");
+    modal.classList.add("hidden");
+    modal.classList.remove("flex");
+    document.body.style.overflow = "auto";
+
+    // Reset search input
+    document.getElementById('attendeeSearch').value = '';
+  }
+
+  document.getElementById("attendeesModal").addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeAttendeesModal();
+    }
   });
-}
 
-function closeActionModal() {
-  const modal = document.getElementById("actionModal");
-  modal.classList.add("hidden");
-  modal.classList.remove("flex");
-
-  // Clear error
-  const errorEl = document.getElementById("modalError");
-  errorEl.classList.add("hidden");
-  errorEl.textContent = "";
-}
-
-
-
-function featureEventHandler() {
-  openActionModal({
-    title: "Feature Event",
-    description: "Select until when this event should be featured.",
-    showInput: true,
-    inputLabel: "Featured Until",
-    inputType: "datetime-local",
-    confirmCallback: (value, errorEl) => {
-      if (!value) {
-        errorEl.textContent = "Please select a date";
-        errorEl.classList.remove("hidden");
-        return;
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      const attendeesModal = document.getElementById("attendeesModal");
+      if (!attendeesModal.classList.contains("hidden")) {
+        closeAttendeesModal();
       }
+    }
+  });
 
-      fetch(`/admin/events/<%= event._id %>/featureEvent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ featuredUntil: new Date(value).toISOString() })
-        })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) window.location.href = data.redirectUrl;
-        else {
-        errorEl.textContent = data.message || "Something went wrong";
-        errorEl.classList.remove("hidden");
+  function filterAttendees() {
+    const searchTerm = document.getElementById('attendeeSearch').value.toLowerCase().trim();
+    const activeTab = document.querySelector('.tab-content:not(.hidden)');
+
+    if (!activeTab) return;
+
+    const attendeeItems = activeTab.querySelectorAll('.attendee-item');
+    let visibleCount = 0;
+
+    attendeeItems.forEach(item => {
+      const attendeeName = item.getAttribute('data-name').toLowerCase();
+      const shouldShow = attendeeName.includes(searchTerm);
+
+      item.style.display = shouldShow ? 'block' : 'none';
+      if (shouldShow) visibleCount++;
+    });
+
+    // Update visible count
+    document.getElementById('visibleAttendeesCount').textContent = visibleCount;
+  }
+
+  function switchAttendeeTab(tabName) {
+    // Reset search input
+    document.getElementById('attendeeSearch').value = '';
+
+    // Update active tab button
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active', 'bg-[#ED8842]', 'text-white');
+      btn.classList.add('text-[#1C2A3A]/70');
+    });
+
+    // Activate clicked tab button
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    let found = false;
+    tabButtons.forEach(btn => {
+      const onclickAttr = btn.getAttribute('onclick');
+      if (onclickAttr && onclickAttr.includes(`'${tabName}'`)) {
+        btn.classList.add('active', 'bg-[#ED8842]', 'text-white');
+        btn.classList.remove('text-[#1C2A3A]/70');
+        found = true;
+      }
+    });
+
+    // Fallback to first tab if not found
+    if (!found && tabButtons.length > 0) {
+      tabButtons[0].classList.add('active', 'bg-[#ED8842]', 'text-white');
+      tabButtons[0].classList.remove('text-[#1C2A3A]/70');
+    }
+
+    // Show selected tab content, hide others
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.add('hidden');
+      content.classList.remove('active');
+    });
+
+    const targetTab = document.getElementById(`tab-${tabName}`);
+    if (targetTab) {
+      targetTab.classList.remove('hidden');
+      targetTab.classList.add('active');
+
+      // Reset counts
+      const totalInTab = targetTab.querySelectorAll('.attendee-item').length;
+      document.getElementById('visibleAttendeesCount').textContent = totalInTab;
+      document.getElementById('totalAttendeesDisplay').textContent = totalInTab;
+      document.getElementById('totalAttendeesCount').textContent = document.querySelectorAll('.attendee-item[data-name]').length;
+
+      // Trigger filter to reset visibility
+      filterAttendees();
+    }
+  }
+
+  function featureEventHandler() {
+    openActionModal({
+      title: "Feature Event",
+      description: "Select until when this event should be featured.",
+      showInput: true,
+      inputLabel: "Featured Until",
+      inputType: "datetime-local",
+      confirmCallback: (value, errorEl) => {
+        if (!value) {
+          errorEl.textContent = "Please select a date";
+          errorEl.classList.remove("hidden");
+          return;
         }
-        })
-        .catch(err => console.error(err));
+
+        fetch(`/admin/events/<%= event._id %>/featureEvent`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              featuredUntil: new Date(value).toISOString()
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) window.location.href = data.redirectUrl;
+            else {
+              errorEl.textContent = data.message || "Something went wrong";
+              errorEl.classList.remove("hidden");
+            }
+          })
+          .catch(err => console.error(err));
 
         closeActionModal();
-        }
-        });
-        }
+      }
+    });
+  }
 
-
-
-
-
-        function unfeatureEventHandler() {
-        openActionModal({
-        title: "Unfeature Event",
-        description: "Are you sure you want to remove this event from featured?",
-        showInput: false,
-
-        confirmCallback: (_, errorEl) => {
-
+  function unfeatureEventHandler() {
+    openActionModal({
+      title: "Unfeature Event",
+      description: "Are you sure you want to remove this event from featured?",
+      showInput: false,
+      confirmCallback: (_, errorEl) => {
         fetch(`/admin/events/<%= event._id%>/unfeatureEvent`, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        }
-        })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) {
-        window.location.href =data.redirectUrl;
-        } else {
-        errorEl.textContent = data.message || "Something went wrong";
-        errorEl.classList.remove("hidden");
-        }
-        })
-        .catch(err => {
-        console.error(err);
-        errorEl.textContent = "Server error. Try again.";
-        errorEl.classList.remove("hidden");
-        });
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = data.redirectUrl;
+            } else {
+              errorEl.textContent = data.message || "Something went wrong";
+              errorEl.classList.remove("hidden");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            errorEl.textContent = "Server error. Try again.";
+            errorEl.classList.remove("hidden");
+          });
 
         closeActionModal();
-        }
-        });
-        }
+      }
+    });
+  }
 
-
-
-
-
-        function approveEventHandler() {
-        openActionModal({
-        title: "Approve Event",
-        description: "Are you sure you want to approve this event?",
-        showInput: false,
-
-        confirmCallback: (_, errorEl) => {
-
+  function approveEventHandler() {
+    openActionModal({
+      title: "Approve Event",
+      description: "Are you sure you want to approve this event?",
+      showInput: false,
+      confirmCallback: (_, errorEl) => {
         fetch(`/admin/events/<%=event._id%>/approveEvent`, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        }
-        })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) {
-        window.location.href = data.redirectUrl;
-        } else {
-        errorEl.textContent = data.message || "Something went wrong";
-        errorEl.classList.remove("hidden");
-        }
-        })
-        .catch(err => {
-        console.error(err);
-        errorEl.textContent = "Server error. Try again.";
-        errorEl.classList.remove("hidden");
-        });
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = data.redirectUrl;
+            } else {
+              errorEl.textContent = data.message || "Something went wrong";
+              errorEl.classList.remove("hidden");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            errorEl.textContent = "Server error. Try again.";
+            errorEl.classList.remove("hidden");
+          });
 
         closeActionModal();
-        }
-        });
-        }
+      }
+    });
+  }
 
-
-
-
-
-        function rejectEventHandler() {
-        openActionModal({
-        title: "Reject Event",
-        description: "Please provide a reason for rejecting this event.",
-        showInput: true,
-        inputLabel: "Rejection Reason",
-        inputType: "text",
-
-        confirmCallback: (reason, errorEl) => {
-
+  function rejectEventHandler() {
+    openActionModal({
+      title: "Reject Event",
+      description: "Please provide a reason for rejecting this event.",
+      showInput: true,
+      inputLabel: "Rejection Reason",
+      inputType: "text",
+      confirmCallback: (reason, errorEl) => {
         if (!reason || !reason.trim()) {
-        errorEl.textContent = "Rejection reason is required";
-        errorEl.classList.remove("hidden");
-        return;
+          errorEl.textContent = "Rejection reason is required";
+          errorEl.classList.remove("hidden");
+          return;
         }
 
         fetch(`/admin/events/<%= event._id%>/rejectEvent`, {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ reason })
-        })
-        .then(res => res.json())
-        .then(data => {
-        if (data.success) {
-        window.location.href = data.redirectUrl
-        } else {
-        errorEl.textContent = data.message || "Something went wrong";
-        errorEl.classList.remove("hidden");
-        }
-        })
-        .catch(err => {
-        console.error(err);
-        errorEl.textContent = "Server error. Try again.";
-        errorEl.classList.remove("hidden");
-        });
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              reason
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              window.location.href = data.redirectUrl;
+            } else {
+              errorEl.textContent = data.message || "Something went wrong";
+              errorEl.classList.remove("hidden");
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            errorEl.textContent = "Server error. Try again.";
+            errorEl.classList.remove("hidden");
+          });
 
         closeActionModal();
-        }
-        });
-        }
-
-
-
-
-        </script>
+      }
+    });
+  }
+</script>
 
 </html>

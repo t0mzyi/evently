@@ -7,6 +7,7 @@ import {
   singleEvent,
   statusChanger,
 } from "../../service/admin/eventsService.js";
+import ticketDb from "../../model/ticketDb.js";
 
 export const showEvents = async (req, res) => {
   try {
@@ -23,9 +24,11 @@ export const showEvents = async (req, res) => {
     });
 
     res.render("admin/events/events", {
+      activePage: "events",
       events,
       pendingEvents: eventDetails.pendingEvents,
       approvedEvents: eventDetails.approvedEvents,
+      liveEvents: eventDetails.liveEvents,
       rejectedEvents: eventDetails.rejectedEvents,
       totalEvents: eventDetails.totalEvents,
       totalPages: eventDetails.totalPages,
@@ -56,9 +59,16 @@ export const showSingleEvent = async (req, res) => {
     const total = event.ticketTypes.reduce((acc, t) => (acc += t.quantityTotal), 0);
     const available = event.ticketTypes.reduce((acc, t) => (acc += t.quantityAvailable), 0);
     const sold = total - available;
-    const ticket = { total, available, sold };
+    const attendees = await ticketDb.find({ eventId: event._id });
 
-    res.render("admin/events/viewEvents", { event, venueDetails, ticket });
+    const validTickets = attendees.filter((t) => t.status === "VALID");
+    const totalEarnings = validTickets.reduce((sum, t) => sum + Number(t.purchasePrice), 0).toFixed(2);
+    const hostEarnings = validTickets.reduce((sum, t) => sum + Number(t.purchasePrice) / 1.025, 0).toFixed(2);
+
+    console.log(hostEarnings, "host", totalEarnings);
+    const ticket = { total, available, sold };
+    console.log(event);
+    res.render("admin/events/viewEvents", { event, totalEarnings, hostEarnings, venueDetails, ticket, attendees });
   } catch (error) {
     console.log("error", error);
   }

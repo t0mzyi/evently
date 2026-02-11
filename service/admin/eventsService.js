@@ -3,7 +3,7 @@ import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
 
 export const allEvents = async (page, search, type, sortQuery) => {
-  const limit = 1;
+  const limit = 5;
   const filter = {};
   if (search) {
     filter.title = { $regex: search, $options: "i" };
@@ -17,10 +17,11 @@ export const allEvents = async (page, search, type, sortQuery) => {
   else if (sortQuery == "createdAt-asc") sort = { createdAt: 1 };
   else if (sortQuery == "createdAt-desc") sort = { createdAt: -1 };
 
-  const [totalEvents, pendingEvents, approvedEvents, rejectedEvents, events] = await Promise.all([
+  const [totalEvents, pendingEvents, approvedEvents, liveEvents, rejectedEvents, events] = await Promise.all([
     eventsDb.countDocuments(filter),
     eventsDb.countDocuments({ status: "pending" }),
     eventsDb.countDocuments({ status: "approved" }),
+    eventsDb.countDocuments({ status: "live" }),
     eventsDb.countDocuments({ status: "rejected" }),
     eventsDb
       .find(filter)
@@ -30,13 +31,23 @@ export const allEvents = async (page, search, type, sortQuery) => {
       .populate("categoryId", "name")
       .populate("hostId", "firstName lastName"),
   ]);
-
+  events.forEach((event) => {
+    if (event.ticketTypes && event.ticketTypes.length > 0) {
+      event.minPrice = Math.min(...event.ticketTypes.map((t) => t.price || 0));
+    } else {
+      event.minPrice = 0;
+    }
+    console.log(event.ticketTypes);
+    event.totalTickets = event.ticketTypes.reduce((acc, t) => (acc += t.quantityTotal), 0);
+    event.availableTickets = event.ticketTypes.reduce((acc, t) => (acc += t.quantityAvailable), 0);
+  });
   const totalPages = Math.ceil(totalEvents / limit);
   return {
     pendingEvents,
     approvedEvents,
     rejectedEvents,
     totalEvents,
+    liveEvents,
     events,
     totalPages,
     currentPage: parseInt(page),

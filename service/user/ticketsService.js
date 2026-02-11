@@ -159,7 +159,7 @@ export const finalizeOrder = async (orderDetails) => {
     try {
       await generateTickets(order);
       const event = await eventsDb.findById(order.eventId);
-      if (event && event.adminId) {
+      if (event && event.hostId) {
         const hostEarnings = order.pricing.subTotal;
         await addMoneyWallet(event.adminId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
       }
