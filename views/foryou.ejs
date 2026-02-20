@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Evently — Discover & Experience</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com  "></script>
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script>
     tailwind.config = {
@@ -35,8 +35,8 @@
       }
     }
   </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css  " />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js  "></script>
   <style>
     .category-thumb {
       font-size: 24px;
@@ -72,9 +72,10 @@
 
     .marquee-container {
       overflow: hidden;
-      white-space: nowrap;
       position: relative;
       height: 80px;
+      display: flex;
+      align-items: center;
     }
 
     .marquee-content,
@@ -82,6 +83,7 @@
       display: inline-block;
       animation: marquee 25s linear infinite;
       padding-left: 20px;
+      white-space: nowrap;
     }
 
     .marquee-content-reverse {
@@ -132,11 +134,17 @@
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
+
+    /* Fix for swiper containers to prevent overflow */
+    .events-section,
+    .venues-section {
+      overflow: hidden;
+    }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display  :wght@500&display=swap" rel="stylesheet">
 </head>
 
-<body class="bg-apple-bg text-apple-text">
+<body class="bg-apple-bg text-apple-text overflow-x-hidden">
 
   <!-- Navigation -->
   <%- include('partials/navbar') %>
@@ -163,8 +171,8 @@
 
 
     <!-- Trending Carousel -->
-    <div class="w-full relative z-10">
-      <div class="swiper mySwiper mb-20 !max-w-full !px-4 md:!px-10">
+    <div class="w-full relative z-10 px-4 md:px-10">
+      <div class="swiper mySwiper mb-20 !max-w-full">
         <div class="swiper-wrapper">
           <% for(let i=0; i < featuredEvents.length; i++) { %>
           <a href="/events/<%= featuredEvents[i]._id %>" class="swiper-slide group relative cursor-pointer block rounded-2xl overflow-hidden shadow-2xl">
@@ -262,7 +270,7 @@
   <main class="max-w-7xl mx-auto px-6 space-y-24 pb-24">
 
     <!-- All Events -->
-    <section class="max-w-[90rem] mx-auto px-6 mb-32">
+    <section class="events-section max-w-[90rem] mx-auto px-6 mb-32">
       <div class="flex justify-between items-end mb-12">
         <div>
           <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-2">Upcoming
@@ -283,7 +291,7 @@
         </div>
       </div>
 
-      <div class="swiper eventsSwiper !overflow-visible">
+      <div class="swiper eventsSwiper !overflow-visible px-4 md:px-6">
         <div class="swiper-wrapper">
           <% for(let i=0; i < allEvents.length; i++) { %>
           <a href="/events/<%= allEvents[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#1C2A3A]/5 transition-all duration-300 group block h-full flex flex-col">
@@ -298,7 +306,7 @@
                 <% const minPrice=Math.min(...allEvents[i].ticketTypes.map(t=> t.price)) %>
                 <span class="px-4 py-2 bg-[#1C2A3A] text-white rounded-full text-sm font-bold shadow-lg">
                   <% if(minPrice && minPrice> 0) { %>
-                  $<%= minPrice %>
+                  ₹<%= minPrice %>
                   <% } else { %>
                   Free
                   <% } %>
@@ -332,7 +340,7 @@
     </section>
 
     <!-- All Venues -->
-    <section class="max-w-[90rem] mx-auto px-6 mb-32">
+    <section class="venues-section max-w-[90rem] mx-auto px-6 mb-32">
       <div class="flex justify-between items-end mb-12">
         <div>
           <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-2">Premier Venues</h2>
@@ -347,7 +355,7 @@
       </div>
 
       <div class="max-w-[90rem] mx-auto">
-        <div class="swiper venuesSwiper !overflow-visible">
+        <div class="swiper venuesSwiper !overflow-visible px-4 md:px-6">
           <div class="swiper-wrapper">
             <% for(let i=0; i < allVenues.length; i++) { %>
             <a href="/venue/<%= allVenues[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#1C2A3A]/5 transition-all duration-300 group block h-full flex flex-col">

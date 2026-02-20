@@ -20,6 +20,7 @@ import {
   showSingleCategory,
   updateCategory,
 } from "../controller/admin/categoryController.js";
+import { showWallet } from "../controller/admin/walletController.js";
 
 const router = express.Router();
 
@@ -57,5 +58,6 @@ router.put("/categories/:categoryId/edit", isAdmin, updateCategory);
 router.patch("/users/:userId/:action", isAdmin, toggleBlockUser);
 
 router.get("/dashboard", isAdmin, getDash);
+router.get("/wallet", showWallet);
 
 export default router;

@@ -237,26 +237,26 @@
               <h3 class="font-bold text-[#1C2A3A] text-lg" id="summary-name"><%= order.selectedTicket.name %></h3>
               <p class="text-sm text-[#1C2A3A]/50" id="summary-desc">Quantity: <span id="summary-qty"><%= order.selectedTicket.quantity %></span></p>
             </div>
-            <p class="font-bold text-[#1C2A3A] text-xl">$<span id="summary-total"><%= order.selectedTicket.price %></span></p>
+            <p class="font-bold text-[#1C2A3A] text-xl">₹<span id="summary-total"><%= order.selectedTicket.price %></span></p>
           </div>
 
           <div class="space-y-2">
             <div class="flex justify-between text-sm">
               <span class="text-[#1C2A3A]/60">Subtotal</span>
-              <span class="font-medium text-[#1C2A3A]">$<span id="subtotal"><%= order.pricing.subTotal %></span></span>
+              <span class="font-medium text-[#1C2A3A]">₹<span id="subtotal"><%= order.pricing.subTotal %></span></span>
             </div>
             <div class="flex justify-between text-sm">
               <span class="text-[#1C2A3A]/60">Service Fee</span>
-              <span class="font-medium text-[#1C2A3A]">$<span id="service-fee"><%= order.pricing.serviceFee %></span></span>
+              <span class="font-medium text-[#1C2A3A]">₹<span id="service-fee"><%= order.pricing.serviceFee %></span></span>
             </div>
             <!-- Coupon Row (Hidden by default) -->
             <div id="coupon-row" class="hidden flex justify-between text-sm text-green-600 font-medium">
               <span>Discount</span>
-              <span>-$<span id="discount-amount">0.00</span></span>
+              <span>-₹<span id="discount-amount">0.00</span></span>
             </div>
             <div class="flex justify-between text-xl font-heading font-bold pt-4 mt-2 border-t border-[#1C2A3A]/10">
               <span class="text-[#1C2A3A]">Total</span>
-              <span class="text-[#1C2A3A]">$<span id="total"><%= order.pricing.totalAmount %></span></span>
+              <span class="text-[#1C2A3A]">₹<span id="total"><%= order.pricing.totalAmount %></span></span>
             </div>
           </div>
         </div>
@@ -300,7 +300,7 @@
             Back
           </button>
           <button onclick="showPaymentModal()" class="bg-[#ED8842] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 flex items-center gap-2">
-            Confirm & Pay $<span id="btn-total">203.98</span>
+            Confirm & Pay ₹<span id="btn-total">203.98</span>
           </button>
         </div>
       </div>
@@ -354,7 +354,7 @@
       </div>
 
       <button onclick="processPayment()" class="w-full mt-6 bg-[#ED8842] text-white rounded-xl py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 hidden" id="payButton">
-        Pay $203.98
+        Pay ₹203.98
       </button>
 
       <button onclick="closePaymentModal()" class="w-full mt-4 text-[#1C2A3A]/40 font-bold text-sm hover:text-[#1C2A3A] transition-colors py-2">

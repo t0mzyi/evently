@@ -32,20 +32,7 @@
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-  <div class="fixed top-6 w-full z-50 px-4 md:px-6">
-    <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
-      <div class="flex items-center gap-6">
-        <span class="text-xl font-bold tracking-tight text-white font-heading">evently admin</span>
-        <div class="hidden md:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/80">
-          <a href="/admin/dashboard" class="text-white">Dashboard</a>
-          <a href="/admin/events" class="hover:text-white transition-colors">Events</a>
-          <a href="/admin/users" class="hover:text-white transition-colors">Users</a>
-          <a href="/admin/venues" class="hover:text-white transition-colors">Venues</a>
-        </div>
-      </div>
-      <div class="flex items-center gap-4 text-white/70 text-sm">Admin</div>
-    </nav>
-  </div>
+  <%- include('../partials/adminNavbar', {activePage : 'dashboard'}) %>
 
   <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -58,46 +45,46 @@
           </div>
           <span class="text-[10px] font-bold text-[#1C2A3A]/40 uppercase tracking-widest">Growth</span>
         </div>
-
-        <p class="text-3xl font-heading font-bold mb-1">
-          <%= users.totalUsers %>
-        </p>
-        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-4">
-          Total Users
-        </p>
-
+        <p class="text-3xl font-heading font-bold mb-1"><%= users.totalUsers %></p>
+        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-4">Total Users</p>
         <div class="flex items-center justify-between pt-4 border-t border-[#1C2A3A]/5">
           <div class="flex items-center gap-2">
             <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-            <span class="text-[10px] font-bold text-[#1C2A3A] uppercase tracking-tighter">
-              <%= users.activeUsers %> Active
-            </span>
+            <span class="text-[10px] font-bold text-[#1C2A3A] uppercase tracking-tighter"><%= users.activeUsers %> Active</span>
           </div>
-
           <div class="flex items-center gap-2">
             <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
-            <span class="text-[10px] font-bold text-[#1C2A3A]/60 uppercase tracking-tighter">
-              <%= users.blockedUsers %> Blocked
-            </span>
+            <span class="text-[10px] font-bold text-[#1C2A3A]/60 uppercase tracking-tighter"><%= users.blockedUsers %> Blocked</span>
           </div>
         </div>
       </div>
+
       <div class="bg-white/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/20 shadow-sm">
         <div class="flex items-center justify-between mb-4">
-          <div class="w-10 h-10 rounded-xl bg-[#ED8842]/10 flex items-center justify-center text-[#ED8842]">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          <div class="w-10 h-10 rounded-xl bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A]">
+            <svg id='Events_24' width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>
+              <rect width='24' height='24' stroke='none' fill='#acff07' opacity='0' />
+              <g transform="matrix(0.16 0 0 0.16 12 12)">
+                <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,0,0); fill-rule: nonzero; opacity: 1;" transform=" translate(-64, -64)" d="M 34 1 C 32.3 1 31 2.3 31 4 L 31 11 L 4 11 C 2.3 11 1 12.3 1 14 C 1 15.7 2.3 17 4 17 L 114 17 C 117.9 17 121 20.1 121 24 L 121 114 C 121 117.9 117.9 121 114 121 L 14 121 C 10.1 121 7 117.9 7 114 L 7 44 C 7 40.1 10.1 37 14 37 L 104 37 C 105.7 37 107 35.7 107 34 C 107 32.3 105.7 31 104 31 L 14 31 C 6.8 31 1 36.8 1 44 L 1 114 C 1 121.2 6.8 127 14 127 L 114 127 C 121.2 127 127 121.2 127 114 L 127 24 C 127 16.8 121.2 11 114 11 L 97 11 L 97 4 C 97 2.3 95.7 1 94 1 C 92.3 1 91 2.3 91 4 L 91 11 L 37 11 L 37 4 C 37 2.3 35.7 1 34 1 z M 29 51 C 22.9 51 18 55.9 18 62 C 18 68.1 22.9 73 29 73 C 35.1 73 40 68.1 40 62 C 40 55.9 35.1 51 29 51 z M 64 51 C 57.9 51 53 55.9 53 62 C 53 68.1 57.9 73 64 73 C 70.1 73 75 68.1 75 62 C 75 55.9 70.1 51 64 51 z M 29 57 C 31.8 57 34 59.2 34 62 C 34 64.8 31.8 67 29 67 C 26.2 67 24 64.8 24 62 C 24 59.2 26.2 57 29 57 z M 64 57 C 66.8 57 69 59.2 69 62 C 69 64.8 66.8 67 64 67 C 61.2 67 59 64.8 59 62 C 59 59.2 61.2 57 64 57 z M 64 86 C 57.9 86 53 90.9 53 97 C 53 103.1 57.9 108 64 108 C 70.1 108 75 103.1 75 97 C 75 90.9 70.1 86 64 86 z M 99 86 C 92.9 86 88 90.9 88 97 C 88 103.1 92.9 108 99 108 C 105.1 108 110 103.1 110 97 C 110 90.9 105.1 86 99 86 z M 64 92 C 66.8 92 69 94.2 69 97 C 69 99.8 66.8 102 64 102 C 61.2 102 59 99.8 59 97 C 59 94.2 61.2 92 64 92 z M 99 92 C 101.8 92 104 94.2 104 97 C 104 99.8 101.8 102 99 102 C 96.2 102 94 99.8 94 97 C 94 94.2 96.2 92 99 92 z" stroke-linecap="round" />
+              </g>
             </svg>
           </div>
-          <span class="text-[10px] font-bold text-green-600 uppercase">+8%</span>
+          <span class="text-[10px] font-bold text-[#1C2A3A]/40 uppercase tracking-widest">Growth</span>
         </div>
-        <p class="text-3xl font-heading font-bold mb-1">
-          <%= events.totalEvents %>
-        </p>
-        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">
-          Total Events
-        </p>
+        <p class="text-3xl font-heading font-bold mb-1"><%= events.liveEvents %></p>
+        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold mb-4">Events Live</p>
+        <div class="flex items-center justify-between pt-4 border-t border-[#1C2A3A]/5">
+          <div class="flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+            <span class="text-[10px] font-bold text-[#1C2A3A] uppercase tracking-tighter"><%= events.pendingEvents %> Pending</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+            <span class="text-[10px] font-bold text-[#1C2A3A]/60 uppercase tracking-tighter"><%= events.approvedEvents %> Approved</span>
+          </div>
+        </div>
       </div>
+
       <div class="bg-white/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/20 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-600">
@@ -107,11 +94,10 @@
           </div>
           <span class="text-[10px] font-bold text-yellow-600 uppercase">Urgent</span>
         </div>
-        <p class="text-3xl font-heading font-bold mb-1">23</p>
-        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">
-          Pending
-        </p>
+        <p class="text-3xl font-heading font-bold mb-1"><%= events.pendingEvents %></p>
+        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">Pending</p>
       </div>
+
       <div class="bg-white/40 backdrop-blur-xl rounded-[2rem] p-6 border border-white/20 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <div class="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-600">
@@ -121,91 +107,91 @@
           </div>
           <span class="text-[10px] font-bold text-green-600 uppercase">+24%</span>
         </div>
-        <p class="text-3xl font-heading font-bold mb-1">₹48.2K</p>
-        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">
-          Revenue
-        </p>
+        <p class="text-3xl font-heading font-bold mb-1">₹<%= (adminBalance/1000).toFixed(1) %>K</p>
+        <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">Revenue</p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-      <div class="lg:col-span-5 space-y-6">
-        <div class="bg-white/40 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/20 shadow-sm h-full">
-          <h3 class="text-lg font-heading font-medium mb-8">Quick Actions</h3>
-          <div class="grid grid-cols-1 gap-4">
-            <a href="/admin/events" class="flex items-center justify-between p-5 rounded-2xl bg-white/30 border border-white/40 hover:bg-[#1C2A3A] hover:text-white transition-all group shadow-sm">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-[#ED8842]/20 flex items-center justify-center text-[#ED8842] group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                  </svg>
-                </div>
-                <span class="font-bold text-sm uppercase tracking-widest">Approve Events</span>
-              </div>
-              <svg class="w-5 h-5 opacity-30 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-            <a href="/admin/users" class="flex items-center justify-between p-5 rounded-2xl bg-white/30 border border-white/40 hover:bg-[#1C2A3A] hover:text-white transition-all group shadow-sm">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A] group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                  </svg>
-                </div>
-                <span class="font-bold text-sm uppercase tracking-widest">Manage Users</span>
-              </div>
-              <svg class="w-5 h-5 opacity-30 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
-            <a href="/admin/categories" class="flex items-center justify-between p-5 rounded-2xl bg-white/30 border border-white/40 hover:bg-[#1C2A3A] hover:text-white transition-all group shadow-sm">
-              <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-white/10 group-hover:text-white transition-colors">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                  </svg>
-                </div>
-                <span class="font-bold text-sm uppercase tracking-widest">Categories</span>
-              </div>
-              <svg class="w-5 h-5 opacity-30 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </a>
+    <div class="grid grid-cols-1 lg:grid-cols-10 gap-8 items-start">
+      <div class="bg-white/40 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/20 shadow-sm lg:col-span-7">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h3 class="text-lg font-heading font-medium">Market Analytics</h3>
+            <p class="text-xs text-[#1C2A3A]/40 uppercase tracking-widest font-bold">Revenue vs Outflow</p>
           </div>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="flex bg-[#1C2A3A]/5 p-1 rounded-xl">
+              <a href="/admin/dashboard?period=daily&startDate=<%= currentStartDate %>&endDate=<%= currentEndDate %>" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= currentPeriod === 'daily' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">
+                Daily
+              </a>
+              <a href="/admin/dashboard?period=monthly&year=<%= currentYear %>&month=<%= currentMonth %>" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= currentPeriod === 'monthly' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">
+                Monthly
+              </a>
+              <a href="/admin/dashboard?period=yearly&year=<%= currentYear %>" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= currentPeriod === 'yearly' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">
+                Yearly
+              </a>
+            </div>
+
+            <% if (currentPeriod === 'daily') { %>
+            <form action="/admin/dashboard" method="GET" class="flex items-center gap-2">
+              <input type="hidden" name="period" value="daily">
+              <input type="date" name="startDate" value="<%= currentStartDate %>" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#ED8842]" />
+              <span class="text-[#1C2A3A]/40 text-xs">to</span>
+              <input type="date" name="endDate" value="<%= currentEndDate %>" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#ED8842]" />
+              <button type="submit" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg bg-[#ED8842] text-white hover:bg-[#ED8842]/90 transition-all">Apply</button>
+            </form>
+            <% } %>
+
+            <% if (currentPeriod === 'monthly') { %>
+            <form action="/admin/dashboard" method="GET" class="flex items-center gap-2">
+              <input type="hidden" name="period" value="monthly">
+              <select name="year" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#ED8842]">
+                <% for(let y = new Date().getFullYear() - 3; y <= new Date().getFullYear() + 1; y++) { %>
+                <option value="<%= y %>" <%= y === parseInt(currentYear) ? 'selected' : '' %>><%= y %></option>
+                <% } %>
+              </select>
+              <select name="month" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#ED8842]">
+                <% const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; %>
+                <% months.forEach((m, i) => { %>
+                <option value="<%= i + 1 %>" <%= (i + 1) === parseInt(currentMonth) ? 'selected' : '' %>><%= m %></option>
+                <% }) %>
+              </select>
+              <button type="submit" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg bg-[#ED8842] text-white hover:bg-[#ED8842]/90 transition-all">Apply</button>
+            </form>
+            <% } %>
+
+            <% if (currentPeriod === 'yearly') { %>
+            <form action="/admin/dashboard" method="GET" class="flex items-center gap-2">
+              <input type="hidden" name="period" value="yearly">
+              <select name="year" onchange="this.form.submit()" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#ED8842]">
+                <% for(let y = new Date().getFullYear() - 3; y <= new Date().getFullYear() + 1; y++) { %>
+                <option value="<%= y %>" <%= y === parseInt(currentYear) ? 'selected' : '' %>><%= y %></option>
+                <% } %>
+              </select>
+            </form>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="h-[350px] w-full">
+          <canvas id="tradingChart"></canvas>
         </div>
       </div>
 
-      <div class="lg:col-span-7 space-y-8">
-        <div class="p-4 h-[220px] relative">
-          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4 ml-4">
-            Weekly Revenue
-          </h4>
-          <canvas id="revenueChart"></canvas>
-        </div>
-        <div class="p-4 h-[220px] relative">
-          <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-4 ml-4">
-            Category Engagement
-          </h4>
-          <canvas id="categoryChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white/40 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/20 shadow-sm">
-      <h3 class="text-lg font-heading font-medium mb-6">Recent Activity</h3>
-      <div class="space-y-4">
-        <div class="flex items-start gap-4 pb-4 border-b border-[#1C2A3A]/5">
-          <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </div>
-          <div class="flex-1">
-            <p class="text-sm font-medium">
-              Event "Jazz under the Moonlight" approved
-            </p>
-            <p class="text-xs text-[#1C2A3A]/60 mt-1">2 minutes ago</p>
+      <div class="bg-white/40 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/20 shadow-sm lg:col-span-3 h-full">
+        <h3 class="text-lg font-heading font-medium mb-6">Recent Activity</h3>
+        <div class="space-y-6">
+          <div class="flex items-start gap-4 pb-4 border-b border-[#1C2A3A]/5">
+            <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-medium leading-tight">Admin System Online</p>
+              <p class="text-[10px] font-bold uppercase tracking-tighter text-[#1C2A3A]/40 mt-1">Real-time sync active</p>
+            </div>
           </div>
         </div>
       </div>
@@ -213,92 +199,201 @@
   </main>
 
   <script>
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = "#1C2A3A";
+    const chartData = <%- JSON.stringify(chartData || []) %>;
+    const currentPeriod = '<%= currentPeriod || "daily" %>';
+    const currentYear = '<%= currentYear || new Date().getFullYear() %>';
+    const currentMonth = '<%= currentMonth || (new Date().getMonth() + 1) %>';
+    const currentStartDate = '<%= currentStartDate || "" %>';
+    const currentEndDate = '<%= currentEndDate || "" %>';
 
-    // 1. Weekly Revenue (Floating Line)
-    const revCtx = document.getElementById("revenueChart").getContext("2d");
-    new Chart(revCtx, {
-      type: "line",
-      data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        datasets: [{
-          data: [18000, 24000, 19000, 32000, 28000, 45000, 38000],
-          borderColor: "#1C2A3A",
-          borderWidth: 2.5,
-          tension: 0.4,
-          pointRadius: 0,
-          pointHoverRadius: 6,
-          fill: true,
-          backgroundColor: "rgba(28, 42, 58, 0.03)",
-        }, ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false
-            },
-            border: {
-              display: false
-            }
-          },
-          y: {
-            display: false,
-            grid: {
-              display: false
-            }
-          },
-        },
-      },
+    document.addEventListener('DOMContentLoaded', () => {
+      const ctx = document.getElementById("tradingChart");
+      if (ctx) {
+        renderChart(ctx.getContext("2d"), chartData, currentPeriod, currentYear, currentMonth, currentStartDate, currentEndDate);
+      }
     });
 
-    // 2. Category Distribution (Clean Bar)
-    const catCtx = document.getElementById("categoryChart").getContext("2d");
-    new Chart(catCtx, {
-      type: "bar",
-      data: {
-        labels: ["Music", "Tech", "Arts", "Sports", "Food"],
-        datasets: [{
-          data: [85, 45, 60, 30, 70],
-          backgroundColor: "#ED8842",
-          borderRadius: 8,
-          barThickness: 30,
-        }, ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: false
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              display: false
+    function generateEmptyData(period, year, month, startDate, endDate) {
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+      if (period === 'daily') {
+        const labels = [];
+        const start = startDate ? new Date(startDate) : new Date(Date.now() - 6 * 24 * 60 * 60 * 1000);
+        const end = endDate ? new Date(endDate) : new Date();
+
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const dateStr = d.toISOString().split('T')[0];
+          const m = monthNames[d.getMonth()];
+          const day = d.getDate();
+          labels.push({
+            _id: dateStr,
+            label: `${m} ${day}`,
+            inflow: 0,
+            outflow: 0,
+            net: 0
+          });
+        }
+        return labels;
+      }
+
+      if (period === 'monthly') {
+        const labels = [];
+        const daysInMonth = new Date(year, month, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+          labels.push({
+            _id: String(day),
+            label: String(day),
+            inflow: 0,
+            outflow: 0,
+            net: 0
+          });
+        }
+        return labels;
+      }
+
+      if (period === 'yearly') {
+        return monthNames.map((name, i) => ({
+          _id: String(i + 1),
+          label: name,
+          inflow: 0,
+          outflow: 0,
+          net: 0
+        }));
+      }
+
+      return [];
+    }
+
+    function renderChart(ctx, rawData, period, year, month, startDate, endDate) {
+      const data = rawData && rawData.length > 0 ? rawData : generateEmptyData(period, parseInt(year), parseInt(month), startDate, endDate);
+
+      const labels = data.map(d => d.label || d._id || '');
+      const inflow = data.map(d => Number(d.inflow) || 0);
+      const outflow = data.map(d => Number(d.outflow) || 0);
+      const net = data.map((d, i) => (Number(d.inflow) || 0) - (Number(d.outflow) || 0));
+
+      Chart.defaults.font.family = "'Inter', sans-serif";
+      Chart.defaults.color = "#1C2A3A";
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+              type: 'bar',
+              label: 'Inflow',
+              data: inflow,
+              backgroundColor: '#1C2A3A',
+              borderRadius: 4,
+              barThickness: 18,
+              order: 2
             },
-            border: {
-              display: false
+            {
+              type: 'bar',
+              label: 'Outflow',
+              data: outflow,
+              backgroundColor: '#ED8842',
+              borderRadius: 4,
+              barThickness: 18,
+              order: 3
+            },
+            {
+              type: 'line',
+              label: 'Net Balance',
+              data: net,
+              borderColor: '#22C55E',
+              backgroundColor: 'rgba(34, 197, 94, 0.1)',
+              borderWidth: 2.5,
+              pointBackgroundColor: '#22C55E',
+              pointBorderColor: '#fff',
+              pointBorderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: false,
+              tension: 0.3,
+              order: 1,
+              yAxisID: 'y'
             }
-          },
-          y: {
-            display: false,
-            grid: {
-              display: false
-            }
-          },
+          ]
         },
-      },
-    });
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              display: true,
+              position: 'top',
+              align: 'end',
+              labels: {
+                usePointStyle: true,
+                pointStyle: 'rectRounded',
+                padding: 20,
+                font: {
+                  size: 11,
+                  weight: '600'
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: '#1C2A3A',
+              titleFont: {
+                size: 12,
+                weight: 'bold'
+              },
+              bodyFont: {
+                size: 12
+              },
+              padding: 12,
+              callbacks: {
+                label: (context) =>
+                  `${context.dataset.label}: ₹${Math.abs(context.parsed.y).toLocaleString()}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              border: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  weight: 'bold',
+                  size: 10
+                },
+                maxRotation: 45,
+                minRotation: 45
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(28, 42, 58, 0.05)',
+                drawTicks: false
+              },
+              border: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  size: 10
+                },
+                callback: (value) => {
+                  const abs = Math.abs(value);
+                  return abs >= 1000 ? `₹${(abs/1000).toFixed(1)}k` : `₹${abs}`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
   </script>
 </body>
 

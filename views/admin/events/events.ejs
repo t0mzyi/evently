@@ -189,7 +189,7 @@
   <%-include('../../partials/adminNavbar') %>
   <%-include('../../partials/doodles') %>
 
-  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+  <main class="ml-64 pt-8 pb-16 px-6 max-w-7xl mx-auto min-h-screen">
     <!-- Header with Filters -->
     <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
       <div>
@@ -353,7 +353,7 @@
                   <div class="text-right">
                     <div class="font-heading font-bold text-2xl text-[#1C2A3A]">
                       <div class="text-xs text-[#1C2A3A]/60 mt-0.5">Starting from</div>
-                      <%= events[i].minPrice === 0 ? 'Free' : '$' + events[i].minPrice %>
+                      <%= events[i].minPrice === 0 ? 'Free' : '₹' + events[i].minPrice %>
                     </div>
                   </div>
                 </div>
