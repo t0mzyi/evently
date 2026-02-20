@@ -46,6 +46,10 @@ const transactionSchema = new mongoose.Schema(
     razorpaySignature: {
       type: String,
     },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "order",
+    },
   },
   { timestamps: { createdAt: true, updatedAt: false } },
 );

@@ -76,6 +76,8 @@ export const checkoutPage = async (req, res) => {
     const walletBalance = wallet.availableBalance.toString();
     if (!order) {
       return res.redirect("/events?status=error&message=UnAuthorised");
+    } else if (order.status != "PENDING") {
+      return res.redirect("/events?status=error&message=Order Expired ");
     }
     console.log(walletBalance);
     res.render("user/tickets/checkout", { order, walletBalance });

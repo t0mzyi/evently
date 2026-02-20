@@ -7,6 +7,7 @@ import { formatDate } from "../../utils/dateTimeFormator.js";
 import ticketDb from "../../model/ticketDb.js";
 import { generateBookingId } from "../../utils/ticketIdGenerator.js";
 import { addMoneyWallet, debitWallet, refundWallet } from "./walletService.js";
+import { creditAdminWallet } from "../admin/walletService.js";
 
 export const ticketBookingRender = async (eventId) => {
   const event = await eventsDb.findById(eventId);
@@ -161,7 +162,8 @@ export const finalizeOrder = async (orderDetails) => {
       const event = await eventsDb.findById(order.eventId);
       if (event && event.hostId) {
         const hostEarnings = order.pricing.subTotal;
-        await addMoneyWallet(event.adminId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
+        await addMoneyWallet(event.hostId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
+        await creditAdminWallet(order.pricing.serviceFee, `Service Fee of order ${order._id}`);
       }
     } catch (error) {
       console.error("Error on generateTIckets.", error);
@@ -181,9 +183,7 @@ export const generateTickets = async (order) => {
     (t) => t._id.toString() === order.selectedTicket.ticketTypeId.toString(),
   );
   const seatTier = String.fromCharCode(65 + tierIndex);
-  const lastTicket = await ticketDb
-    .findOne({ eventId: event._id, ticketTypeId: order.ticketTypeId })
-    .sort({ seatNumber: -1 });
+  const lastTicket = await ticketDb.findOne({ eventId: event._id, seatTier: seatTier }).sort({ seatNumber: -1 });
 
   let nextSeatNumber = lastTicket ? lastTicket.seatNumber + 1 : 1;
 

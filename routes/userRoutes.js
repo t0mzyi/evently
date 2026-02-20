@@ -41,6 +41,7 @@ import { bookmarks, toggleBookmark } from "../controller/user/bookmarksControlle
 import {
   bookTicket,
   checkoutPage,
+  handleUnreservingTicket,
   processCheckout,
   showCancelTicket,
   showMybookings,
@@ -122,7 +123,7 @@ router.get("/tickets/cancel/:orderId", showCancelTicket);
 router.get("/ticket/view", viewTicket);
 router.get("/ticket/checkout/:orderId", checkoutPage);
 router.post("/ticket/checkout", processCheckout);
-router.post("/ticket/unreserve/:orderId", unReserveTicket);
+router.post("/ticket/unreserve/:orderId", handleUnreservingTicket);
 router.get("/tickets/:orderId", viewOrderTickets);
 router.post("/tickets/cancel", ticketCancelAndRefund);
 

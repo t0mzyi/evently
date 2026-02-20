@@ -28,6 +28,7 @@ export const verifyOtp = async (emailAddress, otp) => {
 
 export const createUser = async (userData) => {
   const newUser = await userDb.create(userData);
+  console.log("New User created");
   //create wallet too
   const wallet = await walletDb.create({ userId: newUser._id });
   console.log("New user created", newUser.firstName);

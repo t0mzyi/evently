@@ -5,12 +5,17 @@ import crypto from "crypto";
 import walletDb from "../../model/walletDb.js";
 import { formatDate } from "../../utils/dateTimeFormator.js";
 
+// export const createWalletUser = async (userId) => {
+//   await walletDb.create({ userId: userId });
+// };
 export const walletDetails = async (userId, page = 1, limit = 10, filters = {}) => {
   try {
     const user = await userDb.findById(userId);
+    // console.log(user);
     if (!user) throw new Error("User doesnt exists");
 
     const walletInfo = await walletDb.findOne({ userId: user._id });
+    console.log(walletInfo);
     const query = { walletId: walletInfo._id };
     if (filters.type && filters.type !== "all") {
       query.type = filters.type;
@@ -135,22 +140,26 @@ export const verifyRazorpayPayment = async (paymentData) => {
 };
 
 export const refundWallet = async (userId, amount, reason) => {
-  const wallet = await walletDb.findOneAndUpdate(
-    { userId, userId },
-    {
-      $inc: { availableBalance: amount },
-    },
-    { new: true },
-  );
-  await transactionDb.create({
-    walletId: wallet._id,
-    userId: userId,
-    type: "credit",
-    amount: amount,
-    description: reason,
-    status: "COMPLETED",
-  });
-  console.log(`Refunded ${amount} to Wallet ${walletId} (User ${userId})`);
+  try {
+    const wallet = await walletDb.findOneAndUpdate(
+      { userId, userId },
+      {
+        $inc: { availableBalance: amount },
+      },
+      { new: true },
+    );
+    await transactionDb.create({
+      walletId: wallet._id,
+      userId: userId,
+      type: "credit",
+      amount: amount,
+      description: reason,
+      status: "COMPLETED",
+    });
+    console.log(`Refunded ${amount} to Wallet ${wallet._id} (User ${userId})`);
+  } catch (error) {
+    console.log("Error in refundWallet", error);
+  }
 };
 
 export const updateTransactionStatus = async (orderId, status) => {
