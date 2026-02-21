@@ -142,7 +142,7 @@ export const verifyRazorpayPayment = async (paymentData) => {
 export const refundWallet = async (userId, amount, reason) => {
   try {
     const wallet = await walletDb.findOneAndUpdate(
-      { userId, userId },
+      { userId: userId },
       {
         $inc: { availableBalance: amount },
       },

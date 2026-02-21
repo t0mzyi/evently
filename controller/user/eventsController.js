@@ -20,12 +20,11 @@ import { userBookmarks } from "../../service/user/bookmarksService.js";
 export const showAllEvents = async (req, res) => {
   const query = req.query.q || "";
   const page = parseInt(req.query.page) || 1;
-  const limit = 9;
+  const limit = 3;
   const sortByParam = req.query.sortBy || "date-desc";
   const categoryFilter = req.query.category || "all";
 
   try {
-    // Parse the combined sortBy parameter (e.g., "date-desc", "price-asc")
     let sortBy = "date";
     let order = "desc";
 
@@ -93,6 +92,7 @@ export const showSingleEvent = async (req, res) => {
   const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
   const ticket = { lowestPrice, totalTickets, ticketsLeft };
   const schedule = formatDate(event.startDate);
+  // console.log(event, venue, schedule, ticket);
   res.render("user/events/event-details", { event, venue, schedule, ticket });
 };
 

@@ -13,7 +13,7 @@ import { debitWallet } from "./walletService.js";
 export const allEvents = async (
   query,
   page = 1,
-  limit = 9,
+  limit = 3,
   sortBy = "date",
   order = "desc",
   categoryFilter = "all",
@@ -183,7 +183,7 @@ export const allEvents = async (
 };
 
 export const singleEventFinder = async (eventId) => {
-  const event = await eventsDb.findById(eventId).populate("categoryId", "name");
+  const event = await eventsDb.findById(eventId).populate("categoryId hostId");
   if (!event) throw new Error("Event not found");
 
   let venue;
