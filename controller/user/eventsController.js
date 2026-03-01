@@ -161,9 +161,9 @@ export const createEvent = async (req, res) => {
 
 export const viewEventHost = async (req, res) => {
   try {
-    const event = await hostEventViewer(req.session.user, req.params.eventId);
+    const { event, eventTickets } = await hostEventViewer(req.session.user, req.params.eventId);
 
-    res.render("user/events/view-event-active-host", { event });
+    res.render("user/events/view-event-active-host", { event, eventTickets });
   } catch (error) {
     console.log("error in view Event Host", error.message);
     res.redirect(`/dashboard?status=false&message=${error.message}`);
@@ -292,5 +292,15 @@ export const handlepayAndPublish = async (req, res) => {
       success: false,
       message: error.message || "Failed to process payment",
     });
+  }
+};
+
+export const showAttenties = async (req, res) => {
+  try {
+    const { event, eventTickets } = await hostEventViewer(req.session.user, req.params.eventId);
+    console.log("event", event, "eventickets", eventTickets);
+    res.render("user/events/attendees", { event, eventTickets });
+  } catch (error) {
+    console.log("Error in showAttenties", error);
   }
 };

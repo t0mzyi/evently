@@ -3,6 +3,7 @@
 import { bookmarksDb } from "../../model/bookmarksDb.js";
 import categoryDb from "../../model/categoryDb.js";
 import eventsDb from "../../model/eventsDb.js";
+import ticketDb from "../../model/ticketDb.js";
 import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
 import walletDb from "../../model/walletDb.js";
@@ -364,13 +365,27 @@ export const hostEventViewer = async (userId, eventId) => {
   event.sDate = formattedStartDate;
   event.eDate = formattedEndDate;
 
+  let eventTickets = await ticketDb.find({ eventId, status: { $ne: "CANCELLED" } }).lean();
+
+  eventTickets.forEach((t) => (t.hostRevenue = t.purchasePrice / 1.025));
+  const tickets = {
+    total: event.ticketTypes.reduce((acc, t) => (acc += t.quantityTotal), 0),
+    available: event.ticketTypes.reduce((acc, t) => (acc += t.quantityAvailable), 0),
+    totalRevenue: eventTickets.reduce((acc, t) => (acc += t.purchasePrice), 0),
+    hostRevenue: eventTickets.reduce((acc, t) => (acc += t.hostRevenue), 0),
+  };
+  tickets.sold = tickets.total - tickets.available;
+  tickets.platformRevenue = tickets.totalRevenue - tickets.hostRevenue;
+  event.tickets = tickets;
+
   if (event.venueType == "iconic") {
     console.log("id", event.venueId);
     const venue = await venueDb.findById(event.venueId);
     event.venueDetails = venue;
     console.log(venue.description);
   }
-  return event;
+  console.log(eventTickets);
+  return { event, eventTickets };
 };
 
 export const editEventRender = async (userId, eventId) => {
@@ -399,13 +414,11 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
   if (!user || !user.hostedEvents.some((e) => e.equals(eventId))) {
     throw new Error("Access Denied");
   }
-
   const isApproved = currentEvent.status === "approved";
   if (isApproved) {
     delete body.startDate;
     delete body.endDate;
     delete body.venueId;
-
     if (body.ticketTypes && Array.isArray(body.ticketTypes)) {
       body.ticketTypes = body.ticketTypes.map((newTicket, idx) => {
         const existing = currentEvent.ticketTypes[idx];
@@ -420,7 +433,6 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
       });
     }
   }
-
   if (body.totalCapacity !== undefined) {
     const newCapacity = parseInt(body.totalCapacity);
     const currentSold = currentEvent.ticketsSold || 0;
@@ -428,9 +440,7 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
       throw new Error(`Total capacity cannot be less than tickets already sold (${currentSold}).`);
     }
   }
-
   let allImagePaths = [];
-
   if (typeof body.existingGalleryImages === "string") {
     try {
       allImagePaths = JSON.parse(body.existingGalleryImages);

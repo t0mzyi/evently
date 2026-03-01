@@ -31,6 +31,7 @@ import {
   handlepayAndPublish,
   payandpublish,
   showAllEvents,
+  showAttenties,
   showCreateEvent,
   showSingleEvent,
   updateEvent,
@@ -108,6 +109,7 @@ router.put("/editEvent/:eventId", isAuth, uploadEvent.array("galleryImages", 10)
 router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
 router.get("/payAndPublish/:eventId", payandpublish);
 router.post("/payAndPublish", handlepayAndPublish);
+router.get("/:eventId/attendees", showAttenties);
 
 //cat
 router.get("/categories", categories);

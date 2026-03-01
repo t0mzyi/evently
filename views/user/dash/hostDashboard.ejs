@@ -18,7 +18,7 @@
               secondary: '#1C2A3A',
               accent: '#5C7C8A',
               dark: '#1C2A3A',
-              surface: '#F9F7F5',
+              surface: '#F9F7F5'
             },
             apple: {
               bg: '#EAE0CF',
@@ -30,505 +30,780 @@
           },
           fontFamily: {
             heading: ['Fraunces', 'serif'],
-            sans: ['Inter', 'sans-serif'],
+            sans: ['Inter', 'sans-serif']
+          },
+          animation: {
+            'pop-in': 'popIn 0.3s ease-out forwards',
+            float: 'float 3s ease-in-out infinite'
+          },
+          keyframes: {
+            popIn: {
+              '0%': {
+                opacity: '0',
+                transform: 'translateY(20px) scale(0.9)'
+              },
+              '100%': {
+                opacity: '1',
+                transform: 'translateY(0) scale(1)'
+              }
+            },
+            float: {
+              '0%, 100%': {
+                transform: 'translateY(0)'
+              },
+              '50%': {
+                transform: 'translateY(-6px)'
+              }
+            }
           }
         }
       }
     }
   </script>
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 120px;
+    }
+
+    .search-highlight {
+      background-color: #fef08a;
+      padding: 0 3px;
+      border-radius: 3px;
+      font-weight: 500;
+    }
+
+    .scroll-btn {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px) scale(0.8);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 100;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .scroll-btn.visible {
+      transform: translateX(-50%) translateY(0) scale(1);
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .scroll-btn:hover {
+      transform: translateX(-50%) translateY(-6px) scale(1.05);
+      box-shadow: 0 25px 50px -12px rgba(28, 42, 58, 0.25), 0 10px 20px -5px rgba(28, 42, 58, 0.15);
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.8);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .pulse-ring::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border: 2px solid currentColor;
+      border-radius: 9999px;
+      animation: pulse-ring 1.5s ease-out infinite;
+    }
+
+    .arrow-down {
+      animation: bounceDown 2s infinite;
+    }
+
+    .arrow-up {
+      animation: bounceUp 2s infinite;
+    }
+
+    @keyframes bounceDown {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(4px);
+      }
+    }
+
+    @keyframes bounceUp {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+  </style>
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-
-  <!-- Global Navigation -->
   <%- include('../../partials/navbar')%>
   <%- include('../../partials/doodles')%>
 
-  <div class="flex pt-28 max-w-7xl mx-auto px-6 gap-8">
-    <!-- Sidebar Navigation -->
-    <aside class="w-64 shrink-0 hidden lg:block h-[calc(100vh-8rem)] sticky top-28">
-      <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-3xl rounded-[2rem] p-6 h-full flex flex-col justify-between shadow-sm">
-        <div>
-          <div class="flex items-center gap-4 px-2 mb-8"></div>
-          <div></div>
-          <a href="/dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <!-- Scroll to Events Button -->
+  <button id="scrollToEventsBtn" onclick="scrollToSection('allEventsSection')" class="scroll-btn group flex items-center gap-2 px-5 py-3 bg-white/60 backdrop-blur-xl border border-white/40 text-[#1C2A3A] rounded-full shadow-lg hover:bg-white/80 transition-all animate-pop-in" aria-label="Scroll to All Events">
+    <div class="relative">
+      <svg class="w-5 h-5 arrow-down transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+      </svg>
+      <div class="absolute inset-0 pulse-ring text-[#1C2A3A]/30"></div>
+    </div>
+    <span class="font-medium text-sm hidden sm:inline">All Events</span>
+    <span class="text-xs bg-[#1C2A3A]/10 px-2 py-0.5 rounded-full"><%= user?.hostedEvents?.length || 0 %></span>
+  </button>
+
+  <!-- Scroll to Analytics Button -->
+  <button id="scrollToAnalyticsBtn" onclick="scrollToSection('analyticsSection')" class="scroll-btn group flex items-center gap-2 px-5 py-3 bg-[#1C2A3A]/90 backdrop-blur-xl border border-white/20 text-white rounded-full shadow-lg hover:bg-[#1C2A3A] transition-all animate-pop-in" aria-label="Scroll to Analytics">
+    <div class="relative">
+      <svg class="w-5 h-5 arrow-up transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+      </svg>
+      <div class="absolute inset-0 pulse-ring text-white/30"></div>
+    </div>
+    <span class="font-medium text-sm hidden sm:inline">Analytics</span>
+    <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+    </svg>
+  </button>
+
+  <div class="flex pt-28 w-full">
+    <!-- Sidebar -->
+    <aside class="w-20 shrink-0 hidden lg:block fixed left-0 top-0 h-screen z-40">
+      <div class="bg-[#1C2A3A] h-full flex flex-col items-center py-8 border-r border-white/10">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center text-white font-bold mb-8">E</div>
+        <nav class="space-y-4 flex-1 flex flex-col justify-center w-full px-3">
+          <a href="/dashboard" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
             </svg>
-            <span>Profile</span>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Profile</span>
           </a>
-          <a href="/dashboard/hostDashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-[#F9F7F5] border border-[#1C2A3A]/5 text-[#1C2A3A] font-medium transition-all shadow-sm">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <a href="/dashboard/hostDashboard" class="w-full aspect-square flex items-center justify-center rounded-xl bg-white/15 border border-white/20 text-white transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
             </svg>
-            <span>Host dashboard</span>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Dashboard</span>
           </a>
-
-          <nav class="space-y-2">
-            <a href="/dashboard/myBookings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
-              </svg>
-              <span>My Bookings</span>
-            </a>
-
-            <a href="/dashboard/calendar" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <span>Calendar</span>
-            </a>
-
-
-            <a href="/dashboard/wallet" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-              </svg>
-              <span>Wallet</span>
-            </a>
-          </nav>
+          <a href="/dashboard/myBookings" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+            </svg>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Bookings</span>
+          </a>
+          <a href="/dashboard/calendar" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Calendar</span>
+          </a>
+          <a href="/dashboard/wallet" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+            </svg>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Wallet</span>
+          </a>
+        </nav>
+        <div class="pt-6 border-t border-white/10 mt-auto w-full px-3 space-y-3">
+          <a href="/dashboard" class="w-full aspect-square flex items-center justify-center rounded-xl bg-gradient-to-br from-white/20 to-white/10 text-white text-xs font-bold"><%= user?.name?.charAt(0) || 'U' %></a>
+          <a href="/logout" class="w-full aspect-square flex items-center justify-center rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all group relative">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+            <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Logout</span>
+          </a>
         </div>
       </div>
     </aside>
-    <!-- Main Content Area -->
-    <main class="flex-1 w-full min-w-0">
-      <div>
-        <div class="flex flex-col md:flex-row justify-between items-end mb-8">
+
+    <!-- Main Content -->
+    <main class="flex-1 w-full min-w-0 lg:ml-20">
+      <div class="px-8 py-8 max-w-7xl mx-auto space-y-8">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-end">
           <div>
             <h1 class="text-4xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">Host Dashboard</h1>
-            <p class="text-[#1C2A3A]/60 font-sans">Manage events you are hosting.</p>
+            <p class="text-[#1C2A3A]/60 font-sans">Manage events and track performance</p>
           </div>
-          <a href="/createEvent" class="mt-4 md:mt-0 px-6 py-3 bg-[#1C2A3A] text-white rounded-xl font-bold shadow-lg hover:bg-[#2C3E50] transition-colors whitespace-nowrap">
+          <a href="/createEvent" class="mt-4 md:mt-0 px-6 py-3 bg-[#1C2A3A] text-white rounded-xl font-bold shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 whitespace-nowrap flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
             Create Event
           </a>
         </div>
 
-        <!-- Analytics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <!-- Total Events -->
-          <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
-            <div class="flex items-center gap-4 mb-2">
-              <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/5 flex items-center justify-center text-[#1C2A3A]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                  </path>
-                </svg>
+        <!-- Analytics Section -->
+        <div id="analyticsSection" class="space-y-8">
+          <!-- Analytics Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/5 flex items-center justify-center text-[#1C2A3A]">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                  </svg>
+                </div>
+                <span class="text-[10px] font-bold text-[#1C2A3A]/60 uppercase tracking-wider">Total Events</span>
               </div>
-              <span class="text-[#1C2A3A]/60 font-medium">Total Events</span>
+              <h3 class="text-3xl font-heading text-[#1C2A3A]"><%= typeof analytics !== 'undefined' && analytics ? analytics.totalEvents : (user?.hostedEvents?.length || 0) %></h3>
             </div>
-            <h3 class="text-4xl font-heading text-[#1C2A3A]">
-              <%= user?.hostedEvents?.length %>
-            </h3>
-          </div>
-
-          <!-- Tickets Sold -->
-          <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
-            <div class="flex items-center gap-4 mb-2">
-              <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/5 flex items-center justify-center text-[#1C2A3A]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
-                  </path>
-                </svg>
+            <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/5 flex items-center justify-center text-[#1C2A3A]">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+                  </svg>
+                </div>
+                <span class="text-[10px] font-bold text-[#1C2A3A]/60 uppercase tracking-wider">Tickets Sold</span>
               </div>
-              <span class="text-[#1C2A3A]/60 font-medium">Tickets Sold</span>
+              <h3 class="text-3xl font-heading text-[#1C2A3A]"><%= typeof analytics !== 'undefined' && analytics ? analytics.totalTicketsSold : 0 %></h3>
             </div>
-            <h3 class="text-4xl font-heading text-[#1C2A3A]">
-              4
-            </h3>
-          </div>
-
-          <!-- Total Revenue -->
-          <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
-            <div class="flex items-center gap-4 mb-2">
-              <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/5 flex items-center justify-center text-[#1C2A3A]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                  </path>
-                </svg>
+            <div class="bg-gradient-to-br from-[#1C2A3A] to-[#2C3E50] rounded-[2rem] p-6 text-white shadow-lg">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <span class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Total Revenue</span>
               </div>
-              <span class="text-[#1C2A3A]/60 font-medium">Total Revenue</span>
+              <h3 class="text-3xl font-heading text-white">₹<%= typeof analytics !== 'undefined' && analytics ? analytics.totalRevenue.toLocaleString() : '0.00' %></h3>
             </div>
-            <h3 class="text-4xl font-heading text-[#1C2A3A]">
-            </h3>
+            <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 backdrop-blur-xl border border-emerald-500/20 rounded-[2rem] p-6">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                  </svg>
+                </div>
+                <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Top Event</span>
+              </div>
+              <% if (typeof analytics !== 'undefined' && analytics && analytics.topEventByRevenue) { %>
+              <h3 class="text-lg font-heading font-semibold text-[#1C2A3A] truncate mb-1"><%= analytics.topEventByRevenue.title %></h3>
+              <p class="text-2xl font-bold text-emerald-600">₹<%= analytics.topEventByRevenue.revenue.toLocaleString() %></p>
+              <% } else { %>
+              <p class="text-[#1C2A3A]/60 text-sm">No sales yet</p>
+              <% } %>
+            </div>
           </div>
-        </div>
 
-
-
-        <!-- Empty State -->
-        <% if (!user.isHost) { %>
-        <div id="no-events-state" class="flex flex-col items-center justify-center py-20 bg-white/40 backdrop-blur-xl rounded-[2rem] border border-[#1C2A3A]/5 text-center px-4">
-          <div class="w-20 h-20 bg-[#1C2A3A]/5 rounded-full flex items-center justify-center mb-6">
-            <svg class="w-10 h-10 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-              </path>
-            </svg>
-          </div>
-          <h3 class="text-xl font-heading font-medium text-[#1C2A3A] mb-2">No Hosted Events</h3>
-          <p class="text-[#1C2A3A]/60 max-w-md mb-8">You haven't created any events yet. Start hosting to
-            see
-            your dashboard light up!</p>
-          <a href="/createEvent" class="px-8 py-4 bg-[#1C2A3A] text-white rounded-xl font-medium shadow-lg hover:bg-[#2C3E50] transition-all hover:scale-105 flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
-              </path>
-            </svg>
-            Create Your First Event
-          </a>
-
-          <% } else { %>
+          <!-- Charts with Filters -->
           <div class="space-y-6">
-            <!-- Event Card 1 -->
-            <%for(let i = 0 ;i < user.hostedEvents.length ; i++){ %>
-            <% if(user.hostedEvents[i].status == 'live') {%>
-            <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] overflow-hidden shadow-sm border border-white/40 hover:shadow-lg transition-all">
-              <!-- Flex row with min-h-0 to prevent stretching -->
-              <div class="flex flex-col md:flex-row min-h-0">
-                <div class="w-full md:w-1/3 h-[275px] relative overflow-hidden rounded-lg">
-                  <div class="w-full h-full flex items-center justify-center transition-transform duration-300 hover:scale-105">
-                    <img src="<%= user.hostedEvents[i].galleryImages[0] %>" class="w-full h-full object-cover block" alt="<%= user.hostedEvents[i].title || 'Event' %>">
-                  </div>
-                  <div class="absolute top-4 left-4 bg-emerald-500/90 backdrop-blur-md px-3 py-1 rounded-full z-10">
-                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Active</span>
-                  </div>
+            <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-4">
+              <form action="/dashboard/hostDashboard" method="GET" class="flex flex-wrap items-center gap-4">
+                <div class="flex bg-[#1C2A3A]/5 p-1 rounded-xl">
+                  <button type="submit" name="timeRange" value="daily" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= typeof timeRange !== 'undefined' && timeRange === 'daily' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">Days</button>
+                  <button type="submit" name="timeRange" value="monthly" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= typeof timeRange === 'undefined' || timeRange === 'monthly' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">Monthly</button>
+                  <button type="submit" name="timeRange" value="yearly" class="px-4 py-1.5 text-[10px] font-bold uppercase rounded-lg transition-all <%= typeof timeRange !== 'undefined' && timeRange === 'yearly' ? 'bg-[#1C2A3A] text-white shadow-sm' : 'text-[#1C2A3A]/40 hover:text-[#1C2A3A]' %>">Yearly</button>
                 </div>
-
-                <!-- Event Details -->
-                <div class="flex-1 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2"><%=user.hostedEvents[i].title%></h3>
-                      <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                          </svg>
-                          <span><%=user.hostedEvents[i].formattedDate.date%></span>
-                        </div>
-                        <div class="hidden md:block w-1 h-1 rounded-full bg-current"></div>
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                          </svg>
-                          <span><%= user.hostedEvents[i].venueDetails.name %></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Stats -->
-                  <div class="grid grid-cols-3 gap-4 mb-4 p-4 bg-[#F9F7F5] rounded-xl">
-                    <div class="text-center">
-                      <p class="text-2xl font-heading text-[#1C2A3A]"><%=user.hostedEvents[i].tickets.sold%></p>
-                      <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">Sold</p>
-                    </div>
-                    <div class="text-center border-x border-[#1C2A3A]/10">
-                      <p class="text-2xl font-heading text-[#1C2A3A]"><%=user.hostedEvents[i].tickets.remaining%></p>
-                      <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">Remaining</p>
-                    </div>
-                    <div class="text-center">
-                      <p class="text-2xl font-heading text-[#1C2A3A]">$12,250</p>
-                      <p class="text-[10px] uppercase tracking-widest text-[#1C2A3A]/40 font-bold">Revenue</p>
-                    </div>
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="flex gap-2">
-                    <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
-                      View Event
-                    </a>
-                    <a href="/editEvent/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
-                      Edit
-                    </a>
-
-                    <a href="/boost-event" class="px-4 py-2 bg-[#ED8842] text-white rounded-xl text-sm font-bold hover:bg-[#D97732] transition-colors shadow-lg shadow-orange-500/20 flex items-center gap-2">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                      </svg>
-                      Boost
-                    </a>
-                  </div>
+                <% if (typeof timeRange === 'undefined' || timeRange === 'daily') { %>
+                <div class="flex items-center gap-2 ml-auto">
+                  <input type="hidden" name="timeRange" value="daily">
+                  <input type="date" name="startDate" value="<%= typeof startDate !== 'undefined' ? startDate : new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] %>" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]" required>
+                  <span class="text-[#1C2A3A]/40 text-xs">to</span>
+                  <input type="date" name="endDate" value="<%= typeof endDate !== 'undefined' ? endDate : new Date().toISOString().split('T')[0] %>" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]" required>
+                  <button type="submit" class="px-3 py-1.5 text-[10px] font-bold uppercase rounded-lg bg-[#1C2A3A] text-white hover:bg-[#2C3E50] transition-all">Apply</button>
                 </div>
+                <% } %>
+                <% if (typeof timeRange !== 'undefined' && timeRange === 'monthly') { %>
+                <div class="flex items-center gap-2 ml-auto">
+                  <input type="hidden" name="timeRange" value="monthly">
+                  <select name="year" onchange="this.form.submit()" class="px-3 py-1.5 text-xs rounded-lg bg-white/60 border border-[#1C2A3A]/10 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]">
+                    <% const currentYear = new Date().getFullYear(); %>
+                    <% for (let y = currentYear - 2; y <= currentYear + 1; y++) { %>
+                    <option value="<%= y %>" <%= typeof year !== 'undefined' && year == y ? 'selected' : '' %>><%= y %></option>
+                    <% } %>
+                  </select>
+                </div>
+                <% } %>
+                <% if (typeof timeRange !== 'undefined' && timeRange === 'yearly') { %>
+                <div class="ml-auto text-xs text-[#1C2A3A]/60 font-medium">Showing: 2025 - 2029</div>
+                <% } %>
+              </form>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="text-lg font-heading font-semibold text-[#1C2A3A]">Revenue Overview</h3>
+                  <span class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider"><%= typeof timeRange !== 'undefined' ? timeRange : 'monthly' %> View</span>
+                </div>
+                <div class="h-64"><canvas id="revenueChart"></canvas></div>
+              </div>
+              <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
+                <h3 class="text-lg font-heading font-semibold text-[#1C2A3A] mb-4">Event Status</h3>
+                <div class="h-64"><canvas id="statusChart"></canvas></div>
               </div>
             </div>
-            <% }else if(user.hostedEvents[i].status == 'pending') {%>
+          </div>
 
-            <!-- Event Card 2 - Pending -->
-            <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/40">
-              <div class="flex flex-col md:flex-row">
-                <!-- Event Image -->
-                <div class="w-full md:w-1/3 h-[275px] relative overflow-hidden rounded-lg">
-                  <div class="w-full h-full flex items-center justify-center transition-transform duration-300 hover:scale-105">
-                    <img src="<%= user.hostedEvents[i].galleryImages[0] %>" class="w-full h-full object-cover block" alt="<%= user.hostedEvents[i].title || 'Event' %>">
-                  </div>
-                  <div class="absolute top-4 left-4 bg-yellow-500/90 backdrop-blur-md px-3 py-1 rounded-full z-10">
-                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Pending</span>
-                  </div>
-                </div>
-
-                <!-- Event Details -->
-                <div class="flex-1 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2"><%=user.hostedEvents[i].title%>
-                      </h3>
-                      <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                          </svg>
-                          <span><%=user.hostedEvents[i].formattedDate.date%></span>
-                        </div>
-                        <div class="hidden md:block w-1 h-1 rounded-full bg-current">
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                            </path>
-                          </svg>
-                          <span><%= user.hostedEvents[i].venueDetails.name %></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Pending Message -->
-                  <div class="mb-4 p-4 bg-orange-50 border border-orange-200 rounded-xl">
-                    <div class="flex items-start gap-3">
-                      <svg class="w-5 h-5 text-orange-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                      <div>
-                        <p class="text-sm font-bold text-orange-900 mb-1">Pending Admin
-                          Approval
-                        </p>
-                        <p class="text-xs text-orange-800">Your event is under review.
-                          You'll be
-                          notified once it's approved.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="flex gap-2">
-                    <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
-                      View Event
-                    </a>
-                    <a href="/editEvent/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
-                      Edit
-                    </a>
-                  </div>
-                </div>
-              </div>
+          <!-- Top 3 Events Table -->
+          <div class="bg-white/40 backdrop-blur-xl border border-[#1C2A3A]/5 rounded-[2rem] p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h3 class="text-xl font-heading font-semibold text-[#1C2A3A]">Top 3 Performing Events</h3>
             </div>
-            <% }else if(user.hostedEvents[i].status == 'approved') {%>
-
-            <!-- Event Card 2 - Pending -->
-            <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/40">
-              <div class="flex flex-col md:flex-row">
-                <!-- Event Image -->
-                <div class="w-full md:w-1/3 h-[275px] relative overflow-hidden rounded-lg">
-                  <div class="w-full h-full flex items-center justify-center transition-transform duration-300 hover:scale-105">
-                    <img src="<%= user.hostedEvents[i].galleryImages[0] %>" class="w-full h-full object-cover block" alt="<%= user.hostedEvents[i].title || 'Event' %>">
-                  </div>
-                  <div class="absolute top-4 left-4 bg-green-400/100 backdrop-blur-md px-3 py-1 rounded-full z-10">
-                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Payment Pending</span>
-                  </div>
-                </div>
-
-                <!-- Event Details -->
-                <div class="flex-1 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2"><%=user.hostedEvents[i].title%>
-                      </h3>
-                      <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                          </svg>
-                          <span><%=user.hostedEvents[i].formattedDate.date%></span>
-                        </div>
-                        <div class="hidden md:block w-1 h-1 rounded-full bg-current">
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                            </path>
-                          </svg>
-                          <span><%= user.hostedEvents[i].venueDetails.name %></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Pending Message -->
-                  <div class="mb-4 p-4 bg-orang-50 border border-green-500 rounded-xl">
-                    <div class="flex items-start gap-3">
-                      <svg class="w-5 h-5 text-orange-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                      <div>
-                        <p class="text-sm font-bold text-green-900 mb-1">Your event is approved by admin now waiting for your payment
-                        </p>
-
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="flex gap-2">
-                    <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
-                      View Event
-                    </a>
-                    <a href="/editEvent/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
-                      Edit
-                    </a>
-                    <a href="/payAndPublish/<%=user.hostedEvents[i]._id%> " class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
-                      Pay and Publish
-                    </a>
-                  </div>
-                </div>
-              </div>
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead>
+                  <tr class="text-left text-[10px] uppercase tracking-widest text-[#1C2A3A]/60 border-b border-[#1C2A3A]/10">
+                    <th class="pb-3 pl-4">#</th>
+                    <th class="pb-3">Event</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3">Tickets Sold</th>
+                    <th class="pb-3">Revenue</th>
+                    <th class="pb-3 pr-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (typeof analytics !== 'undefined' && analytics && analytics.eventStats && analytics.eventStats.length > 0) { %>
+                  <% analytics.eventStats.slice(0, 3).forEach((event, index) => { %>
+                  <tr class="border-b border-[#1C2A3A]/5 last:border-0 hover:bg-white/30 transition-colors">
+                    <td class="py-4 pl-4"><span class="w-6 h-6 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-xs font-bold text-[#1C2A3A]"><%= index + 1 %></span></td>
+                    <td class="py-4"><span class="font-medium text-[#1C2A3A]"><%= event.title %></span></td>
+                    <td class="py-4"><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider <%= event.status === 'live' ? 'bg-emerald-500/20 text-emerald-600' : event.status === 'pending' ? 'bg-amber-500/20 text-amber-600' : event.status === 'approved' ? 'bg-blue-500/20 text-blue-600' : event.status === 'completed' || event.status === 'finished' ? 'bg-gray-500/20 text-gray-600' : 'bg-red-500/20 text-red-600' %>"><%= event.status %></span></td>
+                    <td class="py-4 text-[#1C2A3A]"><%= event.ticketsSold %></td>
+                    <td class="py-4 font-semibold text-[#1C2A3A]">₹<%= event.revenue.toLocaleString() %></td>
+                    <td class="py-4 pr-4 text-[#1C2A3A]/60 text-sm"><%= new Date(event.startDate).toLocaleDateString() %></td>
+                  </tr>
+                  <% }) %>
+                  <% } else { %>
+                  <tr>
+                    <td colspan="6" class="py-8 text-center text-[#1C2A3A]/60">No event data available yet</td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
             </div>
-            <%} else if(user.hostedEvents[i].status == 'rejected') {%>
-
-            <!-- Event Card 3 - Rejected -->
-            <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/40">
-              <div class="flex flex-col md:flex-row">
-                <!-- Event Image -->
-                <div class="w-full md:w-1/3 h-[275px] relative overflow-hidden rounded-lg">
-                  <div class="w-full h-full flex items-center justify-center transition-transform duration-300 hover:scale-105">
-                    <img src="<%= user.hostedEvents[i].galleryImages[0] %>" class="w-full h-full object-cover block" alt="<%= user.hostedEvents[i].title || 'Event' %>">
-                  </div>
-                  <div class="absolute top-4 left-4 bg-red-500/90 backdrop-blur-md px-3 py-1 rounded-full z-10">
-                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Rejected</span>
-                  </div>
-                </div>
-
-                <!-- Event Details -->
-                <div class="flex-1 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2"><%= user.hostedEvents[i].title%></h3>
-                      <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                          </svg>
-                          <span><%= user.hostedEvents[i].formattedDate.date%></span>
-                        </div>
-                        <div class="hidden md:block w-1 h-1 rounded-full bg-current">
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                            </path>
-                          </svg>
-                          <span><%= user.hostedEvents[i].venueDetails.name%></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Rejected Message -->
-                  <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
-                    <div class="flex items-start gap-3">
-                      <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                        </path>
-                      </svg>
-                      <div>
-                        <p class="text-sm font-bold text-red-900 mb-1">Event Not
-                          Approved</p>
-                        <p class="text-xs text-red-800">Reason : <%= user.hostedEvents[i].rejectionReason%>.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Actions -->
-                  <div class="flex gap-2">
-                    <a href="/viewEventHost/<%=user.hostedEvents[i]._id%>" class="flex-1 px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">
-                      Revise & Resubmit
-                    </a>
-
-                  </div>
-                </div>
-              </div>
-            </div>
-            <%} else if(user.hostedEvents[i].status == 'completed') {%>
-
-            <!-- Event Card 4 - Finished -->
-            <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] overflow-hidden shadow-sm border border-white/40 opacity-75 hover:opacity-100 transition-opacity">
-              <div class="flex flex-col md:flex-row">
-                <!-- Event Image -->
-                <div class="relative md:w-72 h-48 md:h-auto overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1514525253440-b393332569ca?q=80&w=600&auto=format&fit=crop" class="w-full h-full object-cover grayscale" alt="Jazz Evening">
-                  <div class="absolute inset-0 bg-gradient-to-r from-[#1C2A3A]/40 to-transparent">
-                  </div>
-                  <div class="absolute top-4 left-4 bg-[#1C2A3A]/90 backdrop-blur-md px-3 py-1 rounded-full">
-                    <span class="text-[10px] font-bold text-white uppercase tracking-widest">Finished</span>
-                  </div>
-                </div>
-
-                <!-- Event Details -->
-                <div class="flex-1 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-2xl font-heading text-[#1C2A3A] mb-2">Jazz Evening
-                      </h3>
-                      <div class="flex flex-wrap items-center gap-3 text-[#1C2A3A]/60 text-sm mb-3">
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                          </svg>
-                          <span>Nov 10, 2024</span>
-                        </div>
-                        <div class="hidden md:block w-1 h-1 rounded-full bg-current">
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
-                            </path>
-                          </svg>
-                          <span>Blue Note Jazz Club</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Finished Info -->
-                  <p class="text-sm text-[#1C2A3A]/60 mb-4">
-                    This event has ended. You can view the event details, analytics, and
-                    attendee
-                    reviews.
-                  </p>
-
-                  <!-- Actions -->
-                  <div class="flex gap-2">
-                    <a href="/view-event-host" class="flex-1 px-4 py-2 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">
-                      View Details
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <%}%>
-        <%}%>
           </div>
         </div>
-        <% } %>
+
+        <!-- All Events Grid -->
+        <div id="allEventsSection" class="space-y-8">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h2 class="text-2xl font-heading font-semibold text-[#1C2A3A]">All Events</h2>
+              <p class="text-sm text-[#1C2A3A]/60 mt-1"><span id="eventCount"><%= user?.hostedEvents?.length || 0 %></span> total events</p>
+            </div>
+            <div class="w-full md:w-auto md:min-w-[300px]">
+              <div class="relative">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" id="eventSearch" placeholder="Search events by name, status, or date..." class="w-full bg-white/60 border border-[#1C2A3A]/10 rounded-xl pl-11 pr-10 py-2.5 text-sm text-[#1C2A3A] placeholder-[#1C2A3A]/40 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 focus:border-[#1C2A3A]/30 transition-all" oninput="filterEvents(this.value)">
+                <button id="clearEventSearch" onclick="clearEventSearch()" class="absolute right-4 top-1/2 -translate-y-1/2 text-[#1C2A3A]/40 hover:text-[#1C2A3A] transition-colors hidden">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+              <p id="searchResults" class="text-xs text-[#1C2A3A]/50 mt-2 hidden">Showing <span id="visibleCount">0</span> of <span id="totalCount"><%= user?.hostedEvents?.length || 0 %></span> events</p>
+            </div>
+          </div>
+          <% if (!user.isHost) { %>
+          <div id="no-events-state" class="flex flex-col items-center justify-center py-20 bg-white/40 backdrop-blur-xl rounded-[2rem] border border-[#1C2A3A]/5 text-center px-4">
+            <div class="w-20 h-20 bg-[#1C2A3A]/5 rounded-full flex items-center justify-center mb-6">
+              <svg class="w-10 h-10 text-[#1C2A3A]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-heading font-medium text-[#1C2A3A] mb-2">No Hosted Events</h3>
+            <p class="text-[#1C2A3A]/60 max-w-md mb-8">You haven't created any events yet. Start hosting to see your dashboard light up!</p>
+            <a href="/createEvent" class="px-8 py-4 bg-[#1C2A3A] text-white rounded-xl font-medium shadow-lg hover:bg-[#2C3E50] transition-all hover:scale-105 flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Create Your First Event
+            </a>
+          </div>
+          <% } else { %>
+          <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <% for(let i = 0; i < user.hostedEvents.length; i++) {
+const event = user.hostedEvents[i];
+const title = event.title?.toLowerCase() || '';
+const status = event.status?.toLowerCase() || '';
+const date = event.formattedDate?.date?.toLowerCase() || '';
+%>
+            <div class="event-card bg-white/60 backdrop-blur-xl rounded-[2rem] overflow-hidden shadow-sm border border-white/40 hover:shadow-lg hover:-translate-y-1 transition-all group" data-title="<%= title %>" data-status="<%= status %>" data-date="<%= date %>">
+              <div class="relative h-48 overflow-hidden">
+                <img src="<%= event.galleryImages[0] %>" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt="<%= event.title || 'Event' %>">
+                <div class="absolute top-4 left-4 px-3 py-1.5 rounded-full backdrop-blur-md z-10 <%= event.status === 'live' ? 'bg-emerald-500/90' : event.status === 'pending' ? 'bg-amber-500/90' : event.status === 'approved' ? 'bg-blue-500/90' : event.status === 'rejected' ? 'bg-red-500/90' : 'bg-[#1C2A3A]/90' %>">
+                  <span class="text-[10px] font-bold text-white uppercase tracking-widest"><%= event.status === 'completed' || event.status === 'finished' ? 'Finished' : event.status === 'live' ? 'Active' : event.status === 'approved' ? 'Payment Pending' : event.status %></span>
+                </div>
+              </div>
+              <div class="p-5">
+                <h3 class="text-xl font-heading font-semibold text-[#1C2A3A] mb-2 line-clamp-1 event-title"><%= event.title %></h3>
+                <div class="flex items-center gap-2 text-[#1C2A3A]/60 text-sm mb-4">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                  <span class="event-date"><%= event.formattedDate?.date || 'TBD' %></span>
+                </div>
+                <div class="flex items-center justify-between py-3 border-t border-[#1C2A3A]/10 mb-4">
+                  <div class="text-center">
+                    <p class="text-lg font-heading text-[#1C2A3A]"><%= event.tickets?.sold || 0 %></p>
+                    <p class="text-[9px] uppercase tracking-wider text-[#1C2A3A]/40 font-bold">Sold</p>
+                  </div>
+                  <div class="w-px h-8 bg-[#1C2A3A]/10"></div>
+                  <div class="text-center">
+                    <p class="text-lg font-heading text-[#1C2A3A]"><%= event.tickets?.remaining || 0 %></p>
+                    <p class="text-[9px] uppercase tracking-wider text-[#1C2A3A]/40 font-bold">Left</p>
+                  </div>
+                  <div class="w-px h-8 bg-[#1C2A3A]/10"></div>
+                  <div class="text-center">
+                    <p class="text-lg font-heading text-[#1C2A3A]">₹<%= (event.tickets?.revenue || 0).toLocaleString() %></p>
+                    <p class="text-[9px] uppercase tracking-wider text-[#1C2A3A]/40 font-bold">Earned</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <a href="/viewEventHost/<%= event._id %>" class="flex-1 px-4 py-2.5 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">View</a>
+                  <% if(event.status === 'live') { %>
+                  <a href="/editEvent/<%= event._id %>" class="flex-1 px-4 py-2.5 border border-[#1C2A3A]/20 text-[#1C2A3A] rounded-xl text-sm font-medium hover:bg-white transition-all text-center">Edit</a>
+                  <% } else if(event.status === 'approved') { %>
+                  <a href="/payAndPublish/<%= event._id %>" class="flex-1 px-4 py-2.5 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">Pay</a>
+                  <% } else if(event.status === 'rejected') { %>
+                  <a href="/editEvent/<%= event._id %>" class="flex-1 px-4 py-2.5 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all text-center">Revise</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+          <div id="emptySearchState" class="hidden text-center py-12 bg-white/40 backdrop-blur-xl rounded-[2rem] border border-[#1C2A3A]/5">
+            <svg class="w-12 h-12 mx-auto text-[#1C2A3A]/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <p class="text-[#1C2A3A]/60 mb-2">No events match your search</p>
+            <button onclick="clearEventSearch()" class="text-sm text-[#1C2A3A] hover:underline">Clear search</button>
+          </div>
+          <% } %>
+        </div>
+      </div>
     </main>
   </div>
 
+  <!-- GLOBAL SCROLL FUNCTION (OUTSIDE ALL SCRIPT BLOCKS) -->
+  <script>
+    function scrollToSection(sectionId) {
+      var section = document.getElementById(sectionId);
+      if (!section) return;
+
+      var targetPosition = section.getBoundingClientRect().top + window.pageYOffset - 100;
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      });
+    }
+  </script>
+
+  <!-- MAIN SCRIPT -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get elements
+      var eventsBtn = document.getElementById('scrollToEventsBtn');
+      var analyticsBtn = document.getElementById('scrollToAnalyticsBtn');
+      var analyticsSec = document.getElementById('analyticsSection');
+      var eventsSec = document.getElementById('allEventsSection');
+
+      console.log('[INIT] Elements check:', {
+        eventsBtn: !!eventsBtn,
+        analyticsBtn: !!analyticsBtn,
+        analyticsPos: analyticsSec ? analyticsSec.offsetTop : 'missing',
+        eventsPos: eventsSec ? eventsSec.offsetTop : 'missing'
+      });
+
+      if (!eventsBtn || !analyticsBtn || !analyticsSec || !eventsSec) {
+        console.error('Required elements NOT FOUND! Check IDs.');
+        return;
+      }
+
+      // Store events section position (PAGE coordinates)
+      var eventsPagePos = eventsSec.offsetTop;
+
+      console.log('[POSITIONS] Events starts at:', eventsPagePos);
+
+      // Force initial state on load
+      setTimeout(function() {
+        updateButtons();
+      }, 800);
+
+      // Simple scroll detection
+      function updateButtons() {
+        var scrollY = window.scrollY;
+        var pastEvents = scrollY > eventsPagePos + 50;
+
+        console.log('[SCROLL] scrollY:', scrollY, 'pastEvents:', pastEvents);
+
+        if (pastEvents) {
+          eventsBtn.classList.remove('visible');
+          analyticsBtn.classList.add('visible');
+          console.log('[BUTTONS] → ANALYTICS button shown');
+        } else {
+          eventsBtn.classList.add('visible');
+          analyticsBtn.classList.remove('visible');
+          console.log('[BUTTONS] → EVENTS button shown');
+        }
+      }
+
+      // Throttled scroll listener
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            updateButtons();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, {
+        passive: true
+      });
+
+      window.addEventListener('resize', updateButtons);
+
+      // Initialize counts
+      var totalEvents = <%= user?.hostedEvents?.length || 0 %>;
+      var countEls = [document.getElementById('totalCount'), document.getElementById('eventCount')];
+      countEls.forEach(function(el) {
+        if (el) el.textContent = totalEvents;
+      });
+
+      // Charts initialization - ALL SYNTAX CORRECTED
+      var hasAnalytics = <%= typeof analytics !== 'undefined' && analytics ? true : false %>;
+      var timeRange = '<%= typeof timeRange !== 'undefined' ? timeRange : 'monthly' %>';
+
+      if (hasAnalytics) {
+        // Revenue Chart
+        var revenueCanvas = document.getElementById('revenueChart');
+        if (revenueCanvas) {
+          var revenueData = <%- JSON.stringify(analytics.monthlyRevenue || []) %>;
+          if (revenueData.length > 0) {
+            var ctx = revenueCanvas.getContext('2d');
+            var existing = Chart.getChart(revenueCanvas);
+            if (existing) existing.destroy();
+
+            new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: revenueData.map(function(d) {
+                  return d.label;
+                }),
+                datasets: [{
+                  label: 'Revenue (₹)',
+                  data: revenueData.map(function(d) {
+                    return Math.round(d.revenue);
+                  }),
+                  borderColor: '#1C2A3A',
+                  backgroundColor: 'rgba(28, 42, 58, 0.1)',
+                  tension: 0.4,
+                  fill: true,
+                  pointBackgroundColor: '#1C2A3A',
+                  pointBorderColor: '#fff',
+                  pointBorderWidth: 2,
+                  pointRadius: 4,
+                  pointHoverRadius: 6
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: false
+                  },
+                  tooltip: {
+                    backgroundColor: '#1C2A3A',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    callbacks: {
+                      label: function(ctx) {
+                        return '₹' + ctx.parsed.y.toLocaleString();
+                      },
+                      title: function(ctx) {
+                        if (timeRange === 'yearly') return 'Year: ' + ctx[0].label;
+                        if (timeRange === 'monthly') return 'Month: ' + ctx[0].label;
+                        return 'Day: ' + ctx[0].label;
+                      }
+                    }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function(v) {
+                        return v >= 1000 ? '₹' + (v / 1000).toFixed(1) + 'k' : '₹' + v;
+                      }
+                    }
+                  },
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      font: {
+                        size: timeRange === 'daily' ? 8 : 10
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+
+        // Status Chart
+        var statusCanvas = document.getElementById('statusChart');
+        if (statusCanvas) {
+          var statusData = <%- JSON.stringify(analytics.statusDistribution || {}) %>;
+          var labels = Object.keys(statusData).filter(function(k) {
+            return statusData[k] > 0;
+          });
+          var values = labels.map(function(k) {
+            return statusData[k];
+          });
+
+          if (labels.length > 0) {
+            var ctx = statusCanvas.getContext('2d');
+            var existing = Chart.getChart(statusCanvas);
+            if (existing) existing.destroy();
+
+            new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                labels: labels.map(function(l) {
+                  return l.charAt(0).toUpperCase() + l.slice(1);
+                }),
+                datasets: [{
+                  data: values,
+                  backgroundColor: ['#10B981', '#F59E0B', '#3B82F6', '#6B7280', '#EF4444'],
+                  borderWidth: 0,
+                  hoverOffset: 10
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: {
+                      usePointStyle: true,
+                      padding: 20,
+                      font: {
+                        size: 11
+                      }
+                    }
+                  },
+                  tooltip: {
+                    backgroundColor: '#1C2A3A',
+                    callbacks: {
+                      label: function(c) {
+                        var total = c.dataset.data.reduce(function(a, b) {
+                          return a + b;
+                        }, 0);
+                        return c.label + ': ' + c.parsed + ' (' + ((c.parsed / total) * 100).toFixed(1) + '%)';
+                      }
+                    }
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
+    });
+
+    // Search functions
+    function filterEvents(query) {
+      var searchQuery = query.trim().toLowerCase();
+      var clearBtn = document.getElementById('clearEventSearch');
+      var searchResults = document.getElementById('searchResults');
+      if (searchQuery.length > 0) {
+        clearBtn.classList.remove('hidden');
+        searchResults.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+        searchResults.classList.add('hidden');
+      }
+      var cards = document.querySelectorAll('.event-card');
+      var visibleCount = 0;
+      cards.forEach(function(card) {
+        var title = card.dataset.title || '';
+        var status = card.dataset.status || '';
+        var date = card.dataset.date || '';
+        var matches = !searchQuery || title.includes(searchQuery) || status.includes(searchQuery) || date.includes(searchQuery);
+        if (matches) {
+          card.classList.remove('hidden');
+          visibleCount++;
+          if (searchQuery) {
+            highlightText(card.querySelector('.event-title'), searchQuery);
+            highlightText(card.querySelector('.event-date'), searchQuery);
+          }
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      var visibleEl = document.getElementById('visibleCount');
+      if (visibleEl) visibleEl.textContent = visibleCount;
+      var empty = document.getElementById('emptySearchState');
+      var grid = document.getElementById('eventsGrid');
+      if (visibleCount === 0 && searchQuery && cards.length > 0) {
+        if (empty) empty.classList.remove('hidden');
+        if (grid) grid.classList.add('hidden');
+      } else {
+        if (empty) empty.classList.add('hidden');
+        if (grid) grid.classList.remove('hidden');
+      }
+    }
+
+    function clearEventSearch() {
+      var input = document.getElementById('eventSearch');
+      if (input) {
+        input.value = '';
+        filterEvents('');
+        input.focus();
+      }
+    }
+
+    function highlightText(element, query) {
+      if (!element || !query) return;
+      var original = element.textContent;
+      var regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      if (regex.test(original)) {
+        element.innerHTML = original.replace(regex, '<span class="search-highlight">$1</span>');
+      }
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        var input = document.getElementById('eventSearch');
+        if (input && document.activeElement === input) clearEventSearch();
+      }
+    });
+  </script>
 </body>
 
 </html>

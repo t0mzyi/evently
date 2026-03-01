@@ -1,6 +1,6 @@
 import userDb from "../../model/userDb.js";
 import { userDetails } from "../../service/admin/dashService.js";
-import { updateProfileService, userFinder } from "../../service/user/dashBoardService.js";
+import { getEventAnalytics, updateProfileService, userFinder } from "../../service/user/dashBoardService.js";
 
 export const getProfile = async (req, res) => {
   try {
@@ -55,8 +55,38 @@ export const editProfile = async (req, res) => {
 export const showHostDashboard = async (req, res) => {
   try {
     const user = await userFinder(req.session.user);
-    return res.render("user/dash/hostDashboard", { user });
+
+    let { timeRange, startDate, endDate, year } = req.query;
+
+    const currentYear = new Date().getFullYear();
+    const today = new Date().toISOString().split("T")[0];
+    const tenDaysAgo = new Date();
+    tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+    const defaultStartDate = tenDaysAgo.toISOString().split("T")[0];
+
+    if (!timeRange) timeRange = "monthly";
+    if (!year) year = currentYear;
+
+    if (timeRange === "daily") {
+      if (!startDate) startDate = defaultStartDate;
+      if (!endDate) endDate = today;
+    } else {
+      if (!startDate) startDate = today;
+      if (!endDate) endDate = today;
+    }
+
+    const analytics = await getEventAnalytics(user._id, timeRange, year, startDate, endDate);
+
+    return res.render("user/dash/hostDashboard", {
+      user,
+      analytics,
+      timeRange,
+      startDate,
+      endDate,
+      year,
+    });
   } catch (err) {
     console.log(err);
+    res.status(500).render("error", { message: err.message });
   }
 };

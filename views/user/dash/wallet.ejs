@@ -8,7 +8,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/styles.css" />
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
   <script>
     tailwind.config = {
       theme: {
@@ -161,22 +160,9 @@
       animation: spin-slow 2s linear infinite;
     }
 
-
     .animate-gradient {
       background-size: 200% 200%;
       animation: gradientShift 8s ease infinite;
-    }
-
-    .nav-btn.active {
-      background: linear-gradient(135deg, rgba(237, 136, 66, 0.15), rgba(237, 136, 66, 0.05));
-      border-left: 3px solid #ED8842;
-      color: #1C2A3A !important;
-      font-weight: 500;
-    }
-
-    .nav-btn.active svg {
-      opacity: 1 !important;
-      color: #ED8842;
     }
 
     .balance-card {
@@ -219,7 +205,6 @@
       transform: translateY(0);
     }
 
-    /* Loading spinner */
     .spinner {
       display: inline-block;
       width: 20px;
@@ -240,7 +225,6 @@
       margin-left: 8px;
     }
 
-    /* Currency conversion indicator */
     .currency-indicator {
       position: absolute;
       right: 12px;
@@ -251,7 +235,6 @@
       opacity: 0.7;
     }
 
-    /* Filter controls */
     #searchTransactions:focus {
       box-shadow: 0 0 0 3px rgba(237, 136, 66, 0.2);
     }
@@ -298,62 +281,72 @@
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
+
   <!-- Global Navigation -->
-  <!-- Simulated navbar for demo -->
   <%- include('../../partials/navbar') %>
   <%- include('../../partials/doodles') %>
 
-  <div class="flex pt-28 max-w-7xl mx-auto px-6 gap-8 pb-12 animate-fade-in">
-    <!-- Sidebar Navigation -->
-    <aside class="w-64 shrink-0 hidden lg:block h-[calc(100vh-8rem)] sticky top-28">
-      <div class="bg-white/40 border border-[#1C2A3A]/5 backdrop-blur-3xl rounded-[2rem] p-6 h-full flex flex-col justify-between shadow-sm">
-        <div>
-          <div class="flex items-center gap-4 px-2 mb-8"></div>
-          <div></div>
-          <a href="/dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <span>Profile</span>
-          </a>
-          <a href="/dashboard/hostDashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-            </svg>
-            <span>Host dashboard</span>
-          </a>
+  <!-- Sidebar - Dark theme matching other pages -->
+  <aside class="w-20 shrink-0 hidden lg:block fixed left-0 top-0 h-screen z-40">
+    <div class="bg-[#1C2A3A] h-full flex flex-col items-center py-8 border-r border-white/10">
+      <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center text-white font-bold mb-8">E</div>
+      <nav class="space-y-4 flex-1 flex flex-col justify-center w-full px-3">
+        <!-- Profile -->
+        <a href="/dashboard" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" title="Profile">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Profile</span>
+        </a>
 
-          <nav class="space-y-2">
-            <a href="/dashboard/myBookings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
-              </svg>
-              <span>My Bookings</span>
-            </a>
+        <!-- Dashboard -->
+        <a href="/dashboard/hostDashboard" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" title="Dashboard">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Dashboard</span>
+        </a>
 
-            <a href="/dashboard/calendar" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[#1C2A3A]/70 hover:bg-[#F9F7F5] hover:text-[#1C2A3A] transition-all">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              <span>Calendar</span>
-            </a>
+        <!-- My Bookings -->
+        <a href="/dashboard/myBookings" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" title="Bookings">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Bookings</span>
+        </a>
 
+        <!-- Calendar -->
+        <a href="/dashboard/calendar" class="w-full aspect-square flex items-center justify-center rounded-xl text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" title="Calendar">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Calendar</span>
+        </a>
 
-            <a href="/dashboard/wallet" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-[#F9F7F5] border border-[#1C2A3A]/5 text-[#1C2A3A] font-medium transition-all shadow-sm">
-              <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-              </svg>
-              <span>Wallet</span>
-            </a>
-          </nav>
-        </div>
+        <!-- Wallet - ACTIVE/SELECTED -->
+        <a href="/dashboard/wallet" class="w-full aspect-square flex items-center justify-center rounded-xl bg-white/15 border border-white/20 text-white transition-all group relative" title="Wallet">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Wallet</span>
+        </a>
+      </nav>
+      <div class="pt-6 border-t border-white/10 mt-auto w-full px-3 space-y-3">
+        <a href="/dashboard" class="w-full aspect-square flex items-center justify-center rounded-xl bg-gradient-to-br from-white/20 to-white/10 text-white text-xs font-bold" title="<%= user?.name || 'User' %>"><%= user?.name?.charAt(0) || 'U' %></a>
+        <a href="/logout" class="w-full aspect-square flex items-center justify-center rounded-xl text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-all group relative" title="Logout">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+          </svg>
+          <span class="absolute left-full ml-4 px-3 py-1.5 bg-[#1C2A3A] text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg border border-white/10">Logout</span>
+        </a>
       </div>
-    </aside>
-    <!-- Simulated sidebar for demo -->
+    </div>
+  </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 w-full min-w-0">
-      <div class="flex flex-col md:flex-row justify-between items-end mb-8 stagger-container">
+  <!-- Main Content - with left margin for sidebar -->
+  <main class="pt-28 pb-16 px-6 lg:ml-20">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-end mb-8 animate-fade-in">
         <div class="stagger-item" style="animation-delay: 0.1s">
           <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-2 text-[#1C2A3A]">Wallet</h1>
           <p class="text-[#1C2A3A]/60 font-sans">Track your earnings and payout history.</p>
@@ -392,9 +385,6 @@
             </svg>
           </div>
         </div>
-
-
-
         <!-- Total Earnings -->
         <div class="balance-card bg-white/60 backdrop-blur-xl border border-white/40 rounded-[2rem] p-8 shadow-sm relative overflow-hidden group hover:bg-white/70 transition-colors">
           <div class="absolute -top-12 -right-12 w-40 h-40 bg-[#1C2A3A]/5 rounded-full blur-3xl group-hover:bg-[#1C2A3A]/10 transition-colors duration-500"></div>
@@ -440,23 +430,17 @@
                 </div>
                 <input type="text" id="searchTransactions" class="w-full sm:w-64 bg-white border border-[#1C2A3A]/10 rounded-xl pl-10 pr-4 py-2 text-sm text-[#1C2A3A] focus:outline-none focus:ring-2 focus:ring-[#ED8842] focus:border-transparent transition-all" placeholder="Search transactions..." value="<%= details.pagination && details.pagination.filters ? details.pagination.filters.search : '' %>">
               </div>
-
               <!-- Type Filter Buttons -->
               <div class="flex gap-2">
-                <button onclick="applyFilter('type', 'all')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all <%= (details.pagination && details.pagination.filters && details.pagination.filters.type === 'all') || !(details.pagination && details.pagination.filters) ? 'bg-[#1C2A3A] text-white shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-[#1C2A3A]/5' %>">
-                  All
-                </button>
+                <button onclick="applyFilter('type', 'all')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all <%= (details.pagination && details.pagination.filters && details.pagination.filters.type === 'all') || !(details.pagination && details.pagination.filters) ? 'bg-[#1C2A3A] text-white shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-[#1C2A3A]/5' %>">All</button>
                 <button onclick="applyFilter('type', 'credit')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1 <%= details.pagination && details.pagination.filters && details.pagination.filters.type === 'credit' ? 'bg-emerald-100 text-emerald-700 shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-emerald-50' %>">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                  Credit
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Credit
                 </button>
                 <button onclick="applyFilter('type', 'debit')" class="px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1 <%= details.pagination && details.pagination.filters && details.pagination.filters.type === 'debit' ? 'bg-rose-100 text-rose-700 shadow-md' : 'bg-white text-[#1C2A3A]/60 border border-[#1C2A3A]/10 hover:bg-rose-50' %>">
-                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                  Debit
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span>Debit
                 </button>
               </div>
             </div>
-
             <!-- Sort Dropdown -->
             <div class="flex items-center gap-3 w-full sm:w-auto">
               <span class="text-xs text-[#1C2A3A]/60 hidden sm:inline">Sort by:</span>
@@ -474,7 +458,6 @@
                   </svg>
                 </div>
               </div>
-
               <!-- Clear Filters Button -->
               <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all' || details.pagination.filters.sort !== 'date_desc')) { %>
               <button onclick="clearFilters()" class="px-3 py-2 rounded-xl text-xs font-medium bg-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/20 hover:text-[#1C2A3A] transition-all flex items-center gap-1">
@@ -486,7 +469,6 @@
               <% } %>
             </div>
           </div>
-
           <!-- Active Filters Badge (Mobile) -->
           <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all' || details.pagination.filters.sort !== 'date_desc')) { %>
           <div class="mt-3 flex flex-wrap gap-2">
@@ -503,7 +485,6 @@
               </button>
             </span>
             <% } %>
-
             <% if (details.pagination.filters.type !== 'all') { %>
             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= details.pagination.filters.type === 'credit' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' %>">
               <%= details.pagination.filters.type.charAt(0).toUpperCase() + details.pagination.filters.type.slice(1) %>
@@ -531,12 +512,12 @@
             </thead>
             <tbody class="divide-y divide-[#1C2A3A]/5">
               <% if (details.transactions && details.transactions.length > 0) { %>
-              <% for (let i = 0; i < details.transactions.length; i++) { 
-          const tx = details.transactions[i];
-          const isCredit = tx.type === "credit";
-          const amountColor = isCredit ? "text-emerald-600" : "text-rose-600";
-          const amountPrefix = isCredit ? "+" : "-";
-        %>
+              <% for (let i = 0; i < details.transactions.length; i++) {
+              const tx = details.transactions[i];
+              const isCredit = tx.type === "credit";
+              const amountColor = isCredit ? "text-emerald-600" : "text-rose-600";
+              const amountPrefix = isCredit ? "+" : "-";
+            %>
               <tr class="hover:bg-[#F9FAFB] transition-colors group">
                 <td class="px-6 py-4">
                   <div class="flex items-start">
@@ -558,17 +539,17 @@
                     <div>
                       <div class="font-medium text-[#1E293B] group-hover:text-[#0F172A] transition-colors"><%= tx.description %></div>
                       <div class="text-xs text-[#64748B] mt-0.5 flex items-center">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium 
-                    <%= tx.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' : 
-                       tx.status === 'PENDING' ? 'bg-amber-100 text-amber-800' : 
-                       'bg-rose-100 text-rose-800' %>">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium
+                        <%= tx.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-800' :
+                           tx.status === 'PENDING' ? 'bg-amber-100 text-amber-800' :
+                           'bg-rose-100 text-rose-800' %>">
                           <%= tx.status.replace('_', ' ') %>
                         </span>
                       </div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-[#475569]"><%= tx.date.date %> <%= tx.date.time %> </td>
+                <td class="px-6 py-4 whitespace-nowrap text-[#475569]"><%= tx.date.date %> <%= tx.date.time %></td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center justify-start">
                     <% if (tx.status === "COMPLETED") { %>
@@ -581,8 +562,8 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2.5 py-1 rounded-full text-xs font-medium 
-              <%= isCredit ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' %>">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-medium
+                  <%= isCredit ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' %>">
                     <%= isCredit ? 'CREDIT' : 'DEBIT' %>
                   </span>
                 </td>
@@ -600,13 +581,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                       </svg>
                     </div>
-
                     <% if (details.pagination && details.pagination.filters && (details.pagination.filters.search || details.pagination.filters.type !== 'all')) { %>
                     <p class="text-sm font-medium text-[#1C2A3A]">No matching transactions</p>
                     <p class="text-xs text-[#64748B] mt-1 mb-4">Try adjusting your filters</p>
-                    <button onclick="clearFilters()" class="px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all">
-                      Clear Filters
-                    </button>
+                    <button onclick="clearFilters()" class="px-4 py-2 bg-[#1C2A3A] text-white rounded-xl text-sm font-medium hover:bg-[#2C3E50] transition-all">Clear Filters</button>
                     <% } else { %>
                     <p class="text-sm font-medium text-[#475569]">No transactions found</p>
                     <p class="text-xs text-[#64748B] mt-1">Your transaction history will appear here</p>
@@ -619,54 +597,30 @@
           </table>
         </div>
 
-
-        <!-- Pagination Controls -->
         <!-- Pagination Controls -->
         <% if (details.pagination && details.pagination.totalPages > 1) { %>
         <div class="px-8 py-6 border-t border-[#1C2A3A]/5">
           <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <!-- Page Info -->
             <div class="text-sm text-[#1C2A3A]/60">
-              Showing
-              <span class="font-bold text-[#1C2A3A]">
-                <%= (details.pagination.currentPage - 1) * details.pagination.limit + 1 %>
-                -
-                <%= Math.min(details.pagination.currentPage * details.pagination.limit, details.pagination.totalTransactions) %>
-              </span>
-              of
-              <span class="font-bold text-[#1C2A3A]"><%= details.pagination.totalTransactions %></span>
-              transactions
+              Showing <span class="font-bold text-[#1C2A3A]"><%= (details.pagination.currentPage - 1) * details.pagination.limit + 1 %>-<%= Math.min(details.pagination.currentPage * details.pagination.limit, details.pagination.totalTransactions) %></span> of <span class="font-bold text-[#1C2A3A]"><%= details.pagination.totalTransactions %></span> transactions
             </div>
-
-            <!-- Simplified Pagination Buttons -->
             <div class="flex items-center gap-1.5">
-              <!-- First Page -->
               <button onclick="changePage(1)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === 1 ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === 1 ? 'disabled' : '' %> title="First Page">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
                 </svg>
               </button>
-
-              <!-- Previous Page -->
               <button onclick="changePage(<%= details.pagination.currentPage - 1 %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === 1 ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === 1 ? 'disabled' : '' %> title="Previous Page">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
               </button>
-
-              <!-- Current Page -->
-              <span class="w-9 h-9 rounded-lg flex items-center justify-center font-bold bg-[#1C2A3A] text-white text-sm">
-                <%= details.pagination.currentPage %>
-              </span>
-
-              <!-- Next Page -->
+              <span class="w-9 h-9 rounded-lg flex items-center justify-center font-bold bg-[#1C2A3A] text-white text-sm"><%= details.pagination.currentPage %></span>
               <button onclick="changePage(<%= details.pagination.currentPage + 1 %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === details.pagination.totalPages ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === details.pagination.totalPages ? 'disabled' : '' %> title="Next Page">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
               </button>
-
-              <!-- Last Page -->
               <button onclick="changePage(<%= details.pagination.totalPages %>)" class="w-9 h-9 rounded-lg flex items-center justify-center <%= details.pagination.currentPage === details.pagination.totalPages ? 'bg-[#1C2A3A]/10 text-[#1C2A3A]/30 cursor-not-allowed' : 'bg-white border border-[#1C2A3A]/10 text-[#1C2A3A]/60 hover:bg-[#1C2A3A]/5 hover:text-[#1C2A3A]' %> transition-all" <%= details.pagination.currentPage === details.pagination.totalPages ? 'disabled' : '' %> title="Last Page">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
@@ -677,8 +631,8 @@
         </div>
         <% } %>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
 
   <!-- Withdrawal Modal -->
   <div id="withdrawModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-6 animate-fade-in">
@@ -705,12 +659,8 @@
           </div>
         </div>
         <div class="flex gap-4">
-          <button type="button" onclick="closeModal('withdrawModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">
-            Cancel
-          </button>
-          <button type="submit" class="flex-1 px-4 py-3 bg-[#1C2A3A] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#2C3E50] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">
-            Confirm Withdrawal
-          </button>
+          <button type="button" onclick="closeModal('withdrawModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">Cancel</button>
+          <button type="submit" class="flex-1 px-4 py-3 bg-[#1C2A3A] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#2C3E50] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">Confirm Withdrawal</button>
         </div>
       </form>
     </div>
@@ -745,14 +695,9 @@
             </label>
           </div>
         </div>
-
         <div class="flex gap-4">
-          <button type="button" onclick="closeModal('addMoneyModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">
-            Cancel
-          </button>
-          <button type="submit" id="addMoneySubmitBtn" class="flex-1 px-4 py-3 bg-[#ED8842] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#E07A3A] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">
-            Add Funds
-          </button>
+          <button type="button" onclick="closeModal('addMoneyModal')" class="flex-1 px-4 py-3 rounded-xl border border-[#1C2A3A]/10 text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-all transform hover:-translate-y-0.5">Cancel</button>
+          <button type="submit" id="addMoneySubmitBtn" class="flex-1 px-4 py-3 bg-[#ED8842] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#E07A3A] transition-all transform hover:-translate-y-0.5 hover:shadow-xl">Add Funds</button>
         </div>
       </form>
     </div>
@@ -762,7 +707,6 @@
     // Apply filter function
     function applyFilter(filterType, value) {
       const url = new URL(window.location.href);
-
       if (filterType === 'type') {
         if (value === 'all') {
           url.searchParams.delete('type');
@@ -782,14 +726,10 @@
           url.searchParams.set('search', value);
         }
       }
-
-      // Reset to page 1 when filters change
       url.searchParams.set('page', '1');
-
       window.location.href = url.toString();
     }
 
-    // Clear all filters
     function clearFilters() {
       const url = new URL(window.location.href);
       url.searchParams.delete('search');
@@ -799,13 +739,11 @@
       window.location.href = url.toString();
     }
 
-    // Clear search only
     function clearSearch() {
       document.getElementById('searchTransactions').value = '';
       applyFilter('search', '');
     }
 
-    // Search with debounce
     let searchTimeout;
     document.addEventListener('DOMContentLoaded', function() {
       const searchInput = document.getElementById('searchTransactions');
@@ -814,10 +752,8 @@
           clearTimeout(searchTimeout);
           searchTimeout = setTimeout(() => {
             applyFilter('search', e.target.value.trim());
-          }, 500); // 500ms debounce
+          }, 500);
         });
-
-        // Enter key to search
         searchInput.addEventListener('keypress', function(e) {
           if (e.key === 'Enter') {
             clearTimeout(searchTimeout);
@@ -825,20 +761,21 @@
           }
         });
       }
+
+      // Stagger animations
+      setTimeout(() => {
+        document.querySelectorAll('.stagger-item').forEach(item => item.classList.add('visible'));
+        document.querySelectorAll('.modal-content').forEach(el => el.classList.add('visible'));
+      }, 100);
     });
 
     function changePage(page) {
       if (page < 1) return;
-
-      // Get current URL and update query parameter
       const url = new URL(window.location.href);
       url.searchParams.set('page', page);
-
-      // Reload with new page
       window.location.href = url.toString();
     }
 
-    // Optional: Add keyboard navigation
     document.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowLeft' && <%= details.pagination && details.pagination.hasPrevPage ? 'true' : 'false' %>) {
         changePage(<%= details.pagination.currentPage - 1 %>);
@@ -846,15 +783,11 @@
       if (e.key === 'ArrowRight' && <%= details.pagination && details.pagination.hasNextPage ? 'true' : 'false' %>) {
         changePage(<%= details.pagination.currentPage + 1 %>);
       }
-
-      // Ctrl + F or Cmd + F to focus search
       if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
         e.preventDefault();
         const searchInput = document.getElementById('searchTransactions');
         if (searchInput) searchInput.focus();
       }
-
-      // Escape to clear search
       if (e.key === 'Escape') {
         const searchInput = document.getElementById('searchTransactions');
         if (searchInput && document.activeElement === searchInput) {
@@ -873,47 +806,29 @@
       }
     });
 
-    // Notification modal handler
     function showNotification(message, isSuccess = true) {
       const modal = document.createElement('div');
       modal.className = 'notification-modal';
-      modal.innerHTML = `
-      <div class="notification-content">
-        <div class="notification-title ${isSuccess ? 'success' : 'error'}">
-          ${isSuccess ? 'Success!' : 'Error!'}
-        </div>
-        <p>${message}</p>
-        <button class="notification-btn">OK</button>
-      </div>
-    `;
-
+      modal.innerHTML = `<div class="notification-content"><div class="notification-title ${isSuccess ? 'success' : 'error'}">${isSuccess ? 'Success!' : 'Error!'}</div><p>${message}</p><button class="notification-btn">OK</button></div>`;
       document.body.appendChild(modal);
       setTimeout(() => modal.classList.add('show'), 10);
-
       modal.querySelector('.notification-btn').onclick = () => {
         modal.classList.remove('show');
         setTimeout(() => document.body.removeChild(modal), 300);
       };
     }
 
-    // Process add money with loading state and validation
     function processAddMoney() {
       const addAmountInput = document.getElementById('addAmount');
       const submitBtn = document.getElementById('addMoneySubmitBtn');
-
-      // Clean input: remove commas/spaces and parse
       const rawValue = addAmountInput.value.replace(/[^\d.]/g, '');
       const amount = parseFloat(rawValue);
-
       if (isNaN(amount) || amount < 10) {
         showNotification('Please enter a valid amount of at least ₹10.00', false);
         return;
       }
-
-      // Show loading state
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<div class="spinner"></div><span class="loading-text">Creating Order...</span>';
-
       fetch('/wallet/addMoney', {
           method: 'POST',
           headers: {
@@ -957,24 +872,20 @@
           }
         },
         theme: {
-          color: "#ED8842",
+          color: "#ED8842"
         },
-
       };
-
       const rzp = new Razorpay(options);
       rzp.on('payment.failed', function(response) {
         handlePaymentCancel(order.orderId);
       });
       rzp.open();
       closeModal('addMoneyModal');
-
       document.getElementById('addMoneySubmitBtn').disabled = false;
       document.getElementById('addMoneySubmitBtn').innerHTML = 'Add Funds';
     }
 
     function handlePaymentCancel(orderId) {
-      // We send a request to your server to say "Hey, this order was cancelled"
       fetch('/wallet/cancelPayment', {
           method: 'POST',
           headers: {
@@ -1013,17 +924,14 @@
         });
     }
 
-    // Process withdrawal
     function processWithdrawal() {
       const amount = parseFloat(document.getElementById('withdrawAmount').value);
       const currentBalanceEl = document.querySelector('[data-balance="available"]');
       const currentBalance = parseFloat(currentBalanceEl.textContent.replace(/,/g, ''));
       const newBalance = currentBalance - amount;
-
       currentBalanceEl.textContent = newBalance.toLocaleString('en-IN', {
         minimumFractionDigits: 2
       });
-
       showNotification(`Withdrawal request for ₹${amount.toFixed(2)} submitted!`);
       closeModal('withdrawModal');
     }
@@ -1031,22 +939,12 @@
     function closeModal(modalId) {
       document.getElementById(modalId).classList.add('hidden');
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('[id$="Modal"]').forEach(modal => {
         modal.addEventListener('click', function(e) {
           if (e.target === this) closeModal(this.id);
         });
       });
-
-      setTimeout(() => {
-        document.querySelectorAll('.stagger-item').forEach(item => {
-          item.classList.add('visible');
-        });
-        document.querySelectorAll('.modal-content').forEach(el => {
-          el.classList.add('visible');
-        });
-      }, 100);
     });
   </script>
 </body>

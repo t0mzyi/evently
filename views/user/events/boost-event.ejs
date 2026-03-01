@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boost Event — Evently</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        theme: { primary: '#1C2A3A', highlight: '#2C3E50', accent: '#ED8842', surface: '#F9F7F5' },
+                    },
+                    fontFamily: { heading: ['Fraunces', 'serif'], sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <div class="fixed top-6 w-full z-50 px-4 md:px-6">
+        <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
+            <div class="flex items-center gap-4">
+                <a href="/dashboard"
+                    class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                        </path>
+                    </svg>
+                </a>
+                <span class="text-xl font-bold tracking-tight text-white font-heading">Boost Event</span>
+            </div>
+            <div class="text-white/70 text-sm font-bold uppercase tracking-widest hidden md:block">
+                Summer Music Festival
+            </div>
+        </nav>
+    </div>
+
+    <main class="flex-1 flex items-center justify-center pt-32 pb-16 px-6">
+        <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <!-- Left: Value Proposition -->
+            <div class="space-y-6">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-heading font-medium tracking-tight mb-4 leading-tight">
+                        Skyrocket Your <br> <span class="text-[#ED8842]">Event Visibility</span>
+                    </h1>
+                    <p class="text-[#1C2A3A]/70 text-lg">
+                        Get your event seen by thousands of potential attendees. Boosting pushes your event to the top
+                        of the "For You" page for 24 hours.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-white/40 border border-[#1C2A3A]/5 rounded-2xl p-6 flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#ED8842]/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-[#ED8842]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-[#1C2A3A] mb-1">Top of 'For You'</h3>
+                            <p class="text-sm text-[#1C2A3A]/60">Your event will be the first thing users see when they
+                                open the app.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white/40 border border-[#1C2A3A]/5 rounded-2xl p-6 flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                </path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-[#1C2A3A] mb-1">3x More Views</h3>
+                            <p class="text-sm text-[#1C2A3A]/60">Boosted events receive on average 300% more page views.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Payment & Checkout -->
+            <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/40 shadow-xl">
+                <h2 class="text-xl font-heading font-bold mb-6">Order Summary</h2>
+
+                <!-- Cost Breakdown -->
+                <div class="space-y-4 mb-8">
+                    <div class="flex justify-between items-center pb-4 border-b border-[#1C2A3A]/10">
+                        <span class="text-[#1C2A3A]/60 font-medium">Event Boost (24h)</span>
+                        <span class="font-bold font-mono">$20.00</span>
+                    </div>
+
+                    <!-- Coupon Input -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Have a
+                            Coupon?</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="couponCode" placeholder="Enter code"
+                                class="flex-1 px-4 py-3 bg-white border border-[#1C2A3A]/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 font-mono uppercase text-sm">
+                            <button onclick="applyCoupon()"
+                                class="px-4 py-3 bg-[#1C2A3A] text-white rounded-xl font-bold text-xs uppercase hover:bg-[#2C3E50] transition-colors">Apply</button>
+                        </div>
+                        <p id="couponMsg" class="text-xs mt-2 hidden"></p>
+                    </div>
+
+                    <div class="flex justify-between items-center pt-4 border-t border-[#1C2A3A]/10">
+                        <span class="text-lg font-bold">Total to Pay</span>
+                        <span id="totalPrice" class="text-2xl font-heading font-medium text-[#1C2A3A]">$20.00</span>
+                    </div>
+                </div>
+
+                <!-- Payment Methods Mockup -->
+                <div class="mb-8">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Pay
+                        With</label>
+                    <div class="flex gap-3">
+                        <button
+                            class="flex-1 py-3 border-2 border-[#1C2A3A] rounded-xl flex items-center justify-center gap-2 font-bold bg-[#1C2A3A] text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
+                                </path>
+                            </svg>
+                            Card
+                        </button>
+                        <button
+                            class="flex-1 py-3 border border-[#1C2A3A]/10 bg-white rounded-xl flex items-center justify-center gap-2 font-medium text-[#1C2A3A] hover:bg-[#F9F7F5]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Wallet
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="processPayment()"
+                    class="w-full py-4 bg-[#ED8842] text-white rounded-2xl font-bold text-lg shadow-xl shadow-orange-500/20 hover:bg-[#D97732] hover:scale-[1.02] transition-all">
+                    Pay & Boost Event
+                </button>
+                <p class="text-xs text-center text-[#1C2A3A]/40 mt-4">Secure payment processed by Evently.</p>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function applyCoupon() {
+            const code = document.getElementById('couponCode').value.toUpperCase();
+            const msg = document.getElementById('couponMsg');
+            const total = document.getElementById('totalPrice');
+
+            if (code === 'BOOST50') {
+                msg.textContent = 'Coupon Applied! 50% Off.';
+                msg.className = 'text-xs mt-2 text-green-600 font-bold';
+                msg.classList.remove('hidden');
+                total.textContent = '$10.00';
+            } else if (code === 'WELCOME20') {
+                msg.textContent = 'Coupon Applied! 20% Off.';
+                msg.className = 'text-xs mt-2 text-green-600 font-bold';
+                msg.classList.remove('hidden');
+                total.textContent = '$16.00';
+            } else {
+                msg.textContent = 'Invalid Coupon Code.';
+                msg.className = 'text-xs mt-2 text-red-600 font-bold';
+                msg.classList.remove('hidden');
+                total.textContent = '$20.00';
+            }
+        }
+
+        function processPayment() {
+            const btn = document.querySelector('button[onclick="processPayment()"]');
+            const originalText = btn.textContent;
+
+            btn.textContent = 'Processing...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                alert('Payment Successful! Your event is now boosted.');
+                window.location.href = '/dashboard';
+            }, 1500);
+        }
+    </script>
+</body>
+
+</html>
