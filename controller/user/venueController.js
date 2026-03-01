@@ -15,7 +15,4 @@ export const singleVenue = async (req, res) => {
   res.render("user/venues/venueDetails", { venue });
 };
 
-
-export const addReviewVenue = async(req,res) => {
-  const addReview =
-}
+export const addReviewVenue = async (req, res) => {};
