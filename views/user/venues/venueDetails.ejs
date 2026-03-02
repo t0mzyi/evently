@@ -23,6 +23,21 @@
             heading: ["Fraunces", "serif"],
             sans: ["Inter", "sans-serif"],
           },
+          keyframes: {
+            'fade-in': {
+              '0%': {
+                opacity: '0',
+                transform: 'translateY(10px)'
+              },
+              '100%': {
+                opacity: '1',
+                transform: 'translateY(0)'
+              }
+            }
+          },
+          animation: {
+            'fade-in': 'fade-in 0.3s ease-out'
+          }
         },
       },
     };
@@ -110,55 +125,59 @@
             <h2 class="text-xs font-bold uppercase tracking-[0.2em] text-[#1C2A3A]/40">
               Guest Reviews
             </h2>
+            <% if (currentUserId) { %>
             <button onclick="openAddReviewModal()" class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline">
               + Add Review
             </button>
+            <% } else { %>
+            <a href="/login?redirect=<%= encodeURIComponent('/venue/' + venue._id) %>" class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline">
+              Login to Review
+            </a>
+            <% } %>
           </div>
 
           <div id="reviewsList" class="space-y-6">
-            <!-- Dummy Review 1 -->
-            <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60" data-review-id="dummy-1">
+            <% if (reviews && reviews.length > 0) { %>
+            <% reviews.forEach(review => { %>
+            <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="<%= review._id %>">
               <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center text-white font-bold text-sm">
-                  SJ
+                <!-- Avatar: Image or Simple Icon Fallback -->
+                <% if (review.avatarUrl) { %>
+                <img src="<%= review.avatarUrl %>" alt="<%= review.userName %>" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img" onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';" />
+                <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">
+                  <svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
                 </div>
-                <div>
-                  <p class="font-bold text-sm">Sarah Johnson</p>
-                  <p class="text-[10px] text-[#1C2A3A]/50">March 15, 2024</p>
+                <% } else { %>
+                <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">
+                  <svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
                 </div>
-                <div class="ml-auto flex items-center gap-3">
-                  <div class="flex text-[#ED8842] text-sm">★★★★★</div>
-                  <button onclick="deleteReview('dummy-1', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
-                    ✕
-                  </button>
-                </div>
-              </div>
-              <p class="text-[#1C2A3A]/70 text-sm leading-relaxed">
-                Absolutely stunning venue! The staff was incredibly helpful and the space exceeded our expectations. Perfect for our corporate event.
-              </p>
-            </div>
+                <% } %>
 
-            <!-- Dummy Review 2 -->
-            <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60" data-review-id="dummy-2">
-              <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-full bg-[#1C2A3A] flex items-center justify-center text-white font-bold text-sm">
-                  MR
-                </div>
                 <div>
-                  <p class="font-bold text-sm">Michael Rodriguez</p>
-                  <p class="text-[10px] text-[#1C2A3A]/50">February 28, 2024</p>
+                  <p class="font-bold text-sm"><%= review.userName %></p>
+                  <p class="text-[10px] text-[#1C2A3A]/50"><%= review.date %></p>
                 </div>
                 <div class="ml-auto flex items-center gap-3">
-                  <div class="flex text-[#ED8842] text-sm">★★★★☆</div>
-                  <button onclick="deleteReview('dummy-2', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
+                  <div class="flex text-[#ED8842] text-sm">
+                    <%= '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) %>
+                  </div>
+                  <% if (review.isOwner) { %>
+                  <button onclick="deleteReview('<%= review._id %>', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
                     ✕
                   </button>
+                  <% } %>
                 </div>
               </div>
-              <p class="text-[#1C2A3A]/70 text-sm leading-relaxed">
-                Great location and beautiful aesthetics. Only minor issue was parking, but overall a wonderful experience for our wedding reception.
-              </p>
+              <p class="text-[#1C2A3A]/70 text-sm leading-relaxed"><%= review.comment %></p>
             </div>
+            <% }) %>
+            <% } else { %>
+            <p class="text-[#1C2A3A]/50 text-sm italic">No reviews yet. Be the first to share your experience!</p>
+            <% } %>
           </div>
         </section>
       </div>
@@ -196,7 +215,7 @@
     </div>
   </main>
 
-  <!-- Availability Modal (Existing) -->
+  <!-- Availability Modal -->
   <div id="availabilityModal" class="fixed inset-0 z-[100] hidden">
     <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeAvailabilityModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#F9F7F5] rounded-[3rem] p-10 shadow-2xl">
@@ -209,7 +228,7 @@
     </div>
   </div>
 
-  <!-- Add Review Modal (New) -->
+  <!-- Add Review Modal -->
   <div id="addReviewModal" class="fixed inset-0 z-[100] hidden">
     <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeAddReviewModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#F9F7F5] rounded-[3rem] p-10 shadow-2xl">
@@ -220,11 +239,9 @@
           Your Rating
         </label>
         <div class="flex gap-2" id="starRating">
-          <button type="button" data-rating="1" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
-          <button type="button" data-rating="2" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
-          <button type="button" data-rating="3" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
-          <button type="button" data-rating="4" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
-          <button type="button" data-rating="5" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
+          <% for (let i = 1; i <= 5; i++) { %>
+          <button type="button" data-rating="<%= i %>" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
+          <% } %>
         </div>
         <input type="hidden" id="reviewRating" value="0" />
       </div>
@@ -242,7 +259,7 @@
         <button onclick="closeAddReviewModal()" class="flex-1 py-4 bg-white/60 text-[#1C2A3A] rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white/80 transition-colors">
           Cancel
         </button>
-        <button onclick="submitReview()" class="flex-1 py-4 bg-[#ED8842] text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#1C2A3A] transition-colors">
+        <button onclick="submitReview(event)" class="flex-1 py-4 bg-[#ED8842] text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#1C2A3A] transition-colors">
           Submit
         </button>
       </div>
@@ -272,11 +289,22 @@
     </div>
   </div>
 
+  <!-- ✅ Custom Toast Notification (Your Exact Design) -->
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out" style="top: -100px; z-index: 9999;">
+    <div id="toastContent" class="bg-[#1C2A3A] text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+      <div id="toastIcon"></div>
+      <span id="toastMessage" class="text-sm font-bold tracking-wide"></span>
+    </div>
+  </div>
+
   <script>
     // ===== EXISTING AVAILABILITY LOGIC =====
     window.onload = () => {
       const today = new Date().toISOString().split("T")[0];
       document.getElementById("checkDate").setAttribute("min", today);
+
+      // Check URL params for toast notification on page load
+      checkUrlParamsForToast();
     };
 
     function openAvailabilityModal() {
@@ -310,9 +338,78 @@
       }
     }
 
+    // ===== CUSTOM TOAST NOTIFICATION (Your Exact Code) =====
+    const urlParams = new URLSearchParams(window.location.search);
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+
+      if (!toast || !msgEl || !iconEl) return;
+
+      msgEl.textContent = message;
+      iconEl.className = type === 'success' ? 'bg-green-500 rounded-full p-1' : 'bg-red-500 rounded-full p-1';
+
+      iconEl.innerHTML = type === 'success' ?
+        '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' :
+        '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+      // Slide down
+      setTimeout(() => {
+        toast.style.top = '100px';
+      }, 100);
+
+      // Slide up and clean URL
+      setTimeout(() => {
+        toast.style.top = '-100px';
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }, 3500);
+    }
+
+    // Check URL params on page load
+    function checkUrlParamsForToast() {
+      if (urlParams.has('status')) {
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+
+        if (status === 'error') {
+          showToast(message || 'An error occurred', 'error');
+        } else {
+          showToast(message || 'Success!');
+        }
+      }
+    }
+
     // ===== REVIEW SYSTEM =====
     let selectedRating = 0;
     let reviewToDelete = null;
+
+    // ✅ Helper: Build avatar HTML (image or simple icon fallback)
+    function getAvatarHTML(avatarUrl, userName) {
+      const userIcon = `<svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+
+      if (avatarUrl) {
+        return `
+          <img 
+            src="${avatarUrl}" 
+            alt="${userName}"
+            class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img"
+            onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';"
+          />
+          <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">
+            ${userIcon}
+          </div>
+        `;
+      } else {
+        return `
+          <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">
+            ${userIcon}
+          </div>
+        `;
+      }
+    }
 
     // Star rating interaction
     document.querySelectorAll('.star-btn').forEach(star => {
@@ -359,7 +456,7 @@
       document.body.style.overflow = '';
     }
 
-    async function submitReview() {
+    async function submitReview(event) {
       const rating = document.getElementById('reviewRating').value;
       const text = document.getElementById('reviewText').value.trim();
       const errorDiv = document.getElementById('reviewError');
@@ -375,8 +472,14 @@
 
       errorDiv.classList.add('hidden');
 
+      // Show loading state on button
+      const submitBtn = event.target;
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
       try {
-        const response = await fetch('/api/reviews', {
+        const response = await fetch('/venue/review', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -390,16 +493,44 @@
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
+          console.error('Review error ', errorData);
           throw new Error(errorData.message || 'Failed to submit review');
         }
 
         const result = await response.json();
-        alert('Thank you for your review!');
+
+        // ✅ FIX: Use userName from API response (not EJS injection)
+        if (result.review && result.success) {
+          addReviewToDOM({
+            _id: result.review._id,
+            rating: result.review.rating,
+            comment: result.review.comment,
+            userName: result.review.userName, // ← Backend sends "firstName lastName"
+            avatarUrl: result.review.avatarUrl,
+            date: result.review.date, // ← Backend sends formatted date
+            isOwner: true
+          });
+
+          showToast('Your review has been submitted successfully!', 'success');
+        }
+
+        // Reset form and close
+        document.getElementById('reviewText').value = '';
+        document.getElementById('reviewRating').value = '0';
+        updateStars(0);
+        selectedRating = 0;
         closeAddReviewModal();
 
       } catch (error) {
         console.error('Review error:', error);
+        showToast(error.message || 'Something went wrong. Please try again.', 'error');
         showError(error.message || 'Something went wrong. Please try again.');
+      } finally {
+        const submitBtn = document.querySelector('#addReviewModal button[type="button"]:last-child');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit';
+        }
       }
     }
 
@@ -436,18 +567,20 @@
       const reviewCard = buttonEl.closest('.review-card');
 
       try {
-        // Skip API call for dummy reviews
+        // For dummy reviews: just remove from DOM without API call
         if (id.startsWith('dummy-')) {
-          reviewCard.style.opacity = '0';
-          reviewCard.style.transform = 'translateX(-20px)';
-          reviewCard.style.transition = 'all 0.3s ease';
-          setTimeout(() => reviewCard.remove(), 300);
+          animateRemove(reviewCard);
+          showToast('Review deleted successfully!', 'success');
           closeDeleteModal();
           return;
         }
 
-        const response = await fetch(`/api/reviews/${id}`, {
+        // Real review: call DELETE API, then remove from DOM on success
+        const response = await fetch(`/venue/review`, {
           method: 'DELETE',
+          body: JSON.stringify({
+            id
+          }),
           headers: {
             'Content-Type': 'application/json'
           }
@@ -458,39 +591,55 @@
           throw new Error(errorData.message || 'Failed to delete review');
         }
 
-        // Animate and remove from DOM
-        reviewCard.style.opacity = '0';
-        reviewCard.style.transform = 'translateX(-20px)';
-        reviewCard.style.transition = 'all 0.3s ease';
-        setTimeout(() => reviewCard.remove(), 300);
-
+        // Remove from DOM with animation after successful API call
+        animateRemove(reviewCard);
+        showToast('Review deleted successfully!', 'success');
         closeDeleteModal();
 
       } catch (error) {
         console.error('Delete error:', error);
-        alert(error.message || 'Failed to delete review. Please try again.');
+        showToast(error.message || 'Failed to delete review. Please try again.', 'error');
         closeDeleteModal();
       }
     }
 
-    // Optional: Add review to DOM dynamically (for static demo)
+    // ✅ Helper: Animate and remove review card from DOM (no reload)
+    function animateRemove(element) {
+      element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      element.style.opacity = '0';
+      element.style.transform = 'translateX(-20px)';
+      setTimeout(() => {
+        element.remove();
+        // Show empty state if no reviews left
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList.querySelectorAll('.review-card').length === 0) {
+          reviewsList.innerHTML = '<p class="text-[#1C2A3A]/50 text-sm italic">No reviews yet. Be the first to share your experience!</p>';
+        }
+      }, 300);
+    }
+
+    // ✅ FIX: Add review to DOM using API response data (no "Guest User")
     function addReviewToDOM(review) {
       const reviewsList = document.getElementById('reviewsList');
+
+      // Remove empty state placeholder if it exists
+      const emptyState = reviewsList.querySelector('p.italic');
+      if (emptyState) emptyState.remove();
+
       const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-      const reviewId = review._id || `temp-${Date.now()}`;
+      const avatarHTML = getAvatarHTML(review.avatarUrl, review.userName);
+
       const reviewHTML = `
-        <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60" data-review-id="${reviewId}">
+        <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="${review._id}">
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center text-white font-bold text-sm">
-              ${review.userInitials || 'GU'}
-            </div>
+            ${avatarHTML}
             <div>
-              <p class="font-bold text-sm">${review.userName || 'Guest User'}</p>
-              <p class="text-[10px] text-[#1C2A3A]/50">${review.date || new Date().toLocaleDateString()}</p>
+              <p class="font-bold text-sm">${review.userName}</p>
+              <p class="text-[10px] text-[#1C2A3A]/50">${review.date}</p>
             </div>
             <div class="ml-auto flex items-center gap-3">
               <div class="flex text-[#ED8842] text-sm">${stars}</div>
-              <button onclick="deleteReview('${reviewId}', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
+              <button onclick="deleteReview('${review._id}', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
                 ✕
               </button>
             </div>

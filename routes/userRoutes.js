@@ -24,7 +24,7 @@ import { ifAuth, isAuth, otpVerify, resetPasswordGuard } from "../middlewares/au
 import { editProfile, getEditProfile, getProfile, showHostDashboard } from "../controller/user/dashBoardController.js";
 import { upload, uploadEvent } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/foryouController.js";
-import { showVenues, singleVenue } from "../controller/user/venueController.js";
+import { addReviewVenue, deleteReviewVenue, showVenues, singleVenue } from "../controller/user/venueController.js";
 import {
   createEvent,
   editEvent,
@@ -98,6 +98,8 @@ router.get("/dashboard/calendar", showCalender);
 //VENUE
 router.get("/venues", showVenues);
 router.get("/venues/:venueId", singleVenue);
+router.post("/venue/review", addReviewVenue);
+router.delete("/venue/review", deleteReviewVenue);
 
 //events
 router.get("/events", showAllEvents);
