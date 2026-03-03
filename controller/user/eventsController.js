@@ -94,7 +94,6 @@ export const showSingleEvent = async (req, res) => {
   try {
     let eventId = req.params.eventId;
 
-    // Fetch event data
     const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
     const ticket = { lowestPrice, totalTickets, ticketsLeft };
     const schedule = formatDate(event.startDate);
@@ -126,6 +125,10 @@ export const showSingleEvent = async (req, res) => {
     today.setHours(0, 0, 0, 0);
     eventDate.setHours(0, 0, 0, 0);
     const isEventOver = eventDate < today;
+    let bookmarks = { eventIds: [] };
+    if (req.session.user) {
+      bookmarks = await userBookmarks(req.session.user);
+    }
 
     res.render("user/events/event-details", {
       event,
@@ -133,6 +136,7 @@ export const showSingleEvent = async (req, res) => {
       schedule,
       ticket,
       reviews,
+      userBookmarks: bookmarks.eventIds || [],
       currentUserId: req.session.user || null,
       isEventOver,
     });

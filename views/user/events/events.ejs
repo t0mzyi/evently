@@ -54,6 +54,44 @@
     .filter-active {
       box-shadow: 0 0 0 3px rgba(237, 136, 66, 0.3);
     }
+
+    /* ✅ Finished Event Overlay Styles */
+    .finished-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(28, 42, 58, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .event-card:hover .finished-overlay {
+      opacity: 1;
+    }
+
+    .finished-badge {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0.75rem 2rem;
+      border-radius: 2rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #1C2A3A;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .finished-card {
+      opacity: 0.9;
+    }
   </style>
 </head>
 
@@ -116,46 +154,73 @@
           const categoryName = event.categoryId?.name || 'Event';
           const priceDisplay = event.priceDisplay || 'FREE';
           const dateDisplay = event.dateDisplay || new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          
+          // ✅ Check if event is finished
+          const eventDate = new Date(event.startDate);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          eventDate.setHours(0, 0, 0, 0);
+          const isFinished = eventDate < today;
         %>
-      <div class="event-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5">
-        <div class="h-64 overflow-hidden relative">
-          <!-- Bookmark button -->
-          <button class="bookmark-btn absolute top-4 right-4 p-1.5 bg-white rounded-full shadow-md z-10" data-event-id="<%= event._id %>">
-            <% if (isBookmarked) { %>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
-              <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-            </svg>
-            <% } else { %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-            </svg>
+      <div class="<%= isFinished ? 'finished-card' : '' %>">
+        <div class="event-card group relative bg-[#F9F7F5] rounded-[2.5rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-[#1C2A3A]/5">
+          <div class="h-64 overflow-hidden relative">
+            <!-- ✅ Finished Overlay (shows on hover) -->
+            <% if (isFinished) { %>
+            <div class="finished-overlay">
+              <div class="finished-badge">
+                <span class="flex items-center gap-2">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  Event Finished
+                </span>
+              </div>
+            </div>
             <% } %>
-          </button>
-          <a href="/events/<%= event._id %>">
-            <img src="<%= event.galleryImages && event.galleryImages[0] ? event.galleryImages[0] : '/images/default-event.jpg' %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<%= event.title %>" />
-          </a>
-        </div>
-        <div class="p-8">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1"><%= event.title %></h3>
-              <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1"><%= venueAddress %></p>
-            </div>
-            <div class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm"><%= categoryName %></div>
-          </div>
-          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed mb-6 line-clamp-3">
-            <%= event.description ? event.description.substring(0, 120) + (event.description.length > 120 ? '...' : '') : '' %>
-          </p>
-          <div class="flex justify-between items-center mb-6">
-            <div class="text-2xl font-heading font-bold text-[#ED8842]"><%= priceDisplay %></div>
-            <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+
+            <!-- Bookmark button -->
+            <button class="bookmark-btn absolute top-4 right-4 p-1.5 bg-white rounded-full shadow-md z-10" data-event-id="<%= event._id %>">
+              <% if (isBookmarked) { %>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-red-500">
+                <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
               </svg>
-              <span><%= dateDisplay %></span>
-            </div>
+              <% } else { %>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+              </svg>
+              <% } %>
+            </button>
+            <a href="/events/<%= event._id %>" class="block">
+              <img src="<%= event.galleryImages && event.galleryImages[0] ? event.galleryImages[0] : '/images/default-event.jpg' %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 <%= isFinished ? 'grayscale' : '' %>" alt="<%= event.title %>" />
+            </a>
           </div>
-          <a href="/events/<%= event._id %>" class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest text-[#1C2A3A]">View Event</a>
+          <div class="p-8">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-2xl font-heading text-[#1C2A3A] mb-1 <%= isFinished ? 'opacity-70' : '' %>"><%= event.title %></h3>
+                <p class="text-sm text-[#1C2A3A]/60 font-medium line-clamp-1"><%= venueAddress %></p>
+              </div>
+              <div class="bg-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-sm <%= isFinished ? 'bg-gray-100 text-gray-500' : '' %>"><%= categoryName %></div>
+            </div>
+            <p class="text-[#1C2A3A]/70 text-sm leading-relaxed mb-6 line-clamp-3 <%= isFinished ? 'opacity-70' : '' %>">
+              <%= event.description ? event.description.substring(0, 120) + (event.description.length > 120 ? '...' : '') : '' %>
+            </p>
+            <div class="flex justify-between items-center mb-6">
+              <div class="text-2xl font-heading font-bold <%= isFinished ? 'text-gray-400' : 'text-[#ED8842]' %>"><%= priceDisplay %></div>
+              <div class="flex items-center gap-3 text-sm text-[#1C2A3A]/60">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span class="<%= isFinished ? 'opacity-70' : '' %>"><%= dateDisplay %></span>
+              </div>
+            </div>
+
+            <!-- ✅ FIXED: Button is always clickable, just styled differently for finished events -->
+            <a href="/events/<%= event._id %>" class="block w-full py-4 text-center rounded-xl border border-[#1C2A3A]/10 hover:bg-[#1C2A3A] hover:text-white transition-all text-sm font-bold uppercase tracking-widest <%= isFinished ? 'bg-[#1C2A3A]/5 text-[#1C2A3A]/60 border-[#1C2A3A]/20 hover:bg-[#1C2A3A] hover:text-white' : 'text-[#1C2A3A]' %>">
+              View Event
+            </a>
+          </div>
         </div>
       </div>
       <% }) %>

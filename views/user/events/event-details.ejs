@@ -170,6 +170,20 @@
     .star-btn:active {
       transform: scale(1.1);
     }
+
+    /* ✅ Bookmark button styles */
+    .bookmark-btn-detail {
+      transition: all 0.2s ease;
+      z-index: 30;
+    }
+
+    .bookmark-btn-detail:hover {
+      transform: scale(1.1);
+    }
+
+    .bookmark-btn-detail:active {
+      transform: scale(0.95);
+    }
   </style>
 </head>
 
@@ -195,6 +209,20 @@
               </div>
               <div class="hero-gradient bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             </div>
+
+            <!-- ✅ Bookmark Button (Added to Hero Image) -->
+            <button class="bookmark-btn-detail absolute top-8 right-8 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg z-30" data-event-id="<%= event._id %>" id="heroBookmarkBtn">
+              <% const isBookmarked = userBookmarks && userBookmarks.includes(event._id.toString()); %>
+              <% if (isBookmarked) { %>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
+                <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+              </svg>
+              <% } else { %>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+              </svg>
+              <% } %>
+            </button>
           </div>
           <div class="absolute top-8 left-8 flex space-x-3 z-10">
             <span class="px-4 py-2 bg-white/40 backdrop-blur-md border border-white/40 rounded-full text-xs font-semibold text-theme-dark uppercase tracking-wider transition-all-300 hover:bg-white/60"><%= event.categoryId.name%></span>
@@ -543,6 +571,67 @@
           zoomedImage.style.opacity = '0';
         });
       });
+
+      // ✅ Bookmark Toggle Functionality (Same as events page)
+      const bookmarkBtn = document.getElementById('heroBookmarkBtn');
+      if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', async function(e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          const eventId = this.dataset.eventId;
+          const icon = this.querySelector('svg');
+          const isCurrentlyBookmarked = icon.getAttribute('fill') === 'currentColor';
+
+          // Optimistic UI update
+          if (isCurrentlyBookmarked) {
+            icon.outerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+              </svg>`;
+          } else {
+            icon.outerHTML = `
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
+                <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+              </svg>`;
+          }
+
+          try {
+            const response = await fetch(`/toggleBookmark/${eventId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('Failed to toggle bookmark');
+
+            // Show success toast if you have toast functionality
+            if (typeof showToast === 'function') {
+              showToast(isCurrentlyBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks', 'success');
+            }
+          } catch (error) {
+            console.error('Error toggling bookmark:', error);
+            // Revert UI on error
+            if (isCurrentlyBookmarked) {
+              icon.outerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
+                  <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                </svg>`;
+            } else {
+              icon.outerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>`;
+            }
+
+            if (typeof showToast === 'function') {
+              showToast('Failed to update bookmark', 'error');
+            }
+          }
+        });
+      }
     });
   </script>
 
@@ -598,7 +687,7 @@
     </div>
   </div>
 
-  <!-- ✅ Review System JavaScript (FIXED) -->
+  <!-- ✅ Review System JavaScript -->
   <script>
     // ===== REVIEW SYSTEM =====
     let selectedRating = 0;
@@ -659,14 +748,11 @@
     function updateStars(rating, isHover = false) {
       const stars = document.querySelectorAll('.star-btn');
       stars.forEach((star, index) => {
-        // Remove both classes first
         star.classList.remove('text-[#ED8842]', 'text-[#1C2A3A]/30');
-
-        // Add appropriate class based on state
         if (isHover ? (index < rating) : (index < selectedRating)) {
-          star.classList.add('text-[#ED8842]'); // Filled star
+          star.classList.add('text-[#ED8842]');
         } else {
-          star.classList.add('text-[#1C2A3A]/30'); // Empty star
+          star.classList.add('text-[#1C2A3A]/30');
         }
       });
     }
@@ -677,7 +763,6 @@
       const starContainer = document.getElementById('starRating');
 
       stars.forEach(star => {
-        // Click: set selected rating
         star.addEventListener('click', function(e) {
           e.stopPropagation();
           selectedRating = parseInt(this.dataset.rating);
@@ -685,14 +770,12 @@
           updateStars(selectedRating);
         });
 
-        // Hover: preview rating
         star.addEventListener('mouseenter', function() {
           const hoverRating = parseInt(this.dataset.rating);
           updateStars(hoverRating, true);
         });
       });
 
-      // Mouse leave container: revert to selected rating
       starContainer.addEventListener('mouseleave', function() {
         updateStars(selectedRating);
       });
@@ -706,11 +789,9 @@
       document.getElementById('reviewError').classList.add('hidden');
       updateStars(0);
 
-      // Show modal first
       document.getElementById('addReviewModal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
 
-      // THEN initialize star listeners (ensures elements are visible)
       setTimeout(initStarListeners, 50);
     }
 
@@ -826,11 +907,8 @@
           return;
         }
 
-        const response = await fetch(`/event/reviews`, {
+        const response = await fetch(`/event/reviews/${id}`, {
           method: 'DELETE',
-          body: JSON.stringify({
-            id
-          }),
           headers: {
             'Content-Type': 'application/json'
           }
