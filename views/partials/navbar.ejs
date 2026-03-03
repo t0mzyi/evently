@@ -6,10 +6,25 @@
     </div>
 
     <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 space-x-8 text-xs font-bold tracking-widest text-white/80 uppercase font-sans">
-      <a href="/" class="hover:text-white transition-colors">For You</a>
-      <a href="/events" class="hover:text-white transition-colors">Events</a>
-      <a href="/venues" class="hover:text-white transition-colors">Venues</a>
-      <a href="/categories" class="hover:text-white transition-colors">Categories</a>
+      <!-- ✅ For You Link - Only active if currentPage === 'home' -->
+      <a href="/" class="hover:text-white transition-colors relative pb-1 <%= typeof currentPage !== 'undefined' && currentPage === 'home' ? 'text-white border-b-2 border-[#ED8842]' : '' %>">
+        For You
+      </a>
+
+      <!-- ✅ Events Link - Only active if currentPage === 'events' -->
+      <a href="/events" class="hover:text-white transition-colors relative pb-1 <%= typeof currentPage !== 'undefined' && currentPage === 'events' ? 'text-white border-b-2 border-[#ED8842]' : '' %>">
+        Events
+      </a>
+
+      <!-- ✅ Venues Link - Only active if currentPage === 'venues' -->
+      <a href="/venues" class="hover:text-white transition-colors relative pb-1 <%= typeof currentPage !== 'undefined' && currentPage === 'venues' ? 'text-white border-b-2 border-[#ED8842]' : '' %>">
+        Venues
+      </a>
+
+      <!-- ✅ Categories Link - Only active if currentPage === 'categories' -->
+      <a href="/categories" class="hover:text-white transition-colors relative pb-1 <%= typeof currentPage !== 'undefined' && currentPage === 'categories' ? 'text-white border-b-2 border-[#ED8842]' : '' %>">
+        Categories
+      </a>
     </div>
 
     <div class="flex items-center gap-4">
@@ -25,9 +40,7 @@
       </a>
 
       <a href="/dashboard" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-[#1C2A3A] hover:bg-white/90 transition-colors border border-white shadow-md overflow-hidden">
-
         <% if (user && user.avatarUrl) { %>
-
         <img src="<%= user.avatarUrl %>" alt="Profile" class="w-full h-full object-cover">
         <% } else { %>
         <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="">

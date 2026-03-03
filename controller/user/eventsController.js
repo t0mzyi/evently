@@ -19,6 +19,7 @@ import { formatDate } from "../../utils/dateTimeFormator.js";
 import eventsDb from "../../model/eventsDb.js";
 import { userBookmarks } from "../../service/user/bookmarksService.js";
 import reviewDb from "../../model/reviewDb.js";
+import { addEvent } from "../../service/user/categoryService.js";
 
 export const showAllEvents = async (req, res) => {
   const query = req.query.q || "";
@@ -329,6 +330,7 @@ export const handlepayAndPublish = async (req, res) => {
     }
 
     const result = await payAndPublishEvent(eventId, userId);
+    const addEventToCategory = await addEvent(eventId);
 
     res.status(200).json({
       success: true,

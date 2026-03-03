@@ -57,7 +57,6 @@
     }
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
   <style>
     .transition-all-300 {
       transition: all 0.3s ease-in-out;
@@ -188,13 +187,10 @@
 </head>
 
 <body class="bg-apple-bg text-apple-text animate-fade-in">
-
   <!-- Navigation -->
-  <%- include('../../partials/navbar') %>
-
+  <%- include('../../partials/navbar' , {currentPage : 'events'}) %>
   <main class="pt-32 pb-24 px-6 max-w-7xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-
       <!-- Left Column: Immersive Content -->
       <div class="lg:col-span-8 space-y-16 animate-slide-up">
         <!-- Event Hero -->
@@ -209,7 +205,6 @@
               </div>
               <div class="hero-gradient bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
             </div>
-
             <!-- ✅ Bookmark Button (Added to Hero Image) -->
             <button class="bookmark-btn-detail absolute top-8 right-8 p-3 bg-white/90 backdrop-blur-md rounded-full shadow-lg z-30" data-event-id="<%= event._id %>" id="heroBookmarkBtn">
               <% const isBookmarked = userBookmarks && userBookmarks.includes(event._id.toString()); %>
@@ -228,7 +223,6 @@
             <span class="px-4 py-2 bg-white/40 backdrop-blur-md border border-white/40 rounded-full text-xs font-semibold text-theme-dark uppercase tracking-wider transition-all-300 hover:bg-white/60"><%= event.categoryId.name%></span>
           </div>
         </div>
-
         <!-- Description -->
         <div class="bg-white/40 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/60 transition-all-300 hover:bg-white/50">
           <div class="prose prose-lg max-w-none text-apple-text font-normal leading-relaxed">
@@ -236,7 +230,6 @@
             <p class="text-apple-secondary text-left"><%= event.description%></p>
           </div>
         </div>
-
         <!-- Gallery -->
         <section class="bg-theme-surface/60 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:bg-theme-surface/70">
           <div class="flex items-center justify-between mb-8">
@@ -251,16 +244,15 @@
               </div>
             </div>
             <%}%>
-          </div>
-        </section>
-
-        <!-- Venue & Location -->
-        <section class="bg-theme-surface/80 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:shadow-lg">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            <div class="space-y-6">
-              <div>
-                <h2 class="text-3xl font-semibold text-theme-dark text-left mb-2">Venue</h2>
-                <h3 class="text-xl font-semibold text-theme-dark text-left"><%= venue.name%></h3>
+</div>
+</section>
+<!-- Venue & Location -->
+<section class="bg-theme-surface/80 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:shadow-lg">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+<div class="space-y-6">
+<div>
+<h2 class="text-3xl font-semibold text-theme-dark text-left mb-2">Venue</h2>
+<h3 class="text-xl font-semibold text-theme-dark text-left"><%= venue.name%></h3>
           </div>
           <p class="text-apple-secondary leading-relaxed text-left"><%= venue.description%></p>
           <div class="space-y-4">
@@ -285,16 +277,14 @@
       </div>
     </div>
     </section>
-
     <!-- ✅ Reviews Section (Only shows if event is over) -->
-    <% 
-          const eventDate = new Date(event.startDate);
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          eventDate.setHours(0, 0, 0, 0);
-          const isEventOver = eventDate < today;
-        %>
-
+    <%
+const eventDate = new Date(event.startDate);
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+eventDate.setHours(0, 0, 0, 0);
+const isEventOver = eventDate < today;
+%>
     <% if (isEventOver) { %>
     <section class="bg-theme-surface/60 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:bg-theme-surface/70">
       <div class="flex items-center justify-between mb-8">
@@ -309,7 +299,6 @@
         </a>
         <% } %>
       </div>
-
       <div id="reviewsList" class="space-y-6">
         <% if (reviews && reviews.length > 0) { %>
         <% reviews.forEach(review => { %>
@@ -330,7 +319,6 @@
               </svg>
             </div>
             <% } %>
-
             <div>
               <p class="font-bold text-sm"><%= review.userName %></p>
               <p class="text-[10px] text-[#1C2A3A]/50"><%= review.date %></p>
@@ -356,7 +344,6 @@
     </section>
     <% } %>
     </div>
-
     <!-- Right Column: Sticky Booking Panel -->
     <div class="lg:col-span-4">
       <div class="sticky top-32 space-y-8 animate-slide-up">
@@ -372,7 +359,6 @@
               <span class="text-center truncate"><%= venue.address%></span>
             </div>
           </div>
-
           <div class="space-y-4 mb-10">
             <div class="flex justify-between items-center py-3 border-b border-white/10">
               <span class="text-sm font-medium text-apple-secondary text-left">Date</span>
@@ -391,7 +377,6 @@
               <% } %>
             </div>
           </div>
-
           <!-- ✅ Conditional: Show Tickets OR Reviews -->
           <% if (!isEventOver) { %>
           <!-- Ticket Selection (Event is ongoing/future) -->
@@ -401,13 +386,13 @@
               <p class="text-xs font-medium text-theme-primary bg-theme-primary/10 px-3 py-1 rounded-full"><%=ticket.ticketsLeft%> of <%=ticket.totalTickets%> tickets left </p>
             </div>
             <div class="grid grid-cols-1 gap-4">
-              <% for (let i = 0; i < event.ticketTypes.length; i++) { 
-                        const total = event.ticketTypes[i].quantityTotal;
-                        const available = event.ticketTypes[i].quantityAvailable;
-                        const sold = total - available;
-                        const percentage = total > 0 ? (sold / total) * 100 : 0;
-                        const isLowStock = percentage > 70;
-                    %>
+              <% for (let i = 0; i < event.ticketTypes.length; i++) {
+const total = event.ticketTypes[i].quantityTotal;
+const available = event.ticketTypes[i].quantityAvailable;
+const sold = total - available;
+const percentage = total > 0 ? (sold / total) * 100 : 0;
+const isLowStock = percentage > 70;
+%>
               <label class="relative flex flex-col p-5 bg-white/40 border border-white/40 rounded-2xl cursor-pointer hover:border-theme-primary/40 hover:bg-white/60 hover:shadow-md transition-all-300 group">
                 <div class="flex items-center justify-between w-full mb-3">
                   <div class="flex items-center space-x-3">
@@ -418,7 +403,6 @@
                   </div>
                   <span class="text-lg font-bold text-[#1C2A3A] flex-shrink-0">₹<%= event.ticketTypes[i].price %></span>
                 </div>
-
                 <div class="w-full">
                   <div class="flex justify-between text-[10px] font-semibold uppercase tracking-wide mb-1 text-apple-secondary">
                     <span><%= available %> Seats Left of <%= total %></span>
@@ -434,7 +418,6 @@
               <% } %>
             </div>
           </div>
-
           <!-- Book Tickets Button -->
           <a href="/bookTickets/<%= event._id %>">
             <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-dark hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all-300 card-shadow flex items-center justify-center gap-2 group">
@@ -442,7 +425,6 @@
               <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
             </button>
           </a>
-
           <% } else { %>
           <!-- ✅ Event Over: Show Review Call-to-Action -->
           <div class="text-center py-8">
@@ -453,7 +435,6 @@
             </div>
             <h3 class="text-xl font-bold text-theme-dark mb-2">Event Completed!</h3>
             <p class="text-apple-secondary text-sm mb-6">Share your experience with others</p>
-
             <% if (currentUserId) { %>
             <button onclick="openAddReviewModal()" class="w-full h-14 bg-[#ED8842] text-white rounded-[1.5rem] font-bold text-sm hover:bg-[#1C2A3A] transition-all-300 flex items-center justify-center gap-2">
               <i class="fas fa-star"></i> Write a Review
@@ -466,7 +447,6 @@
           </div>
           <% } %>
         </div>
-
         <!-- Organizer Section -->
         <div class="bg-white/30 backdrop-blur-md rounded-[2rem] p-6 border border-white/40 transition-all-300 hover:bg-white/50">
           <div class="flex items-center gap-4">
@@ -486,7 +466,6 @@
             </a>
           </div>
         </div>
-
         <!-- Terms Mini -->
         <div class="px-8 py-6 bg-theme-surface/20 border border-white/10 rounded-[2rem] text-xs text-apple-secondary leading-relaxed transition-all-300 hover:bg-theme-surface/40">
           <p class="font-bold text-theme-dark mb-2 flex items-center gap-2 text-left">
@@ -498,7 +477,6 @@
     </div>
     </div>
   </main>
-
   <!-- Floating CTA for Mobile -->
   <div class="md:hidden fixed bottom-6 left-6 right-6 z-50">
     <% if (!isEventOver) { %>
@@ -513,7 +491,6 @@
     </button>
     <% } %>
   </div>
-
   <!-- Footer -->
   <footer class="border-t border-white/10 py-20 px-6 bg-[#2D2520] mt-12">
     <div class="max-w-7xl mx-auto flex flex-col items-center space-y-6 text-sm text-white/60">
@@ -526,9 +503,7 @@
       <p>&copy; 2024 Evently Inc.</p>
     </div>
   </footer>
-
   <script src="/assets/js/app.js"></script>
-
   <!-- Enhanced Magnifying Glass JavaScript -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -539,7 +514,6 @@
         const img = container.querySelector('.magnify-image');
         const imgSrc = container.dataset.magnify || img.src;
         zoomedImage.style.backgroundImage = `url('${imgSrc}')`;
-
         container.addEventListener('mousemove', (e) => {
           const rect = container.getBoundingClientRect();
           const x = e.clientX - rect.left;
@@ -550,7 +524,6 @@
           const percentY = (y / rect.height) * 100;
           zoomedImage.style.backgroundPosition = `${percentX}% ${percentY}%`;
         });
-
         container.addEventListener('touchmove', (e) => {
           e.preventDefault();
           const rect = container.getBoundingClientRect();
@@ -565,37 +538,32 @@
           magnifier.style.display = 'block';
           zoomedImage.style.opacity = '1';
         });
-
         container.addEventListener('touchend', () => {
           magnifier.style.display = 'none';
           zoomedImage.style.opacity = '0';
         });
       });
-
       // ✅ Bookmark Toggle Functionality (Same as events page)
       const bookmarkBtn = document.getElementById('heroBookmarkBtn');
       if (bookmarkBtn) {
         bookmarkBtn.addEventListener('click', async function(e) {
           e.stopPropagation();
           e.preventDefault();
-
           const eventId = this.dataset.eventId;
           const icon = this.querySelector('svg');
           const isCurrentlyBookmarked = icon.getAttribute('fill') === 'currentColor';
-
           // Optimistic UI update
           if (isCurrentlyBookmarked) {
             icon.outerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-              </svg>`;
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
+<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+</svg>`;
           } else {
             icon.outerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
-                <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-              </svg>`;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
+<path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+</svg>`;
           }
-
           try {
             const response = await fetch(`/toggleBookmark/${eventId}`, {
               method: 'POST',
@@ -604,9 +572,7 @@
               },
               credentials: 'include'
             });
-
             if (!response.ok) throw new Error('Failed to toggle bookmark');
-
             // Show success toast if you have toast functionality
             if (typeof showToast === 'function') {
               showToast(isCurrentlyBookmarked ? 'Removed from bookmarks' : 'Added to bookmarks', 'success');
@@ -616,16 +582,15 @@
             // Revert UI on error
             if (isCurrentlyBookmarked) {
               icon.outerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
-                  <path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
-                </svg>`;
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-red-500">
+<path d="m11.645 20.91.007-.003.022-.012a15.247 15.247 0 0 1 .383-.218 25.18 25.18 0 0 1 4.244-3.17C18.313 15.36 20.25 12.174 20.25 8.25 20.25 5.322 17.784 3 14.85 3A5.5 5.5 0 0 0 9.313 3c-2.935 0-5.4 2.322-5.4 5.25 0 3.925 1.937 7.111 4.739 9.256a25.175 25.175 0 0 1 4.244 3.17 15.247 15.247 0 0 1 .383.219l.022.012.007.004.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+</svg>`;
             } else {
               icon.outerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                </svg>`;
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-gray-400">
+<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+</svg>`;
             }
-
             if (typeof showToast === 'function') {
               showToast('Failed to update bookmark', 'error');
             }
@@ -634,7 +599,6 @@
       }
     });
   </script>
-
   <!-- ✅ Toast HTML -->
   <div id="toast" class="fixed left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out" style="top: -100px; z-index: 9999;">
     <div id="toastContent" class="bg-[#1C2A3A] text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
@@ -642,7 +606,6 @@
       <span id="toastMessage" class="text-sm font-bold tracking-wide"></span>
     </div>
   </div>
-
   <!-- ✅ Add Review Modal -->
   <div id="addReviewModal" class="fixed inset-0 z-[100] hidden">
     <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeAddReviewModal()"></div>
@@ -668,7 +631,6 @@
       </div>
     </div>
   </div>
-
   <!-- ✅ Delete Confirmation Modal -->
   <div id="deleteConfirmModal" class="fixed inset-0 z-[100] hidden">
     <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
@@ -686,27 +648,23 @@
       </div>
     </div>
   </div>
-
   <!-- ✅ Review System JavaScript -->
   <script>
     // ===== REVIEW SYSTEM =====
     let selectedRating = 0;
     let reviewToDelete = null;
-
     // ✅ Helper: Build avatar HTML
     function getAvatarHTML(avatarUrl, userName) {
       const userIcon = `<svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
-
       if (avatarUrl) {
         return `
-          <img src="${avatarUrl}" alt="${userName}" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img" onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';" />
-          <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">${userIcon}</div>
-        `;
+<img src="${avatarUrl}" alt="${userName}" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img" onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';" />
+<div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">${userIcon}</div>
+`;
       } else {
         return `<div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">${userIcon}</div>`;
       }
     }
-
     // ✅ Custom Toast Notification
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -715,13 +673,11 @@
       const msgEl = document.getElementById('toastMessage');
       const iconEl = document.getElementById('toastIcon');
       if (!toast || !msgEl || !iconEl) return;
-
       msgEl.textContent = message;
       iconEl.className = type === 'success' ? 'bg-green-500 rounded-full p-1' : 'bg-red-500 rounded-full p-1';
       iconEl.innerHTML = type === 'success' ?
         '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' :
         '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
-
       setTimeout(() => {
         toast.style.top = '100px';
       }, 100);
@@ -743,7 +699,6 @@
         }
       }
     }
-
     // ✅ FIXED: Update stars with proper logic
     function updateStars(rating, isHover = false) {
       const stars = document.querySelectorAll('.star-btn');
@@ -756,12 +711,10 @@
         }
       });
     }
-
     // ✅ FIXED: Initialize star listeners AFTER modal is shown
     function initStarListeners() {
       const stars = document.querySelectorAll('.star-btn');
       const starContainer = document.getElementById('starRating');
-
       stars.forEach(star => {
         star.addEventListener('click', function(e) {
           e.stopPropagation();
@@ -769,18 +722,15 @@
           document.getElementById('reviewRating').value = selectedRating;
           updateStars(selectedRating);
         });
-
         star.addEventListener('mouseenter', function() {
           const hoverRating = parseInt(this.dataset.rating);
           updateStars(hoverRating, true);
         });
       });
-
       starContainer.addEventListener('mouseleave', function() {
         updateStars(selectedRating);
       });
     }
-
     // ✅ FIXED: Open modal and init stars
     function openAddReviewModal() {
       selectedRating = 0;
@@ -788,10 +738,8 @@
       document.getElementById('reviewText').value = '';
       document.getElementById('reviewError').classList.add('hidden');
       updateStars(0);
-
       document.getElementById('addReviewModal').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
-
       setTimeout(initStarListeners, 50);
     }
 
@@ -799,13 +747,11 @@
       document.getElementById('addReviewModal').classList.add('hidden');
       document.body.style.overflow = '';
     }
-
     // ✅ Submit Review
     async function submitReview(event) {
       const rating = document.getElementById('reviewRating').value;
       const text = document.getElementById('reviewText').value.trim();
       const errorDiv = document.getElementById('reviewError');
-
       if (!rating || rating === '0') {
         showError('Please select a rating');
         return;
@@ -814,13 +760,11 @@
         showError('Review must be at least 10 characters');
         return;
       }
-
       errorDiv.classList.add('hidden');
       const submitBtn = event.target;
       const originalText = submitBtn.textContent;
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
-
       try {
         const response = await fetch('/event/reviews', {
           method: 'POST',
@@ -833,12 +777,10 @@
             comment: text,
           })
         });
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || 'Failed to submit review');
         }
-
         const result = await response.json();
         if (result.review && result.success) {
           addReviewToDOM({
@@ -852,13 +794,11 @@
           });
           showToast('Your review has been submitted successfully!', 'success');
         }
-
         document.getElementById('reviewText').value = '';
         document.getElementById('reviewRating').value = '0';
         updateStars(0);
         selectedRating = 0;
         closeAddReviewModal();
-
       } catch (error) {
         console.error('Review error:', error);
         showToast(error.message || 'Something went wrong. Please try again.', 'error');
@@ -874,7 +814,6 @@
       errorDiv.textContent = message;
       errorDiv.classList.remove('hidden');
     }
-
     // ✅ Delete Review Functions
     function deleteReview(reviewId, buttonEl) {
       reviewToDelete = {
@@ -890,7 +829,6 @@
       document.body.style.overflow = '';
       reviewToDelete = null;
     }
-
     async function confirmDelete() {
       if (!reviewToDelete) return;
       const {
@@ -898,7 +836,6 @@
         buttonEl
       } = reviewToDelete;
       const reviewCard = buttonEl.closest('.review-card');
-
       try {
         if (id.startsWith('dummy-')) {
           animateRemove(reviewCard);
@@ -906,23 +843,19 @@
           closeDeleteModal();
           return;
         }
-
         const response = await fetch(`/event/reviews/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json'
           }
         });
-
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || 'Failed to delete review');
         }
-
         animateRemove(reviewCard);
         showToast('Review deleted successfully!', 'success');
         closeDeleteModal();
-
       } catch (error) {
         console.error('Delete error:', error);
         showToast(error.message || 'Failed to delete review. Please try again.', 'error');
@@ -946,32 +879,28 @@
     function addReviewToDOM(review) {
       const reviewsList = document.getElementById('reviewsList');
       if (!reviewsList) return;
-
       const emptyState = reviewsList.querySelector('p.italic');
       if (emptyState) emptyState.remove();
-
       const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
       const avatarHTML = getAvatarHTML(review.avatarUrl, review.userName);
-
       const reviewHTML = `
-        <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="${review._id}">
-          <div class="flex items-center gap-3 mb-3">
-            ${avatarHTML}
-            <div>
-              <p class="font-bold text-sm">${review.userName}</p>
-              <p class="text-[10px] text-[#1C2A3A]/50">${review.date}</p>
-            </div>
-            <div class="ml-auto flex items-center gap-3">
-              <div class="flex text-[#ED8842] text-sm">${stars}</div>
-              <button onclick="deleteReview('${review._id}', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">✕</button>
-            </div>
-          </div>
-          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed">${review.comment}</p>
-        </div>
-      `;
+<div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="${review._id}">
+<div class="flex items-center gap-3 mb-3">
+${avatarHTML}
+<div>
+<p class="font-bold text-sm">${review.userName}</p>
+<p class="text-[10px] text-[#1C2A3A]/50">${review.date}</p>
+</div>
+<div class="ml-auto flex items-center gap-3">
+<div class="flex text-[#ED8842] text-sm">${stars}</div>
+<button onclick="deleteReview('${review._id}', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">✕</button>
+</div>
+</div>
+<p class="text-[#1C2A3A]/70 text-sm leading-relaxed">${review.comment}</p>
+</div>
+`;
       reviewsList.insertAdjacentHTML('afterbegin', reviewHTML);
     }
-
     // Close modals on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -979,11 +908,9 @@
         closeDeleteModal();
       }
     });
-
     // ✅ Initialize toast check on page load
     window.addEventListener('load', checkUrlParamsForToast);
   </script>
-
 </body>
 
 </html>
