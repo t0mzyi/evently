@@ -26,7 +26,9 @@ import { upload, uploadEvent } from "../middlewares/multerUpload.js";
 import { foryou } from "../controller/foryouController.js";
 import { addReviewVenue, deleteReviewVenue, showVenues, singleVenue } from "../controller/user/venueController.js";
 import {
+  addEventReview,
   createEvent,
+  deleteEventReview,
   editEvent,
   handlepayAndPublish,
   payandpublish,
@@ -112,6 +114,8 @@ router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
 router.get("/payAndPublish/:eventId", payandpublish);
 router.post("/payAndPublish", handlepayAndPublish);
 router.get("/:eventId/attendees", showAttenties);
+router.post("/event/reviews", addEventReview);
+router.delete("/event/reviews", deleteEventReview);
 
 //cat
 router.get("/categories", categories);

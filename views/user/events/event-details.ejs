@@ -159,6 +159,17 @@
       border-radius: 9999px;
       transition: width 1s ease-out;
     }
+
+    /* ✅ Star button transitions */
+    .star-btn {
+      transition: color 0.15s ease-in-out, transform 0.1s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .star-btn:active {
+      transform: scale(1.1);
+    }
   </style>
 </head>
 
@@ -246,6 +257,76 @@
       </div>
     </div>
     </section>
+
+    <!-- ✅ Reviews Section (Only shows if event is over) -->
+    <% 
+          const eventDate = new Date(event.startDate);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          eventDate.setHours(0, 0, 0, 0);
+          const isEventOver = eventDate < today;
+        %>
+
+    <% if (isEventOver) { %>
+    <section class="bg-theme-surface/60 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:bg-theme-surface/70">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-semibold text-theme-dark text-left">Event Reviews</h2>
+        <% if (currentUserId) { %>
+        <button onclick="openAddReviewModal()" class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline">
+          + Add Review
+        </button>
+        <% } else { %>
+        <a href="/login?redirect=<%= encodeURIComponent('/event/' + event._id) %>" class="text-[10px] font-bold text-[#ED8842] uppercase tracking-widest hover:underline">
+          Login to Review
+        </a>
+        <% } %>
+      </div>
+
+      <div id="reviewsList" class="space-y-6">
+        <% if (reviews && reviews.length > 0) { %>
+        <% reviews.forEach(review => { %>
+        <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="<%= review._id %>">
+          <div class="flex items-center gap-3 mb-3">
+            <!-- Avatar: Image or Simple Icon Fallback -->
+            <% if (review.avatarUrl) { %>
+            <img src="<%= review.avatarUrl %>" alt="<%= review.userName %>" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img" onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';" />
+            <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">
+              <svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+            </div>
+            <% } else { %>
+            <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">
+              <svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              </svg>
+            </div>
+            <% } %>
+
+            <div>
+              <p class="font-bold text-sm"><%= review.userName %></p>
+              <p class="text-[10px] text-[#1C2A3A]/50"><%= review.date %></p>
+            </div>
+            <div class="ml-auto flex items-center gap-3">
+              <div class="flex text-[#ED8842] text-sm">
+                <%= '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) %>
+              </div>
+              <% if (review.isOwner) { %>
+              <button onclick="deleteReview('<%= review._id %>', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">
+                ✕
+              </button>
+              <% } %>
+            </div>
+          </div>
+          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed"><%= review.comment %></p>
+        </div>
+        <% }) %>
+        <% } else { %>
+        <p class="text-[#1C2A3A]/50 text-sm italic">No reviews yet. Be the first to share your experience!</p>
+        <% } %>
+      </div>
+    </section>
+    <% } %>
     </div>
 
     <!-- Right Column: Sticky Booking Panel -->
@@ -283,7 +364,9 @@
             </div>
           </div>
 
-          <!-- Ticket Selection with Progress Bars -->
+          <!-- ✅ Conditional: Show Tickets OR Reviews -->
+          <% if (!isEventOver) { %>
+          <!-- Ticket Selection (Event is ongoing/future) -->
           <div class="space-y-6 mb-8">
             <div class="flex items-center justify-between">
               <p class="text-xs font-bold uppercase tracking-widest text-apple-secondary text-left">Experiences</p>
@@ -291,12 +374,12 @@
             </div>
             <div class="grid grid-cols-1 gap-4">
               <% for (let i = 0; i < event.ticketTypes.length; i++) { 
-                    const total = event.ticketTypes[i].quantityTotal;
-                    const available = event.ticketTypes[i].quantityAvailable;
-                    const sold = total - available;
-                    const percentage = total > 0 ? (sold / total) * 100 : 0;
-                    const isLowStock = percentage > 70;
-                %>
+                        const total = event.ticketTypes[i].quantityTotal;
+                        const available = event.ticketTypes[i].quantityAvailable;
+                        const sold = total - available;
+                        const percentage = total > 0 ? (sold / total) * 100 : 0;
+                        const isLowStock = percentage > 70;
+                    %>
               <label class="relative flex flex-col p-5 bg-white/40 border border-white/40 rounded-2xl cursor-pointer hover:border-theme-primary/40 hover:bg-white/60 hover:shadow-md transition-all-300 group">
                 <div class="flex items-center justify-between w-full mb-3">
                   <div class="flex items-center space-x-3">
@@ -324,10 +407,36 @@
             </div>
           </div>
 
-          <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-dark hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all-300 card-shadow flex items-center justify-center gap-2 group">
-            <a href="/bookTickets/<%= event._id %>" class="w-full h-full flex items-center justify-center">BOOK TICKETS</a>
-            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-          </button>
+          <!-- Book Tickets Button -->
+          <a href="/bookTickets/<%= event._id %>">
+            <button class="w-full h-16 bg-theme-primary text-white rounded-[1.5rem] font-bold text-lg hover:bg-theme-dark hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transition-all-300 card-shadow flex items-center justify-center gap-2 group">
+              BOOK TICKETS
+              <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+            </button>
+          </a>
+
+          <% } else { %>
+          <!-- ✅ Event Over: Show Review Call-to-Action -->
+          <div class="text-center py-8">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+              <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-theme-dark mb-2">Event Completed!</h3>
+            <p class="text-apple-secondary text-sm mb-6">Share your experience with others</p>
+
+            <% if (currentUserId) { %>
+            <button onclick="openAddReviewModal()" class="w-full h-14 bg-[#ED8842] text-white rounded-[1.5rem] font-bold text-sm hover:bg-[#1C2A3A] transition-all-300 flex items-center justify-center gap-2">
+              <i class="fas fa-star"></i> Write a Review
+            </button>
+            <% } else { %>
+            <a href="/login?redirect=<%= encodeURIComponent('/event/' + event._id) %>" class="w-full h-14 bg-[#ED8842] text-white rounded-[1.5rem] font-bold text-sm hover:bg-[#1C2A3A] transition-all-300 flex items-center justify-center gap-2">
+              <i class="fas fa-sign-in-alt"></i> Login to Review
+            </a>
+            <% } %>
+          </div>
+          <% } %>
         </div>
 
         <!-- Organizer Section -->
@@ -364,11 +473,17 @@
 
   <!-- Floating CTA for Mobile -->
   <div class="md:hidden fixed bottom-6 left-6 right-6 z-50">
+    <% if (!isEventOver) { %>
     <a href="/bookTickets/<%= event._id %>">
       <button class="w-full h-16 bg-theme-primary text-white rounded-2xl font-semibold card-shadow text-lg shadow-xl hover:bg-theme-dark transition-all-300 flex items-center justify-center gap-2">
         Book Tickets <i class="fas fa-arrow-right text-sm"></i>
       </button>
     </a>
+    <% } else if (currentUserId) { %>
+    <button onclick="openAddReviewModal()" class="w-full h-16 bg-[#ED8842] text-white rounded-2xl font-semibold card-shadow text-lg shadow-xl hover:bg-[#1C2A3A] transition-all-300 flex items-center justify-center gap-2">
+      Write a Review <i class="fas fa-star text-sm"></i>
+    </button>
+    <% } %>
   </div>
 
   <!-- Footer -->
@@ -390,7 +505,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const magnifyContainers = document.querySelectorAll('.magnify-container');
-
       magnifyContainers.forEach(container => {
         const magnifier = container.querySelector('.magnifier');
         const zoomedImage = container.querySelector('.zoomed-image');
@@ -431,6 +545,367 @@
       });
     });
   </script>
+
+  <!-- ✅ Toast HTML -->
+  <div id="toast" class="fixed left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out" style="top: -100px; z-index: 9999;">
+    <div id="toastContent" class="bg-[#1C2A3A] text-white px-6 py-3 rounded-2xl shadow-2xl border border-white/20 flex items-center gap-3">
+      <div id="toastIcon"></div>
+      <span id="toastMessage" class="text-sm font-bold tracking-wide"></span>
+    </div>
+  </div>
+
+  <!-- ✅ Add Review Modal -->
+  <div id="addReviewModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeAddReviewModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-[#F9F7F5] rounded-[3rem] p-10 shadow-2xl">
+      <h3 class="text-3xl font-heading mb-6">Add a Review</h3>
+      <div class="mb-6">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Your Rating</label>
+        <div class="flex gap-2" id="starRating">
+          <% for (let i = 1; i <= 5; i++) { %>
+          <button type="button" data-rating="<%= i %>" class="star-btn text-3xl text-[#1C2A3A]/30 hover:text-[#ED8842] transition-colors select-none">★</button>
+          <% } %>
+        </div>
+        <input type="hidden" id="reviewRating" value="0" />
+      </div>
+      <div class="mb-6">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Your Review</label>
+        <textarea id="reviewText" rows="4" class="w-full px-4 py-3 bg-white rounded-2xl border-none outline-none text-sm resize-none font-sans" placeholder="Share your experience..."></textarea>
+      </div>
+      <div id="reviewError" class="hidden p-3 rounded-xl bg-red-100 text-red-700 text-[10px] font-bold uppercase tracking-widest mb-4 text-center"></div>
+      <div class="flex gap-3">
+        <button onclick="closeAddReviewModal()" class="flex-1 py-4 bg-white/60 text-[#1C2A3A] rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white/80 transition-colors">Cancel</button>
+        <button onclick="submitReview(event)" class="flex-1 py-4 bg-[#ED8842] text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#1C2A3A] transition-colors">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Delete Confirmation Modal -->
+  <div id="deleteConfirmModal" class="fixed inset-0 z-[100] hidden">
+    <div class="absolute inset-0 bg-[#1C2A3A]/90 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm bg-[#F9F7F5] rounded-[3rem] p-8 shadow-2xl text-center">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+        <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        </svg>
+      </div>
+      <h3 class="text-2xl font-heading mb-2">Delete Review?</h3>
+      <p class="text-[#1C2A3A]/70 text-sm mb-6">This action cannot be undone.</p>
+      <div class="flex gap-3">
+        <button onclick="closeDeleteModal()" class="flex-1 py-4 bg-white/60 text-[#1C2A3A] rounded-2xl font-bold uppercase tracking-widest text-[10px] hover:bg-white/80 transition-colors">Cancel</button>
+        <button onclick="confirmDelete()" class="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg hover:bg-red-600 transition-colors">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Review System JavaScript (FIXED) -->
+  <script>
+    // ===== REVIEW SYSTEM =====
+    let selectedRating = 0;
+    let reviewToDelete = null;
+
+    // ✅ Helper: Build avatar HTML
+    function getAvatarHTML(avatarUrl, userName) {
+      const userIcon = `<svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
+
+      if (avatarUrl) {
+        return `
+          <img src="${avatarUrl}" alt="${userName}" class="w-10 h-10 rounded-full object-cover border-2 border-white/60 avatar-img" onerror="this.onerror=null; this.parentElement.querySelector('.avatar-fallback').style.display='flex'; this.style.display='none';" />
+          <div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center avatar-fallback" style="display:none;">${userIcon}</div>
+        `;
+      } else {
+        return `<div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">${userIcon}</div>`;
+      }
+    }
+
+    // ✅ Custom Toast Notification
+    const urlParams = new URLSearchParams(window.location.search);
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toastMessage');
+      const iconEl = document.getElementById('toastIcon');
+      if (!toast || !msgEl || !iconEl) return;
+
+      msgEl.textContent = message;
+      iconEl.className = type === 'success' ? 'bg-green-500 rounded-full p-1' : 'bg-red-500 rounded-full p-1';
+      iconEl.innerHTML = type === 'success' ?
+        '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' :
+        '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+
+      setTimeout(() => {
+        toast.style.top = '100px';
+      }, 100);
+      setTimeout(() => {
+        toast.style.top = '-100px';
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      }, 3500);
+    }
+
+    function checkUrlParamsForToast() {
+      if (urlParams.has('status')) {
+        const status = urlParams.get('status');
+        const message = urlParams.get('message');
+        if (status === 'error') {
+          showToast(message || 'An error occurred', 'error');
+        } else {
+          showToast(message || 'Success!');
+        }
+      }
+    }
+
+    // ✅ FIXED: Update stars with proper logic
+    function updateStars(rating, isHover = false) {
+      const stars = document.querySelectorAll('.star-btn');
+      stars.forEach((star, index) => {
+        // Remove both classes first
+        star.classList.remove('text-[#ED8842]', 'text-[#1C2A3A]/30');
+
+        // Add appropriate class based on state
+        if (isHover ? (index < rating) : (index < selectedRating)) {
+          star.classList.add('text-[#ED8842]'); // Filled star
+        } else {
+          star.classList.add('text-[#1C2A3A]/30'); // Empty star
+        }
+      });
+    }
+
+    // ✅ FIXED: Initialize star listeners AFTER modal is shown
+    function initStarListeners() {
+      const stars = document.querySelectorAll('.star-btn');
+      const starContainer = document.getElementById('starRating');
+
+      stars.forEach(star => {
+        // Click: set selected rating
+        star.addEventListener('click', function(e) {
+          e.stopPropagation();
+          selectedRating = parseInt(this.dataset.rating);
+          document.getElementById('reviewRating').value = selectedRating;
+          updateStars(selectedRating);
+        });
+
+        // Hover: preview rating
+        star.addEventListener('mouseenter', function() {
+          const hoverRating = parseInt(this.dataset.rating);
+          updateStars(hoverRating, true);
+        });
+      });
+
+      // Mouse leave container: revert to selected rating
+      starContainer.addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+      });
+    }
+
+    // ✅ FIXED: Open modal and init stars
+    function openAddReviewModal() {
+      selectedRating = 0;
+      document.getElementById('reviewRating').value = '0';
+      document.getElementById('reviewText').value = '';
+      document.getElementById('reviewError').classList.add('hidden');
+      updateStars(0);
+
+      // Show modal first
+      document.getElementById('addReviewModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+
+      // THEN initialize star listeners (ensures elements are visible)
+      setTimeout(initStarListeners, 50);
+    }
+
+    function closeAddReviewModal() {
+      document.getElementById('addReviewModal').classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // ✅ Submit Review
+    async function submitReview(event) {
+      const rating = document.getElementById('reviewRating').value;
+      const text = document.getElementById('reviewText').value.trim();
+      const errorDiv = document.getElementById('reviewError');
+
+      if (!rating || rating === '0') {
+        showError('Please select a rating');
+        return;
+      }
+      if (text.length < 10) {
+        showError('Review must be at least 10 characters');
+        return;
+      }
+
+      errorDiv.classList.add('hidden');
+      const submitBtn = event.target;
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      try {
+        const response = await fetch('/event/reviews', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            eventId: '<%= event._id %>',
+            rating: parseInt(rating),
+            comment: text,
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to submit review');
+        }
+
+        const result = await response.json();
+        if (result.review && result.success) {
+          addReviewToDOM({
+            _id: result.review._id,
+            rating: result.review.rating,
+            comment: result.review.comment,
+            userName: result.review.userName,
+            avatarUrl: result.review.avatarUrl,
+            date: result.review.date,
+            isOwner: true
+          });
+          showToast('Your review has been submitted successfully!', 'success');
+        }
+
+        document.getElementById('reviewText').value = '';
+        document.getElementById('reviewRating').value = '0';
+        updateStars(0);
+        selectedRating = 0;
+        closeAddReviewModal();
+
+      } catch (error) {
+        console.error('Review error:', error);
+        showToast(error.message || 'Something went wrong. Please try again.', 'error');
+        showError(error.message || 'Something went wrong. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit';
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('reviewError');
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+    }
+
+    // ✅ Delete Review Functions
+    function deleteReview(reviewId, buttonEl) {
+      reviewToDelete = {
+        id: reviewId,
+        buttonEl
+      };
+      document.getElementById('deleteConfirmModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteConfirmModal').classList.add('hidden');
+      document.body.style.overflow = '';
+      reviewToDelete = null;
+    }
+
+    async function confirmDelete() {
+      if (!reviewToDelete) return;
+      const {
+        id,
+        buttonEl
+      } = reviewToDelete;
+      const reviewCard = buttonEl.closest('.review-card');
+
+      try {
+        if (id.startsWith('dummy-')) {
+          animateRemove(reviewCard);
+          showToast('Review deleted successfully!', 'success');
+          closeDeleteModal();
+          return;
+        }
+
+        const response = await fetch(`/event/reviews`, {
+          method: 'DELETE',
+          body: JSON.stringify({
+            id
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'Failed to delete review');
+        }
+
+        animateRemove(reviewCard);
+        showToast('Review deleted successfully!', 'success');
+        closeDeleteModal();
+
+      } catch (error) {
+        console.error('Delete error:', error);
+        showToast(error.message || 'Failed to delete review. Please try again.', 'error');
+        closeDeleteModal();
+      }
+    }
+
+    function animateRemove(element) {
+      element.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      element.style.opacity = '0';
+      element.style.transform = 'translateX(-20px)';
+      setTimeout(() => {
+        element.remove();
+        const reviewsList = document.getElementById('reviewsList');
+        if (reviewsList && reviewsList.querySelectorAll('.review-card').length === 0) {
+          reviewsList.innerHTML = '<p class="text-[#1C2A3A]/50 text-sm italic">No reviews yet. Be the first to share your experience!</p>';
+        }
+      }, 300);
+    }
+
+    function addReviewToDOM(review) {
+      const reviewsList = document.getElementById('reviewsList');
+      if (!reviewsList) return;
+
+      const emptyState = reviewsList.querySelector('p.italic');
+      if (emptyState) emptyState.remove();
+
+      const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+      const avatarHTML = getAvatarHTML(review.avatarUrl, review.userName);
+
+      const reviewHTML = `
+        <div class="review-card bg-white/40 p-6 rounded-3xl border border-white/60 animate-fade-in" data-review-id="${review._id}">
+          <div class="flex items-center gap-3 mb-3">
+            ${avatarHTML}
+            <div>
+              <p class="font-bold text-sm">${review.userName}</p>
+              <p class="text-[10px] text-[#1C2A3A]/50">${review.date}</p>
+            </div>
+            <div class="ml-auto flex items-center gap-3">
+              <div class="flex text-[#ED8842] text-sm">${stars}</div>
+              <button onclick="deleteReview('${review._id}', this)" class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-widest transition-colors" aria-label="Delete review">✕</button>
+            </div>
+          </div>
+          <p class="text-[#1C2A3A]/70 text-sm leading-relaxed">${review.comment}</p>
+        </div>
+      `;
+      reviewsList.insertAdjacentHTML('afterbegin', reviewHTML);
+    }
+
+    // Close modals on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeAddReviewModal();
+        closeDeleteModal();
+      }
+    });
+
+    // ✅ Initialize toast check on page load
+    window.addEventListener('load', checkUrlParamsForToast);
+  </script>
+
 </body>
 
 </html>

@@ -3,6 +3,7 @@
 import { bookmarksDb } from "../../model/bookmarksDb.js";
 import categoryDb from "../../model/categoryDb.js";
 import eventsDb from "../../model/eventsDb.js";
+import reviewDb from "../../model/reviewDb.js";
 import ticketDb from "../../model/ticketDb.js";
 import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
@@ -560,4 +561,75 @@ export const payAndPublishEvent = async (eventId, userId) => {
   } catch (error) {
     throw new Error(`Payment failed: ${error.message}`);
   }
+};
+
+export const addReview = async (userId, body) => {
+  const { eventId, rating, comment } = body;
+  if (!userId) throw new Error("Please login to review");
+  if (!eventId || !rating || !comment) {
+    throw new Error("Please enter all fields");
+  }
+  const ratingNum = parseInt(rating);
+  if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+    throw new Error("Rating must be between 1 and 5");
+  }
+  const commentTrimmed = comment.trim();
+  if (commentTrimmed.length < 10) {
+    throw new Error("Review must be at least 10 characters");
+  }
+  const event = await eventsDb.findById(eventId);
+
+  if (!event) {
+    throw new Error("Event not found");
+  }
+  const eventDate = new Date(event.startDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  eventDate.setHours(0, 0, 0, 0);
+
+  if (eventDate >= today) {
+    throw new Error("Reviews can only be added after the event has ended");
+  }
+  const review = await reviewDb.create({
+    userId,
+    eventId,
+    rating: ratingNum,
+    comment: commentTrimmed,
+  });
+  const user = await userDb.findById(userId).select("firstName lastName avatarUrl").lean();
+  const firstName = user?.firstName || "";
+  const lastName = user?.lastName || "";
+  const userName = `${firstName} ${lastName}`.trim() || "User";
+  const formattedDate = formatDate(review.createdAt);
+
+  return {
+    _id: review._id.toString(),
+    rating: review.rating,
+    comment: review.comment,
+    userName,
+    avatarUrl: user?.avatarUrl || null,
+    date: formattedDate.date,
+    isOwner: true,
+  };
+};
+
+export const deleteReview = async (userId, reviewId) => {
+  if (!userId) {
+    throw new Error("Please login to delete reviews");
+  }
+  if (!reviewId) {
+    throw new Error("Review ID is required");
+  }
+  const review = await reviewDb.findById(reviewId);
+  if (!review) {
+    throw new Error("Review not found");
+  }
+  console.log(review.userId);
+  console.log(userId);
+
+  if (!review.eventId || review.userId.toString() !== userId.toString()) {
+    throw new Error("Not authorized to delete this review");
+  }
+  await reviewDb.updateOne({ _id: reviewId }, { isDeleted: true });
+  return { success: true, message: "Review deleted successfully" };
 };

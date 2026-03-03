@@ -3,7 +3,9 @@
 import path from "path";
 import fs from "fs";
 import {
+  addReview,
   allEvents,
+  deleteReview,
   editEventRender,
   eventCreator,
   hostEventViewer,
@@ -16,6 +18,7 @@ import {
 import { formatDate } from "../../utils/dateTimeFormator.js";
 import eventsDb from "../../model/eventsDb.js";
 import { userBookmarks } from "../../service/user/bookmarksService.js";
+import reviewDb from "../../model/reviewDb.js";
 
 export const showAllEvents = async (req, res) => {
   const query = req.query.q || "";
@@ -88,12 +91,55 @@ export const showAllEvents = async (req, res) => {
 };
 
 export const showSingleEvent = async (req, res) => {
-  let eventId = req.params.eventId;
-  const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
-  const ticket = { lowestPrice, totalTickets, ticketsLeft };
-  const schedule = formatDate(event.startDate);
-  // console.log(event, venue, schedule, ticket);
-  res.render("user/events/event-details", { event, venue, schedule, ticket });
+  try {
+    let eventId = req.params.eventId;
+
+    // Fetch event data
+    const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
+    const ticket = { lowestPrice, totalTickets, ticketsLeft };
+    const schedule = formatDate(event.startDate);
+    let allReviews = await reviewDb
+      .find({ eventId: eventId, isDeleted: false })
+      .populate("userId", "firstName lastName avatarUrl")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Format reviews for frontend
+    const reviews = allReviews.map((r) => {
+      const userName = r.userId
+        ? `${r.userId.firstName || ""} ${r.userId.lastName || ""}`.trim() || "Guest User"
+        : "Guest User";
+
+      return {
+        _id: r._id.toString(),
+        userName: userName,
+        comment: r.comment,
+        rating: r.rating,
+        date: formatDate(r.createdAt).date,
+        avatarUrl: r.userId?.avatarUrl || null,
+        isOwner: req.session.user && r.userId?._id?.toString() === req.session.user.toString(),
+      };
+    });
+
+    const eventDate = new Date(event.startDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    eventDate.setHours(0, 0, 0, 0);
+    const isEventOver = eventDate < today;
+
+    res.render("user/events/event-details", {
+      event,
+      venue,
+      schedule,
+      ticket,
+      reviews,
+      currentUserId: req.session.user || null,
+      isEventOver,
+    });
+  } catch (error) {
+    console.error("showSingleEvent error:", error);
+    res.status(500).render("errors/500", { message: "Failed to load event details" });
+  }
 };
 
 export const showCreateEvent = async (req, res) => {
@@ -302,5 +348,30 @@ export const showAttenties = async (req, res) => {
     res.render("user/events/attendees", { event, eventTickets });
   } catch (error) {
     console.log("Error in showAttenties", error);
+  }
+};
+
+export const addEventReview = async (req, res) => {
+  try {
+    const review = await addReview(req.session.user, req.body);
+    console.log("Event review created:", review);
+    res.status(201).json({ success: true, review });
+  } catch (error) {
+    console.error("addEventReview error:", error.message);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteEventReview = async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ success: false, message: "Please login to delete reviews" });
+    }
+    const id = req.body.id;
+    await deleteReview(req.session.user, id);
+    res.status(204).send();
+  } catch (error) {
+    console.error("deleteEventReview error:", error.message);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
