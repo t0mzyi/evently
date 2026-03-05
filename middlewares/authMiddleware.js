@@ -14,6 +14,7 @@ export const resetPasswordGuard = (req, res, next) => {
   }
   return res.redirect("/forgot-password");
 };
+``;
 
 export const isAuth = async (req, res, next) => {
   if (req.session.user) {
@@ -34,10 +35,10 @@ export const ifAuth = (req, res, next) => {
 };
 
 export const isAdmin = (req, res, next) => {
-  // if (req.session.isAdmin) {
-  //   return next();
-  // }
-  // return res.redirect("/admin");
+  if (req.session.isAdmin) {
+    return next();
+  }
+  return res.redirect("/admin");
   next();
 };
 

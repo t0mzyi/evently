@@ -44,12 +44,14 @@ import { bookmarks, toggleBookmark } from "../controller/user/bookmarksControlle
 import {
   bookTicket,
   checkoutPage,
+  createRazorpayOrder,
   handleUnreservingTicket,
   processCheckout,
   showCancelTicket,
   showMybookings,
   ticketBooking,
   ticketCancelAndRefund,
+  verifyRazorpayPayment,
   viewOrderTickets,
   viewTicket,
 } from "../controller/user/ticketController.js";
@@ -100,8 +102,8 @@ router.get("/dashboard/calendar", showCalender);
 //VENUE
 router.get("/venues", showVenues);
 router.get("/venues/:venueId", singleVenue);
-router.post("/venue/review", addReviewVenue);
-router.delete("/venue/review", deleteReviewVenue);
+router.post("/venue/review", isAuth, addReviewVenue);
+router.delete("/venue/review", isAuth, deleteReviewVenue);
 
 //events
 router.get("/events", showAllEvents);
@@ -111,8 +113,8 @@ router.get("/editEvent/:eventId", isAuth, editEvent);
 router.post("/createEvent", isAuth, uploadEvent.array("galleryImages", 10), createEvent);
 router.put("/editEvent/:eventId", isAuth, uploadEvent.array("galleryImages", 10), updateEvent);
 router.get("/viewEventHost/:eventId", isAuth, viewEventHost);
-router.get("/payAndPublish/:eventId", payandpublish);
-router.post("/payAndPublish", handlepayAndPublish);
+router.get("/payAndPublish/:eventId", isAuth, payandpublish);
+router.post("/payAndPublish", isAuth, handlepayAndPublish);
 router.get("/:eventId/attendees", showAttenties);
 router.post("/event/reviews", addEventReview);
 router.delete("/event/reviews", deleteEventReview);
@@ -121,25 +123,27 @@ router.delete("/event/reviews", deleteEventReview);
 router.get("/categories", categories);
 
 //bookmarks
-router.get("/bookmarks", bookmarks);
-router.post("/toggleBookmark/:eventId", toggleBookmark);
+router.get("/bookmarks", isAuth, bookmarks);
+router.post("/toggleBookmark/:eventId", isAuth, toggleBookmark);
 
 //ticket
-router.get("/bookTickets/:eventId", bookTicket);
-router.post("/bookTickets", ticketBooking);
-router.get("/tickets/cancel/:orderId", showCancelTicket);
-router.get("/ticket/view", viewTicket);
-router.get("/ticket/checkout/:orderId", checkoutPage);
-router.post("/ticket/checkout", processCheckout);
-router.post("/ticket/unreserve/:orderId", handleUnreservingTicket);
-router.get("/tickets/:orderId", viewOrderTickets);
-router.post("/tickets/cancel", ticketCancelAndRefund);
+router.get("/bookTickets/:eventId", isAuth, bookTicket);
+router.post("/bookTickets", isAuth, ticketBooking);
+router.get("/tickets/cancel/:orderId", isAuth, showCancelTicket);
+router.get("/ticket/view", isAuth, viewTicket);
+router.get("/ticket/checkout/:orderId", isAuth, checkoutPage);
+router.post("/ticket/checkout", isAuth, processCheckout);
+router.post("/ticket/unreserve/:orderId", isAuth, handleUnreservingTicket);
+router.get("/tickets/:orderId", isAuth, viewOrderTickets);
+router.post("/tickets/cancel", isAuth, ticketCancelAndRefund);
+router.post("/ticket/createRazorpayOrder", isAuth, createRazorpayOrder);
+router.post("/ticket/verifyRazorpayPayment", isAuth, verifyRazorpayPayment);
 
 //wallet
-router.get("/dashboard/wallet", showWallet);
-router.post("/wallet/addMoney", addMoney);
-router.post("/wallet/verifyPayment", verifyPayment);
-router.post("/wallet/cancelPayment", cancelPayment);
+router.get("/dashboard/wallet", isAuth, showWallet);
+router.post("/wallet/addMoney", isAuth, addMoney);
+router.post("/wallet/verifyPayment", isAuth, verifyPayment);
+router.post("/wallet/cancelPayment", isAuth, cancelPayment);
 
 router.get("/logout", isAuth, logout);
 export default router;

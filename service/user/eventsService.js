@@ -312,22 +312,31 @@ export const newEvent = async (body, files) => {
     if (!venueId) throw new Error("Venue selection error");
     const venue = await venueDb.findById(venueId);
     if (!venue) throw new Error("Venue not found");
-    const eventStartDateStr = start.toISOString().split("T")[0];
-    const eventEndDateStr = end.toISOString().split("T")[0];
-    for (const bookedSlot of venue.bookedOn) {
-      const bookedDate = new Date(bookedSlot);
-      const bookedDateStr = bookedDate.toISOString().split("T")[0];
-      if (bookedDateStr === eventStartDateStr || bookedDateStr === eventEndDateStr) {
-        throw new Error(`Venue is already booked on ${bookedDateStr}. Please select different dates.`);
-      }
+    const overlappingEvent = await eventsDb.findOne({
+      venueId: venueId,
+      status: { $in: ["approved", "live", "pending"] },
+      $or: [
+        {
+          startDate: { $lt: end },
+          endDate: { $gt: start },
+        },
+      ],
+    });
+    if (overlappingEvent) {
+      throw new Error("Venue is already booked during this time period. Please select different dates or times.");
+    }
+    if (totalCapacityFromTickets > venue.capacity) {
+      throw new Error("Total capacity exceeded than the venues capacity");
     }
     await venueDb.findByIdAndUpdate(venueId, {
       $push: {
         bookedOn: {
-          $each: [start, end],
+          start: start.toISOString(),
+          end: end.toISOString(),
         },
       },
     });
+
     event.venueId = venueId;
   } else if (venueType === "custom") {
     if (!custom_name || !custom_address || !custom_city || !custom_state) {

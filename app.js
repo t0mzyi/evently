@@ -35,7 +35,8 @@ app.use((req, res, next) => {
   res.set("Cache-Control", "no-store, no-cache, must-revalidate, must-revalidate");
   res.set("Pragma", "no-cache");
   res.set("Expires", "0");
-  req.session.user = "69660908f78d673268043600";
+  req.session.user = "699816db009ac008e95e03ad";
+  req.session.isAdmin = true;
   next();
 });
 

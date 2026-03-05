@@ -1,5 +1,5 @@
 import express from "express";
-import { AloginGet, AloginPost } from "../controller/admin/login.js";
+import { AloginGet, AloginPost, logout } from "../controller/admin/login.js";
 import { getDash, singleUser, toggleBlockUser, users } from "../controller/admin/dashController.js";
 import { addVenue, editVenue, showAddVenue, showEditVenue, showVenues } from "../controller/admin/venueController.js";
 import { uploadVenue } from "../middlewares/multerUpload.js";
@@ -58,6 +58,7 @@ router.put("/categories/:categoryId/edit", isAdmin, updateCategory);
 router.patch("/users/:userId/:action", isAdmin, toggleBlockUser);
 
 router.get("/dashboard", isAdmin, getDash);
-router.get("/wallet", showWallet);
+router.get("/wallet", isAdmin, showWallet);
+router.get("/logout", logout);
 
 export default router;

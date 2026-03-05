@@ -40,14 +40,15 @@ const venueSchema = new mongoose.Schema(
     },
     costPerHour: {
       type: Number,
-      required: true,
+      default: 4,
+      // required: true,
     },
     isActive: {
       type: Boolean,
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const venueDb = mongoose.model("venues", venueSchema);

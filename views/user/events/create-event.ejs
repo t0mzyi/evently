@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144;300;400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -67,7 +67,6 @@
 <%- include('../../partials/doodles')%>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
-
   <!-- AVAILABILITY MODAL -->
   <div id="availabilityModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md hidden">
     <div class="glass-modal w-full max-w-2xl rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-white/40">
@@ -108,7 +107,6 @@
         <h1 class="text-4xl font-heading text-[#1C2A3A]">Create Event</h1>
         <button type="button" id="changeVenueBtn" onclick="openModal()" class="hidden px-5 py-2 bg-white/80 hover:bg-white rounded-full text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A] border border-[#1C2A3A]/10 shadow-sm transition-all">Change Selection</button>
       </div>
-
       <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-white/40">
         <form id="eventForm" enctype="multipart/form-data" class="space-y-10" novalidate>
           <div id="locked-venue-notice" class="hidden p-5 bg-green-500/10 rounded-2xl border border-green-500/20 mb-4">
@@ -116,9 +114,7 @@
               <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Venue Secured.
             </span>
           </div>
-
           <div id="form-fields" class="space-y-10 opacity-40 pointer-events-none blur-[4px] transition-all duration-700">
-
             <!-- EVENT TITLE -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div class="col-span-2">
@@ -126,7 +122,6 @@
                 <input id="titleInput" name="title" type="text" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:outline-none">
                 <p id="titleError" class="error-text hidden"></p>
               </div>
-
               <!-- DATES -->
               <div>
                 <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Start Date</label>
@@ -138,18 +133,15 @@
                 <input type="datetime-local" id="final-end" name="endDate" class="w-full border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-sm focus:outline-none">
                 <p id="endDateError" class="error-text hidden"></p>
               </div>
-
               <!-- VENUE HIDDEN FIELDS -->
               <input type="hidden" id="venue-type-input" name="venueType" value="iconic">
               <input type="hidden" id="final-venue-id" name="venueId">
-
               <!-- LISTED VENUE DISPLAY -->
               <div class="col-span-2" id="listed-display">
                 <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Selected Venue</label>
                 <input type="text" id="final-venue-name" readonly class="w-full locked-input border border-[#1C2A3A]/10 rounded-xl px-4 py-3 font-bold">
                 <p id="venueError" class="error-text hidden"></p>
               </div>
-
               <!-- CUSTOM VENUE FIELDS -->
               <div class="col-span-2 hidden space-y-6" id="custom-venue-fields">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -181,7 +173,6 @@
                 </div>
               </div>
             </div>
-
             <!-- GALLERY IMAGES -->
             <div class="pt-8 border-t border-[#1C2A3A]/5">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Gallery Photos</label>
@@ -194,7 +185,6 @@
                 </div>
               </div>
             </div>
-
             <!-- CATEGORY -->
             <div class="pt-8 border-t border-[#1C2A3A]/5">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Category</label>
@@ -205,7 +195,6 @@
               </select>
               <p id="categoryError" class="error-text hidden"></p>
             </div>
-
             <!-- TICKETS -->
             <div class="pt-8 border-t border-[#1C2A3A]/5">
               <div class="flex justify-between items-center mb-4">
@@ -215,7 +204,7 @@
               <div id="ticketTypesContainer" class="space-y-4">
                 <!-- Initial Ticket Row -->
                 <div class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl relative group">
-                  <button type="button" onclick="this.closest('div').remove(); calculateTotalCapacity()" class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">✕</button>
+                  <button type="button" onclick="this.closest('div').remove(); calculateTotalCapacity()" class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">×</button>
                   <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
                       <input type="text" name="ticket_name[]" placeholder="General Admission" class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none">
@@ -240,7 +229,6 @@
                   </div>
                 </div>
               </div>
-
               <!-- TOTAL CAPACITY DISPLAY -->
               <div class="mt-6">
                 <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">
@@ -250,14 +238,12 @@
                 <input type="hidden" id="max-capacity-input" name="totalCapacity">
               </div>
             </div>
-
             <!-- DESCRIPTION -->
             <div class="pt-8 border-t border-[#1C2A3A]/5">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Description</label>
               <textarea name="description" rows="6" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 focus:bg-white focus:outline-none transition-all" placeholder="Describe your event..."></textarea>
               <p id="descriptionError" class="error-text hidden"></p>
             </div>
-
             <!-- SUBMIT BUTTON -->
             <div class="pt-8 flex justify-end">
               <button id="publishBtn" type="submit" class="px-12 py-5 bg-[#1C2A3A] text-white rounded-2xl font-heading text-xl shadow-2xl hover:scale-105 transition-all">Publish Event</button>
@@ -284,13 +270,12 @@
     const modalEnd = document.getElementById('modal-end');
     const formFields = document.getElementById('form-fields');
     let selectedFiles = [];
+    let debounceTimer;
 
     // Open modal on load
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', openModal);
-    } else {
+    document.addEventListener('DOMContentLoaded', () => {
       openModal();
-    }
+    });
 
     function openModal() {
       modal.classList.remove('hidden');
@@ -304,24 +289,34 @@
       document.getElementById('venue-type-input').value = "iconic";
       document.getElementById('final-start').value = modalStart.value;
       document.getElementById('final-end').value = modalEnd.value;
-      document.getElementById('final-start').readOnly = true;
-      document.getElementById('final-end').readOnly = true;
-      document.getElementById('final-start').classList.add('locked-input');
-      document.getElementById('final-end').classList.add('locked-input');
+
+      const lockedStart = document.getElementById('final-start');
+      const lockedEnd = document.getElementById('final-end');
+      lockedStart.readOnly = true;
+      lockedEnd.readOnly = true;
+      lockedStart.classList.add('locked-input');
+      lockedEnd.classList.add('locked-input');
+
       document.getElementById('custom-venue-fields').classList.add('hidden');
       document.getElementById('listed-display').classList.remove('hidden');
+
       finishSelection();
     };
 
     window.useCustomVenue = function() {
       document.getElementById('venue-type-input').value = "custom";
       document.getElementById('final-venue-id').value = "";
-      document.getElementById('final-start').readOnly = false;
-      document.getElementById('final-end').readOnly = false;
-      document.getElementById('final-start').classList.remove('locked-input');
-      document.getElementById('final-end').classList.remove('locked-input');
+
+      const lockedStart = document.getElementById('final-start');
+      const lockedEnd = document.getElementById('final-end');
+      lockedStart.readOnly = false;
+      lockedEnd.readOnly = false;
+      lockedStart.classList.remove('locked-input');
+      lockedEnd.classList.remove('locked-input');
+
       document.getElementById('custom-venue-fields').classList.remove('hidden');
       document.getElementById('listed-display').classList.add('hidden');
+
       finishSelection();
     };
 
@@ -346,15 +341,15 @@
     function renderImagePreviews() {
       const container = document.getElementById('image-preview-container');
       container.innerHTML = selectedFiles.map((file, index) => `
-        <div class="relative w-20 h-20 rounded-xl overflow-hidden group border border-[#1C2A3A]/10">
-          <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
-          <div onclick="removeImage(${index})" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+    <div class="relative w-20 h-20 rounded-xl overflow-hidden group border border-[#1C2A3A]/10">
+        <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover">
+        <div onclick="removeImage(${index})" class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5"/>
+                <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5"/>
             </svg>
-          </div>
         </div>
-      `).join('');
+    </div>
+    `).join('');
     }
 
     function removeImage(index) {
@@ -362,53 +357,111 @@
       renderImagePreviews();
     }
 
-    // Modal search
-    // Modal search
-    [document.getElementById('modal-search'), modalStart, modalEnd].forEach(el => {
-      el.addEventListener('input', () => {
-        const start = modalStart.value;
-        const end = modalEnd.value;
-        if (!start || !end) {
-          modalResults.innerHTML = '<p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select dates to check listed availability.</p>';
-          return;
-        }
+    // ✅ VALIDATED DATE CHECK
+    function isValidDateRange(start, end) {
+      if (!start || !end) return false;
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      return startDate < endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime());
+    }
 
-        // ✅ Get date strings from frontend inputs
-        const eventStartDateStr = start.split('T')[0]; // Extract YYYY-MM-DD from datetime-local
-        const eventEndDateStr = end.split('T')[0];
+    // ✅ UPDATED VENUE FILTERING WITH OVERLAP LOGIC (FIXED!)
+    function filterVenues() {
+      const start = modalStart.value;
+      const end = modalEnd.value;
+      const searchQuery = document.getElementById('modal-search').value.toLowerCase();
 
-        const filtered = venues.filter(v => v.name.toLowerCase().includes(document.getElementById('modal-search').value.toLowerCase()));
-        modalResults.innerHTML = filtered.map(v => {
-          const bookedIntervals = v.bookedOn || [];
-          const isOverlapping = bookedIntervals.some(bookedSlot => {
-            const bookedDate = new Date(bookedSlot);
-            const bookedDateStr = bookedDate.toISOString().split('T')[0];
-            return bookedDateStr === eventStartDateStr || bookedDateStr === eventEndDateStr;
-          });
-          const available = !isOverlapping;
-          return `
-        <div class="flex items-center justify-between p-4 bg-white/60 rounded-2xl border border-[#1C2A3A]/5">
-          <div class="flex items-center gap-4">
-            <img src="${v.image_url?.[0] || ''}" class="w-12 h-12 rounded-xl object-cover">
-            <div>
-              <h4 class="text-sm font-bold text-[#1C2A3A]">${v.name}</h4>
-              <p class="text-[10px] text-[#1C2A3A]/50">${v.address}</p>
-            </div>
-          </div>
-          ${available ? 
-            `<button type="button" onclick="confirmVenue('${v._id}', '${v.name.replace(/'/g, "\\'")}')" class="px-5 py-2 bg-[#1C2A3A] text-white text-[10px] font-bold rounded-xl transition-all hover:scale-105">Select</button>` : 
-            `<span class="text-[10px] font-bold text-red-400 uppercase bg-red-50 rounded-xl px-3 py-1">Booked</span>`
-          }
+      // Show help message if dates missing
+      if (!start || !end) {
+        modalResults.innerHTML = '<p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select both start and end dates to check availability.</p>';
+        return;
+      }
+
+      // Validate date range first
+      if (!isValidDateRange(start, end)) {
+        modalResults.innerHTML = `
+        <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p class="text-sm font-bold text-red-600">Invalid Date Range</p>
+            <p class="text-xs text-red-500 mt-1">Please ensure start date is before end date.</p>
         </div>`;
-        }).join('');
+        return;
+      }
+
+      const eventStart = new Date(start);
+      const eventEnd = new Date(end);
+
+      const filtered = venues.filter(v => v.name.toLowerCase().includes(searchQuery));
+
+      modalResults.innerHTML = filtered.map(v => {
+        const bookedIntervals = v.bookedOn || [];
+
+        // ✅ Proper datetime range overlap check (handles both formats)
+        const isOverlapping = bookedIntervals.some(bookedSlot => {
+          let bookedStart, bookedEnd;
+
+          if (typeof bookedSlot === 'object' && bookedSlot.start && bookedSlot.end) {
+            // New Format: { start: ISO, end: ISO }
+            bookedStart = new Date(bookedSlot.start);
+            bookedEnd = new Date(bookedSlot.end);
+          } else if (typeof bookedSlot === 'string') {
+            // Legacy Format: treat as full day (00:00 - 23:59)
+            const parsedDate = new Date(bookedSlot);
+            bookedStart = new Date(parsedDate.setHours(0, 0, 0, 0));
+            bookedEnd = new Date(parsedDate.setHours(23, 59, 59, 999));
+          } else {
+            // Unknown format - skip
+            return false;
+          }
+
+          // ✅ Overlap logic: startA < endB AND startB < endA
+          return eventStart < bookedEnd && eventEnd > bookedStart;
+        });
+
+        const available = !isOverlapping;
+
+        return `
+        <div class="flex items-center justify-between p-4 bg-white/60 rounded-2xl border border-[#1C2A3A]/5 hover:border-[#1C2A3A]/20 transition-all">
+            <div class="flex items-center gap-4">
+                <img src="${v.image_url?.[0] || ''}" class="w-12 h-12 rounded-xl object-cover">
+                <div>
+                    <h4 class="text-sm font-bold text-[#1C2A3A]">${v.name}</h4>
+                    <p class="text-[10px] text-[#1C2A3A]/50">${v.address}</p>
+                </div>
+            </div>
+            ${available ?
+            `<button type="button" onclick="confirmVenue('${v._id}', '${v.name.replace(/'/g, "\\'")}')" 
+                class="px-5 py-2 bg-[#1C2A3A] text-white text-[10px] font-bold rounded-xl transition-all hover:scale-105 hover:bg-[#2C3E50]">
+                Select
+            </button>` :
+            `<span class="text-[10px] font-bold text-red-400 uppercase bg-red-50 rounded-xl px-3 py-1">Booked</span>`
+            }
+        </div>
+        `;
+      }).join('');
+    }
+
+    // ✅ Debounced & Safe Event Listeners (FIXED!)
+    function setupModalListeners() {
+      const searchInput = document.getElementById('modal-search');
+      const startInput = document.getElementById('modal-start');
+      const endInput = document.getElementById('modal-end');
+
+      [searchInput, startInput, endInput].forEach(el => {
+        if (el) {
+          el.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(filterVenues, 300);
+          });
+        }
       });
-    });
+    }
+
+    setupModalListeners();
 
     // FREE TICKET TOGGLE
     function toggleFreeTicket(checkbox) {
       const priceInput = checkbox.closest('.grid').querySelector('input[name="ticket_price[]"]');
       if (!priceInput) return;
-
       if (checkbox.checked) {
         priceInput.value = 0;
         priceInput.disabled = true;
@@ -431,77 +484,57 @@
       document.getElementById('display-capacity').value = total;
     }
 
-    // ADD TICKET
+    // ADD TICKET TYPE
     function addTicketType() {
       const id = Date.now();
       document.getElementById('ticketTypesContainer').insertAdjacentHTML('beforeend', `
-        <div id="row-${id}" class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl relative group">
-          <button 
-            type="button" 
-            onclick="this.closest('div').remove(); calculateTotalCapacity()" 
-            class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-          >✕</button>
-          <div class="grid grid-cols-2 gap-4">
+    <div id="row-${id}" class="p-6 bg-white/40 border border-[#1C2A3A]/10 rounded-2xl relative group">
+        <button type="button" onclick="this.closest('div').remove(); calculateTotalCapacity()" 
+            class="absolute top-4 right-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">×</button>
+        <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
-              <input 
-                type="text" 
-                name="ticket_name[]" 
-                placeholder="Ticket Type" 
-                class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none"
-              >
-              <p class="error-text hidden ticket-name-error"></p>
+                <input type="text" name="ticket_name[]" placeholder="Ticket Type" 
+                    class="w-full bg-white/50 border-b border-[#1C2A3A]/10 text-sm py-1 focus:outline-none">
+                <p class="error-text hidden ticket-name-error"></p>
             </div>
             <div>
-              <label class="text-[9px] font-bold opacity-40">PRICE</label>
-              <div class="flex items-center gap-2 mt-1">
-                <input 
-                  type="number" 
-                  name="ticket_price[]" 
-                  value="0" 
-                  min="0"
-                  class="ticket-price-input w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
-                  oninput="calculateTotalCapacity()"
-                >
-                <label class="flex items-center gap-1 cursor-pointer text-[9px]">
-                  <input 
-                    type="checkbox" 
-                    class="ticket-free-checkbox w-4 h-4 text-[#1C2A3A] rounded"
-                    onchange="toggleFreeTicket(this)"
-                  >
-                  <span class="text-[#1C2A3A]/60">Free</span>
-                </label>
-              </div>
-              <p class="error-text hidden ticket-price-error"></p>
+                <label class="text-[9px] font-bold opacity-40">PRICE</label>
+                <div class="flex items-center gap-2 mt-1">
+                    <input type="number" name="ticket_price[]" value="0" min="0" 
+                        class="ticket-price-input w-full bg-white/50 rounded-lg px-3 py-2 text-sm" 
+                        oninput="calculateTotalCapacity()">
+                    <label class="flex items-center gap-1 cursor-pointer text-[9px]">
+                        <input type="checkbox" class="ticket-free-checkbox w-4 h-4 text-[#1C2A3A] rounded" 
+                            onchange="toggleFreeTicket(this)">
+                        <span class="text-[#1C2A3A]/60">Free</span>
+                    </label>
+                </div>
+                <p class="error-text hidden ticket-price-error"></p>
             </div>
             <div>
-              <label class="text-[9px] font-bold opacity-40">QTY</label>
-              <input 
-                type="number" 
-                name="ticket_quantityTotal[]" 
-                min="1"
-                class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm"
-                oninput="calculateTotalCapacity()"
-              >
-              <p class="error-text hidden ticket-qty-error"></p>
+                <label class="text-[9px] font-bold opacity-40">QTY</label>
+                <input type="number" name="ticket_quantityTotal[]" min="1" 
+                    class="ticket-qty w-full bg-white/50 rounded-lg px-3 py-2 text-sm" 
+                    oninput="calculateTotalCapacity()">
+                <p class="error-text hidden ticket-qty-error"></p>
             </div>
-          </div>
         </div>
-      `);
+    </div>
+    `);
     }
 
     // FORM SUBMISSION
     document.getElementById('eventForm').addEventListener('submit', function(e) {
       e.preventDefault();
-
       const publishBtn = document.getElementById('publishBtn');
       const errorDiv = document.getElementById('backendError');
       const errorMsgSpan = document.getElementById('backendErrorMessage');
+
       errorDiv.classList.add('hidden');
       publishBtn.disabled = true;
       publishBtn.textContent = 'Publishing...';
       publishBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
-      // Clear errors
       document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
       document.querySelectorAll('.error-text').forEach(el => el.classList.add('hidden'));
 
@@ -517,22 +550,21 @@
         isValid = false;
       }
 
-      // Title
       const titleInput = document.getElementById('titleInput');
       if (!titleInput.value.trim()) markError(titleInput, 'Event title is required.');
 
-      // Dates
       const startDateInput = document.getElementById('final-start');
       const endDateInput = document.getElementById('final-end');
       const startDate = startDateInput.value;
       const endDate = endDateInput.value;
+
       if (!startDate) markError(startDateInput, 'Start date is required.');
       if (!endDate) markError(endDateInput, 'End date is required.');
+
       if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
         markError(endDateInput, 'End date must be after start date.');
       }
 
-      // Venue
       const venueType = document.getElementById('venue-type-input').value;
       if (venueType === 'iconic') {
         if (!document.getElementById('final-venue-name').value.trim()) {
@@ -565,14 +597,12 @@
         });
       }
 
-      // Images
       if (selectedFiles.length === 0) {
         document.getElementById('imageError').textContent = 'At least one image is required.';
         document.getElementById('imageError').classList.remove('hidden');
         isValid = false;
       }
 
-      // Category
       const catSelect = document.querySelector('[name="categoryId"]');
       if (!catSelect.value) {
         catSelect.classList.add('input-error');
@@ -581,31 +611,21 @@
         isValid = false;
       }
 
-      // Tickets validation
       const ticketRows = document.querySelectorAll('#ticketTypesContainer > div.p-6');
       if (ticketRows.length === 0) {
         alert('At least one ticket type is required.');
         isValid = false;
       } else {
-        for (const row of ticketRows) {
+        ticketRows.forEach(row => {
           const nameInput = row.querySelector('[name="ticket_name[]"]');
           const qtyInput = row.querySelector('[name="ticket_quantityTotal[]"]');
-
-          if (!nameInput || !qtyInput) {
-            row.classList.add('border-red-500', 'border-2');
-            isValid = false;
-            continue;
-          }
-
-          const name = nameInput.value.trim();
-          const qty = parseInt(qtyInput.value) || 0;
-
+          const name = nameInput?.value.trim();
+          const qty = parseInt(qtyInput?.value) || 0;
           if (!name) markError(nameInput, 'Ticket name is required.');
           if (qty <= 0) markError(qtyInput, 'Quantity must be greater than 0.');
-        }
+        });
       }
 
-      // Description
       const desc = document.querySelector('[name="description"]');
       if (!desc.value.trim()) {
         desc.classList.add('input-error');
@@ -626,9 +646,8 @@
         return;
       }
 
-      // ✅ REBUILD TICKET DATA IN CORRECT ORDER ✅
       const ticketData = [];
-      for (const row of ticketRows) {
+      ticketRows.forEach(row => {
         const name = row.querySelector('[name="ticket_name[]"]').value.trim();
         const price = parseFloat(row.querySelector('input[name="ticket_price[]"]').value) || 0;
         const qty = parseInt(row.querySelector('[name="ticket_quantityTotal[]"]').value) || 0;
@@ -639,29 +658,24 @@
             qty
           });
         }
-      }
+      });
 
       const formData = new FormData(this);
-
-      // Remove old arrays
       formData.delete('ticket_name[]');
       formData.delete('ticket_price[]');
       formData.delete('ticket_quantityTotal[]');
 
-      // Append in guaranteed order
       ticketData.forEach(ticket => {
         formData.append('ticket_name[]', ticket.name);
         formData.append('ticket_price[]', ticket.price.toString());
         formData.append('ticket_quantityTotal[]', ticket.qty.toString());
       });
 
-      // Handle images
       formData.delete('galleryImages');
       selectedFiles.forEach(file => {
         formData.append('galleryImages', file);
       });
 
-      // Submit
       fetch('/createEvent', {
           method: 'POST',
           body: formData

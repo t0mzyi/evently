@@ -17,14 +17,12 @@ export const ticketBookingRender = async (eventId) => {
   return event;
 };
 
-//reserve
 export const ticketBookingAndReserve = async (ticketDetails) => {
   const { ticketId, eventId, quantity, userId } = ticketDetails;
   const event = await eventsDb.findById(eventId);
   const ticket = event.ticketTypes.find((t) => t._id.toString() === ticketId.toString());
   const targetEventId = new mongoose.Types.ObjectId(eventId);
   const targetTicketId = new mongoose.Types.ObjectId(ticketId);
-
   const reserveTickets = await eventsDb.updateOne(
     {
       _id: targetEventId,
@@ -39,23 +37,13 @@ export const ticketBookingAndReserve = async (ticketDetails) => {
       $inc: { "ticketTypes.$.quantityAvailable": -quantity },
     },
   );
-
   if (reserveTickets.modifiedCount === 0) {
     throw new Error("Sold out or insufficient stock for this specific category");
   }
-
-  // Logic: (Price * Qty) + 2.5% Fee
-
   const unitPrize = ticket.price;
   const subTotal = unitPrize * quantity;
   const totalAmount = Math.round(subTotal * 1.025 * 100) / 100;
   const serviceFee = totalAmount - subTotal;
-
-  // console.log("unitPrize", unitPrize);
-  // console.log("subtotal", subTotal);
-  // console.log("serviceFee", serviceFee);
-
-  //ticketDetails
   const selectedTicket = {
     ticketTypeId: ticket._id,
     name: ticket.name,
@@ -76,19 +64,14 @@ export const ticketBookingAndReserve = async (ticketDetails) => {
     status: "PENDING",
     expiresAt: expiryDate,
   });
-
   console.log(`Ticket ${ticket.name} in ${event.title} event Reserved`);
-
   return { orderId: order._id };
 };
 
-//
-
-//unreserve
 export const unReserveTicket = async (orderId) => {
   const order = await orderDb.findById(orderId);
-
-  if (order.status != "FAILED") {
+  if (!order) return;
+  if (order.status !== "FAILED") {
     const orderDetails = await orderDb.findByIdAndUpdate(
       orderId,
       { status: "FAILED", $unset: { expiresAt: "" } },
@@ -96,7 +79,7 @@ export const unReserveTicket = async (orderId) => {
     );
     const ticketId = orderDetails.selectedTicket.ticketTypeId;
     const quantity = orderDetails.selectedTicket.quantity;
-    const ticketUpdate = await eventsDb.findOneAndUpdate(
+    await eventsDb.findOneAndUpdate(
       {
         _id: orderDetails.eventId,
         "ticketTypes._id": ticketId,
@@ -106,28 +89,20 @@ export const unReserveTicket = async (orderId) => {
       },
       { new: true },
     );
-
     console.log(`Inventory Restored: +${quantity} tickets for ${orderDetails.selectedTicket.name}`);
-  } else {
-    console.log(`Unreserve Called But nothing to restore`);
   }
 };
-
-//
-//
 
 export const finalizeOrder = async (orderDetails) => {
   const { orderId, attendee, discount, coupon, paymentMethod } = orderDetails;
   const order = await orderDb.findById(orderId);
   const dateNow = new Date();
-
   if (dateNow > order.expiresAt || order.status == "FAILED") {
     throw new Error("Order expired");
   }
-  //discount logic here
   const totalAmountToPay = order.pricing.totalAmount;
   let walletId = null;
-  if (paymentMethod == "wallet") {
+  if (paymentMethod === "wallet") {
     const walletUpdate = await walletDb.findOneAndUpdate(
       {
         userId: order.userId,
@@ -143,7 +118,7 @@ export const finalizeOrder = async (orderDetails) => {
     }
     walletId = walletUpdate._id;
     await transactionDb.create({
-      walletId: walletUpdate._id,
+      walletId: walletId,
       eventId: order.eventId,
       orderId: order._id,
       type: "debit",
@@ -151,42 +126,70 @@ export const finalizeOrder = async (orderDetails) => {
       description: `Payment for ${order.selectedTicket.name}`,
       status: "COMPLETED",
     });
-
     order.status = "CONFIRMED";
-    order.attendees = attendee;
+    order.attendees = {
+      firstName: attendee?.firstName || "",
+      lastName: attendee?.lastName || "",
+      phone: attendee?.phone || attendee?.phoneNumber || "",
+      email: attendee?.email || "",
+    };
     order.expiresAt = undefined;
     await order.save();
-
-    try {
-      await generateTickets(order);
-      const event = await eventsDb.findById(order.eventId);
-      if (event && event.hostId) {
-        const hostEarnings = order.pricing.subTotal;
-        await addMoneyWallet(event.hostId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
-        await creditAdminWallet(order.pricing.serviceFee, `Service Fee of order ${order._id}`);
-      }
-    } catch (error) {
-      console.error("Error on generateTIckets.", error);
-      if (walletId) {
-        await refundWallet(walletId, order.userId, totalAmountToPay, order._id, order.eventId);
-      }
-      order.status = "REFUNDED";
-      await order.save();
-      throw new Error("Booking failed during ticket generation. Your wallet has been refunded.");
+  } else if (paymentMethod === "razorpay") {
+    order.status = "CONFIRMED";
+    order.attendees = {
+      firstName: attendee?.firstName || "",
+      lastName: attendee?.lastName || "",
+      phone: attendee?.phone || attendee?.phoneNumber || "",
+      email: attendee?.email || "",
+    };
+    order.expiresAt = undefined;
+    await order.save();
+    await transactionDb.create({
+      eventId: order.eventId,
+      orderId: order._id,
+      type: "credit",
+      amount: totalAmountToPay,
+      description: `Payment for ${order.selectedTicket.name}`,
+      status: "COMPLETED",
+      paymentMethod: "Razorpay",
+    });
+  }
+  try {
+    await generateTickets(order);
+    const event = await eventsDb.findById(order.eventId);
+    if (event && event.hostId) {
+      const hostEarnings = order.pricing.subTotal;
+      await addMoneyWallet(event.hostId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
+      await creditAdminWallet(order.pricing.serviceFee, `Service Fee of order ${order._id}`);
     }
+  } catch (error) {
+    console.error("Error on generateTIckets.", error);
+    if (walletId) {
+      try {
+        await refundWallet(walletId, order.userId, totalAmountToPay, order._id, order.eventId);
+        console.log(`Wallet refunded ₹${totalAmountToPay} for Order #${order._id}`);
+      } catch (refundError) {
+        console.error("Refund failed:", refundError);
+      }
+    }
+    order.status = "REFUNDED";
+    await order.save();
+    throw new Error("Booking failed during ticket generation.");
   }
 };
 
 export const generateTickets = async (order) => {
   const event = await eventsDb.findById(order.eventId);
+  if (!order.attendees || (!order.attendees.email && !order.attendees.phone)) {
+    throw new Error("Attendee email or phone number is missing");
+  }
   const tierIndex = event.ticketTypes.findIndex(
     (t) => t._id.toString() === order.selectedTicket.ticketTypeId.toString(),
   );
   const seatTier = String.fromCharCode(65 + tierIndex);
   const lastTicket = await ticketDb.findOne({ eventId: event._id, seatTier: seatTier }).sort({ seatNumber: -1 });
-
   let nextSeatNumber = lastTicket ? lastTicket.seatNumber + 1 : 1;
-
   const holderDetails = {
     firstName: order.attendees.firstName,
     lastName: order.attendees.lastName,
@@ -211,7 +214,7 @@ export const generateTickets = async (order) => {
     });
   }
   await ticketDb.insertMany(newTickets);
-  console.log(`Generated ${newTickets.length} tickets. IDs: ${newTickets.map((t) => t.ticketId).join(", ")}`);
+  console.log(`Generated ${newTickets.length} tickets.`);
 };
 
 export const groupedTickets = async (userId) => {
@@ -249,21 +252,17 @@ export const cancelTickets = async (orderId, userId) => {
   const tickets = await ticketDb.find({ orderId: orderId, status: "VALID" }).populate("eventId", "title");
   if (!tickets) throw Error("No tickets available");
   if (tickets[0].userId.toString() !== userId) throw new Error("Unauthorised");
-
   tickets.forEach((t) => {
     const totalPaid = parseFloat(t.purchasePrice.toString());
     t.basePrice = Math.round((totalPaid / 1.025) * 100) / 100;
   });
-  // console.log(tickets);
   return tickets;
 };
 
 export const ticketCancelAndRefunder = async (body) => {
-  console.log("body", body);
   const order = await orderDb.findById(body.orderId).populate("eventId", "title hostId");
   const hasAccess = order.userId.toString() === body.userId.toString();
   if (!hasAccess) throw new Error("Unauthorised");
-
   const ticketsCount = body.cancelTicketsIds.length;
   const pricePerTicket = (order.pricing.subTotal - order.pricing.discountAmount) / order.selectedTicket.quantity;
   const totalRefundAmount = pricePerTicket * ticketsCount;
@@ -273,7 +272,6 @@ export const ticketCancelAndRefunder = async (body) => {
       orderId: body.orderId,
       status: "VALID",
     });
-
     if (ticket) {
       ticket.status = "CANCELLED";
       await ticket.save();
@@ -306,9 +304,7 @@ export const ticketCancelAndRefunder = async (body) => {
     `Refund for ${ticketsCount} cancelled ticket(s) from Order #${order._id}`,
     order,
   );
-
   console.log(`Money refunded for cancellation ${totalRefundAmount}`);
-
   await debitWallet(
     order.eventId.hostId,
     totalRefundAmount,

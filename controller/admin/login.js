@@ -21,3 +21,7 @@ export const AloginPost = (req, res) => {
     console.log("err in aloginPost", Err.message);
   }
 };
+export const logout = async (req, res) => {
+  req.session.isAdmin = null;
+  res.redirect("/admin/login");
+};
