@@ -357,19 +357,51 @@
       renderImagePreviews();
     }
 
-    // ✅ VALIDATED DATE CHECK
     function isValidDateRange(start, end) {
-      const date = new Date()
-      if (date > start) {
-        return false
+      if (!start || !end) {
+        return {
+          success: false,
+          message: "Both start and end dates are required"
+        };
       }
-      if (!start || !end) return false;
       const startDate = new Date(start);
       const endDate = new Date(end);
-      return startDate < endDate && !isNaN(startDate.getTime()) && !isNaN(endDate.getTime());
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        return {
+          success: false,
+          message: "Invalid date format"
+        };
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const startNormalized = new Date(startDate);
+      startNormalized.setHours(0, 0, 0, 0);
+      if (startNormalized < today) {
+        return {
+          success: false,
+          message: "Start date must be today or in the future"
+        };
+      }
+      if (startDate >= endDate) {
+        return {
+          success: false,
+          message: "End date must be after start date"
+        };
+      }
+      const diffMs = endDate - startDate;
+      const diffHours = diffMs / (1000 * 60 * 60);
+
+      if (diffHours > 24) {
+        return {
+          success: false,
+          message: `Event duration cannot exceed 24 hours (currently ${diffHours.toFixed(1)}h)`
+        };
+      }
+      return {
+        success: true
+      };
     }
 
-    // ✅ UPDATED VENUE FILTERING WITH OVERLAP LOGIC (FIXED!)
     function filterVenues() {
       const start = modalStart.value;
       const end = modalEnd.value;
@@ -380,13 +412,12 @@
         modalResults.innerHTML = '<p class="text-center py-10 text-xs text-[#1C2A3A]/40">Select both start and end dates to check availability.</p>';
         return;
       }
-
-      // Validate date range first
-      if (!isValidDateRange(start, end)) {
+      let x = isValidDateRange(start, end)
+      if (!x.success) {
         modalResults.innerHTML = `
         <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
             <p class="text-sm font-bold text-red-600">Invalid Date Range</p>
-            <p class="text-xs text-red-500 mt-1">Please ensure start date is before end date.</p>
+            <p class="text-xs text-red-500 mt-1">${x.message}</p>
         </div>`;
         return;
       }
@@ -399,12 +430,10 @@
       modalResults.innerHTML = filtered.map(v => {
         const bookedIntervals = v.bookedOn || [];
 
-        // ✅ Proper datetime range overlap check (handles both formats)
         const isOverlapping = bookedIntervals.some(bookedSlot => {
           let bookedStart, bookedEnd;
 
           if (typeof bookedSlot === 'object' && bookedSlot.start && bookedSlot.end) {
-            // New Format: { start: ISO, end: ISO }
             bookedStart = new Date(bookedSlot.start);
             bookedEnd = new Date(bookedSlot.end);
           } else if (typeof bookedSlot === 'string') {
