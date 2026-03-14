@@ -236,11 +236,3 @@ export const logout = async (req, res) => {
     });
   }
 };
-
-
-const pagination = (currentPage) => {
-  const limit = 5
-  const totalDocuments = 10
-  return await db.events.find({}).limit(limit).skip(totalPages - (currentPage * limit))
-
-}
