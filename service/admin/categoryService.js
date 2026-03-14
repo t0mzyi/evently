@@ -7,6 +7,7 @@ export const allCategories = async (req, res) => {
 export const category = async (id) => {
   const cat = await categoryDb.findById(id).populate("events");
   if (!cat) throw new Error("category doesnt Found");
+  console.log(cat.events);
   return cat;
 };
 

@@ -514,7 +514,10 @@
               <% if (details.transactions && details.transactions.length > 0) { %>
               <% for (let i = 0; i < details.transactions.length; i++) {
               const tx = details.transactions[i];
-              const isCredit = tx.type === "credit";
+         
+              const isFailed = tx.status === "FAILED";
+const isCredit = tx.type === "credit" && !isFailed;
+const isDebit = tx.type === "debit";
               const amountColor = isCredit ? "text-emerald-600" : "text-rose-600";
               const amountPrefix = isCredit ? "+" : "-";
             %>
@@ -568,7 +571,12 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 font-bold text-right <%= amountColor %> whitespace-nowrap">
+                  <% if (isFailed) { %>
+                  <span class="text-gray-400">₹<%= parseFloat(tx.amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") %></span>
+                  <span class="text-xs text-gray-500 block font-normal">(Failed)</span>
+                  <% } else { %>
                   <%= amountPrefix %>₹<%= parseFloat(tx.amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+                  <% } %>
                 </td>
               </tr>
               <% } %>

@@ -5,12 +5,13 @@ export const venueList = async (page, search, type, sortQuery) => {
   const totalVenues = await venueDb.countDocuments({});
   const activeVenues = await venueDb.countDocuments({ isActive: true });
   const filter = {};
-  if (search) {
-    filter.name = { $regex: search, $options: "i" };
+  if (search && search.trim() !== "") {
+    filter.name = { $regex: search.trim(), $options: "i" };
   }
-  if (type && type != "all") {
+  if (type && type !== "all") {
     filter.type = type;
   }
+  const totalVenuesFiltered = await venueDb.countDocuments(filter);
   let sort = {};
   if (sortQuery == "name-asc") sort = { name: 1 };
   else if (sortQuery == "name-desc") sort = { name: -1 };
@@ -21,18 +22,21 @@ export const venueList = async (page, search, type, sortQuery) => {
   const venues = await venueDb
     .find(filter)
     .sort(sort)
-    .skip((page - 1) * limit)
+    .collation({ locale: "en", strength: 2 })
+    .skip((parseInt(page) - 1) * limit)
     .limit(limit);
-  const totalPages = Math.ceil(totalVenues / limit);
+  console.log(venues);
+  const totalPages = Math.ceil(totalVenuesFiltered / limit) || 1;
+  const currentPage = parseInt(page) > totalPages ? totalPages : parseInt(page);
   return {
     venues,
     totalVenues,
     activeVenues,
     totalPages,
-    currentPage: parseInt(page),
-    searchQuery: search,
-    selectedType: type,
-    selectedSort: sortQuery,
+    currentPage,
+    searchQuery: search || "",
+    selectedType: type || "all",
+    selectedSort: sortQuery || "name-asc",
   };
 };
 
@@ -72,6 +76,7 @@ export const createVenue = async (venueData, files) => {
     description: venueData.description,
     image_url: imagePaths,
     amenities: structuredAmenities,
+    costPerHour: venueData.ratePerHour,
   });
 
   return venue;

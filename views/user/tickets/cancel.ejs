@@ -34,7 +34,6 @@
   <!-- Navbar -->
   <%- include('../../partials/navBar') %>
 
-
   <main class="pt-32 pb-16 px-6 relative z-10">
     <div class="max-w-xl mx-auto">
 
@@ -43,8 +42,7 @@
         <!-- Icon -->
         <div class="w-20 h-20 mx-auto bg-red-100 rounded-full flex items-center justify-center mb-6 text-red-600">
           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
           </svg>
         </div>
 
@@ -53,10 +51,28 @@
 
         <!-- Ticket Selection List -->
         <div class="space-y-4 mb-8 text-left">
-          <% if (typeof tickets !=='undefined' && tickets.length> 0) { %>
+          <% if (typeof tickets !== 'undefined' && tickets.length > 0) { %>
+
+          <!-- ✅ SELECT ALL HEADER -->
+          <label class="block relative group cursor-pointer mb-2">
+            <input type="checkbox" id="selectAll" class="peer sr-only" onchange="toggleSelectAll()">
+            <div class="bg-[#1C2A3A]/5 border border-[#1C2A3A]/10 rounded-2xl p-4 transition-all peer-checked:border-[#1C2A3A] peer-checked:bg-[#1C2A3A]/10 flex items-center gap-4">
+              <!-- Checkbox Visual -->
+              <div class="w-6 h-6 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center peer-checked:bg-[#1C2A3A] peer-checked:border-[#1C2A3A] transition-colors shrink-0">
+                <svg class="w-3 h-3 text-white opacity-0 select-all-check" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <div class="flex-1">
+                <span class="font-bold text-[#1C2A3A]">Select All Tickets</span>
+                <span class="text-xs text-[#1C2A3A]/50 block">(<%= tickets.length %> tickets available)</span>
+              </div>
+            </div>
+          </label>
+
           <% tickets.forEach(function(ticket, index) { %>
           <label class="block relative group cursor-pointer">
-            <input type="checkbox" name="selected_tickets" data-id="<%= ticket._id %>" value=" <%= ticket.basePrice %>" class="peer sr-only" onchange="updateRefund()">
+            <input type="checkbox" name="selected_tickets" data-id="<%= ticket._id %>" value="<%= ticket.basePrice %>" class="peer sr-only ticket-checkbox" onchange="updateRefund(); updateSelectAllState()">
             <div class="bg-white border border-[#1C2A3A]/10 rounded-2xl p-4 transition-all peer-checked:border-[#1C2A3A] peer-checked:bg-white peer-checked:shadow-md flex items-center gap-4">
               <!-- Checkbox Visual -->
               <div class="w-6 h-6 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center peer-checked:bg-[#1C2A3A] peer-checked:border-[#1C2A3A] transition-colors shrink-0">
@@ -71,7 +87,6 @@
                   <span class="font-bold text-[#1C2A3A]">
                     <%= ticket.ticketName %>
                   </span>
-
                 </div>
                 <div class="text-sm text-[#1C2A3A]/60 flex justify-between">
                   <span class="font-mono text-xs text-[#1C2A3A]/60 bg-[#1C2A3A]/5 px-2 py-0.5 rounded">
@@ -126,13 +141,11 @@
       <div class="text-center">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-            </path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
           </svg>
         </div>
         <h3 class="text-2xl font-heading font-bold text-[#1C2A3A] mb-2">Are you sure?</h3>
-        <p class="text-[#1C2A3A]/60 text-sm mb-6">This action cannot be undone. The selected tickets will be
-          permanently invalid.</p>
+        <p class="text-[#1C2A3A]/60 text-sm mb-6">This action cannot be undone. The selected tickets will be permanently invalid.</p>
 
         <div class="flex flex-col gap-3">
           <button onclick="processCancellation()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold shadow-lg shadow-red-500/20 transition-all">
@@ -145,9 +158,9 @@
       </div>
     </div>
   </div>
+
   <div id="errorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
     <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity opacity-0" id="errorBackdrop"></div>
-
     <div class="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="errorCard">
       <div class="text-center">
         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -167,11 +180,7 @@
 
   <!-- Success Modal -->
   <div id="successModal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop">
-    </div>
-
-    <!-- Modal Card -->
+    <div class="absolute inset-0 bg-[#1C2A3A]/60 backdrop-blur-sm transition-opacity opacity-0" id="modalBackdrop"></div>
     <div class="relative bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="modalCard">
       <div class="text-center">
         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -188,7 +197,9 @@
       </div>
     </div>
   </div>
+
   <%- include('../../partials/footer') %>
+
   <script>
     const refundDiv = document.getElementById('refundAmount')
     const path = window.location.pathname.split('/')
@@ -198,7 +209,50 @@
       ticketIds: []
     };
 
+    // ✅ NEW: Toggle all ticket checkboxes
+    function toggleSelectAll() {
+      const selectAll = document.getElementById('selectAll');
+      const checkboxes = document.querySelectorAll('.ticket-checkbox');
+      const isChecked = selectAll.checked;
 
+      checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+        // Trigger visual update for custom checkbox
+        const checkIcon = cb.closest('label').querySelector('.checkbox-check');
+        if (checkIcon) {
+          checkIcon.style.opacity = isChecked ? '1' : '0';
+        }
+      });
+
+      // Update select all visual
+      const selectAllCheck = document.querySelector('.select-all-check');
+      if (selectAllCheck) {
+        selectAllCheck.style.opacity = isChecked ? '1' : '0';
+      }
+
+      updateRefund();
+    }
+
+    // ✅ NEW: Update "Select All" checkbox state based on individual selections
+    function updateSelectAllState() {
+      const selectAll = document.getElementById('selectAll');
+      const checkboxes = document.querySelectorAll('.ticket-checkbox');
+      const checkedCount = document.querySelectorAll('.ticket-checkbox:checked').length;
+
+      if (checkboxes.length === 0) {
+        selectAll.checked = false;
+      } else if (checkedCount === checkboxes.length) {
+        selectAll.checked = true;
+      } else {
+        selectAll.checked = false;
+      }
+
+      // Update visual for select all
+      const selectAllCheck = document.querySelector('.select-all-check');
+      if (selectAllCheck) {
+        selectAllCheck.style.opacity = selectAll.checked ? '1' : '0';
+      }
+    }
 
     function updateRefund() {
       const checkboxes = document.querySelectorAll('input[name="selected_tickets"]:checked');
@@ -288,7 +342,6 @@
       }, 300);
     }
 
-    // Step 2: Show Success
     // Step 2: Show Success or Error
     async function processCancellation() {
       try {
@@ -332,6 +385,11 @@
         }, 300);
       }
     }
+
+    // ✅ Initialize: Ensure visuals are correct on load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateSelectAllState();
+    });
   </script>
 
 </body>

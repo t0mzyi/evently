@@ -58,6 +58,13 @@ import {
 import { addMoney, cancelPayment, showWallet, verifyPayment } from "../controller/user/walletController.js";
 import { unReserveTicket } from "../service/user/ticketsService.js";
 import { showCalender } from "../controller/user/calenderController.js";
+import {
+  createCoupon,
+  deleteCoupon,
+  getAvailableCoupons,
+  renderManageCoupons,
+  updateCoupon,
+} from "../controller/user/couponsController.js";
 // import { viewBookmarks } from "../controller/user/bookmarksController.js";
 const router = express.Router();
 
@@ -118,6 +125,12 @@ router.post("/payAndPublish", isAuth, handlepayAndPublish);
 router.get("/:eventId/attendees", showAttenties);
 router.post("/event/reviews", addEventReview);
 router.delete("/event/reviews", deleteEventReview);
+
+router.get("/events/:eventId/coupons", renderManageCoupons);
+router.post("/events/:eventId/coupons", createCoupon);
+router.put("/events/:eventId/coupons/:couponId", updateCoupon);
+router.delete("/events/:eventId/coupons/:couponId", deleteCoupon);
+router.get("/coupons/:eventId", getAvailableCoupons);
 
 //cat
 router.get("/categories", categories);

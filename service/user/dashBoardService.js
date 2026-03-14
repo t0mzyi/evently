@@ -64,7 +64,7 @@ export const userFinder = async (userId) => {
         remaining,
         total,
         sold,
-        revenue: Math.round(revenue * 100) / 100, // Round to 2 decimals
+        revenue: Math.round(revenue * 100) / 100,
       };
     }
   }
@@ -90,7 +90,6 @@ export const getEventAnalytics = async (
     const eventIds = events.map((e) => e._id);
     const currentYear = year ? parseInt(year) : new Date().getFullYear();
 
-    // Build date filter based on time range
     let dateFilter = {};
 
     if (timeRange === "daily" && startDate && endDate) {
@@ -125,7 +124,6 @@ export const getEventAnalytics = async (
       };
     }
 
-    // Get all VALID (non-cancelled) tickets with date filter
     const allTickets = await ticketDb
       .find({
         eventId: { $in: eventIds },
@@ -172,7 +170,6 @@ export const getEventAnalytics = async (
     const revenueData = {};
 
     if (timeRange === "daily") {
-      // Daily: Show each day from start to end date
       const start = new Date(startDate);
       const end = new Date(endDate);
       const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
@@ -182,7 +179,6 @@ export const getEventAnalytics = async (
         end.setDate(start.getDate() + 30);
       }
 
-      // Initialize all days in range
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
         const dateKey = d.toISOString().split("T")[0];
         const label = `${d.getDate()}/${d.getMonth() + 1}`;
@@ -193,7 +189,6 @@ export const getEventAnalytics = async (
         };
       }
 
-      // Group tickets by day
       allTickets.forEach((ticket) => {
         if (ticket.createdAt) {
           const date = new Date(ticket.createdAt);
@@ -205,7 +200,6 @@ export const getEventAnalytics = async (
         }
       });
     } else if (timeRange === "monthly") {
-      // Monthly: Show all 12 months of selected year
       for (let m = 0; m < 12; m++) {
         revenueData[m] = {
           label: monthNames[m],
@@ -235,7 +229,6 @@ export const getEventAnalytics = async (
         };
       }
 
-      // Group tickets by year
       allTickets.forEach((ticket) => {
         if (ticket.createdAt) {
           const date = new Date(ticket.createdAt);
@@ -248,7 +241,6 @@ export const getEventAnalytics = async (
       });
     }
 
-    // Convert to sorted array
     const monthlyRevenueArray = Object.values(revenueData)
       .sort((a, b) => a.sortValue - b.sortValue)
       .map((item) => ({

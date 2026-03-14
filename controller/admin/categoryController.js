@@ -12,9 +12,37 @@ export const showSingleCategory = async (req, res) => {
     const cat = await category(categoryId);
     const date = formatDate(cat?.createdAt);
     cat.date = date;
-    res.render("admin/categories/view-category", { cat });
+    let avgTicketPrice = 0;
+    if (cat.events && cat.events.length > 0) {
+      let totalPrice = 0;
+      let ticketCount = 0;
+
+      cat.events.forEach((event) => {
+        if (event.ticketTypes && event.ticketTypes.length > 0) {
+          event.ticketTypes.forEach((ticket) => {
+            if (ticket.price && ticket.price > 0) {
+              totalPrice += ticket.price;
+              ticketCount++;
+            }
+          });
+        }
+      });
+
+      avgTicketPrice = ticketCount > 0 ? (totalPrice / ticketCount).toFixed(2) : 0;
+    }
+    const liveEvents = cat.events.filter((e) => e.status === "live").length;
+    const totalCapacity = cat.events.reduce((sum, e) => sum + (e.totalCapacity || 0), 0);
+    const totalEvents = cat.events.length;
+    res.render("admin/categories/view-category", {
+      cat,
+      avgTicketPrice,
+      liveEvents,
+      totalCapacity,
+      totalEvents,
+    });
   } catch (error) {
     console.log("error in singleCategory", error);
+    res.redirect("/admin/categories?status=error&message=Category+not+found");
   }
 };
 

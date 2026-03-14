@@ -120,7 +120,10 @@ export const verifyRazorpayPayment = async (paymentData) => {
   }
 
   const transaction = await transactionDb.findOneAndUpdate(
-    { razorpayOrderId: razorpay_order_id },
+    {
+      razorpayOrderId: razorpay_order_id,
+      status: "PENDING",
+    },
     {
       status: "COMPLETED",
       razorpayPaymentId: razorpay_payment_id,
@@ -129,11 +132,21 @@ export const verifyRazorpayPayment = async (paymentData) => {
   );
 
   if (!transaction) {
-    throw new Error("Transaction not found");
+    const existingTx = await transactionDb.findOne({ razorpayOrderId: razorpay_order_id });
+    if (existingTx?.status === "FAILED") {
+      throw new Error("Payment was cancelled by user");
+    }
+    if (existingTx?.status === "COMPLETED") {
+      throw new Error("Payment already processed");
+    }
+    throw new Error("Transaction not found or already processed");
   }
 
   await walletDb.findByIdAndUpdate(transaction.walletId, {
-    $inc: { availableBalance: transaction.amount, totalEarnings: transaction.amount },
+    $inc: {
+      availableBalance: transaction.amount,
+      totalEarnings: transaction.amount,
+    },
   });
 
   return { success: true, transaction };

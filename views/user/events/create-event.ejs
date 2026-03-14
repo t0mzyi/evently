@@ -359,6 +359,10 @@
 
     // ✅ VALIDATED DATE CHECK
     function isValidDateRange(start, end) {
+      const date = new Date()
+      if (date > start) {
+        return false
+      }
       if (!start || !end) return false;
       const startDate = new Date(start);
       const endDate = new Date(end);

@@ -43,6 +43,8 @@
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans">
   <%- include('../partials/toast') %>
+  <%- include('../partials/adminNavbar', {activePage : 'users'}) %>
+
 
   <div class="fixed top-6 w-full z-50 px-4 md:px-6">
     <nav class="max-w-7xl mx-auto bg-[#1C2A3A] rounded-full h-16 px-6 flex items-center justify-between shadow-2xl">
@@ -288,7 +290,7 @@
 
     confirmBtn.addEventListener("click", async () => {
       const action = isCurrentlyBlocked ? "unblock" : "block";
-      const url = `/admin/users/₹{currentUserId}/₹{action}`;
+      const url = `/admin/users/${currentUserId}/${action}`;
       try {
         const response = await fetch(url, {
           method: "PATCH",

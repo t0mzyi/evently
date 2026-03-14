@@ -21,27 +21,18 @@ export const allEvents = async (
   categoryFilter = "all",
 ) => {
   try {
-    // Build query filter
     let queryFilter = { status: "live" };
 
-    // Search filter
     if (query.trim()) {
       const searchRegex = new RegExp(query.trim(), "i");
       queryFilter.$or = [{ title: { $regex: searchRegex } }, { description: { $regex: searchRegex } }];
     }
 
-    // Category filter
     if (categoryFilter !== "all") {
       queryFilter.categoryId = categoryFilter;
     }
-
-    // Calculate skip value for pagination
     const skip = (page - 1) * limit;
-
-    // Get total count for pagination
     const totalEvents = await eventsDb.countDocuments(queryFilter);
-
-    // Build sort options
     let sortOptions = {};
     switch (sortBy) {
       case "date":
@@ -53,8 +44,6 @@ export const allEvents = async (
       default:
         sortOptions = { startDate: order === "asc" ? 1 : -1 };
     }
-
-    // Fetch events with basic population
     let events = await eventsDb
       .find(queryFilter)
       .sort(sortOptions)
@@ -67,8 +56,6 @@ export const allEvents = async (
         match: { status: "active" },
       })
       .lean();
-
-    // Process each event in JavaScript
     const processedEvents = events.map((event) => {
       let venueInfo = {
         name: "TBD",
@@ -94,10 +81,7 @@ export const allEvents = async (
       let hasFreeTickets = false;
 
       if (event.ticketTypes && event.ticketTypes.length > 0) {
-        // Filter active tickets
         const activeTickets = event.ticketTypes.filter((t) => t.isActive);
-
-        // Separate free and paid tickets
         const freeTickets = activeTickets.filter((t) => t.isFree || t.price === 0);
         const paidTickets = activeTickets.filter((t) => !t.isFree && t.price > 0);
 
@@ -111,13 +95,11 @@ export const allEvents = async (
           minPrice = hasFreeTickets ? 0 : Math.min(...prices);
           maxPrice = Math.max(...prices);
         } else if (!hasFreeTickets) {
-          // No active paid tickets and no free tickets
           minPrice = 50; // fallback
           maxPrice = 50;
         }
       }
 
-      // Format price display
       const priceDisplay =
         hasFreeTickets && maxPrice > 0
           ? "FREE" // If there's at least one free ticket
@@ -187,6 +169,8 @@ export const allEvents = async (
 export const singleEventFinder = async (eventId) => {
   const event = await eventsDb.findById(eventId).populate("categoryId hostId");
   if (!event) throw new Error("Event not found");
+  console.log(event.status);
+  if (event.status != "live") throw new Error("Event rejected");
 
   let venue;
   if (event.venueType === "iconic") {
@@ -239,6 +223,10 @@ export const newEvent = async (body, files) => {
 
   const start = new Date(startDate);
   const end = new Date(endDate);
+  const dateNow = new Date();
+  if (start < dateNow) {
+    throw new Error("Cant select previous date");
+  }
 
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     throw new Error("Invalid date format");
@@ -284,7 +272,7 @@ export const newEvent = async (body, files) => {
       price,
       quantityTotal: qty,
       quantityAvailable: qty,
-      isFree: price === 0, // ✅ This is what you wanted!
+      isFree: price === 0,
     });
     totalCapacityFromTickets += qty;
   }
@@ -293,7 +281,6 @@ export const newEvent = async (body, files) => {
     throw new Error("At least one valid ticket type is required.");
   }
 
-  // Build event
   const event = {
     hostId,
     title,
@@ -307,7 +294,6 @@ export const newEvent = async (body, files) => {
     totalCapacity: totalCapacityFromTickets,
   };
 
-  // Handle venue
   if (venueType === "iconic") {
     if (!venueId) throw new Error("Venue selection error");
     const venue = await venueDb.findById(venueId);
@@ -502,6 +488,7 @@ export const payEventRender = async (eventId, userId) => {
   if (!event) throw new Error("Event not found");
   if (event.hostId != userId) throw new Error("Unauthorised");
   if (event.status == "live") throw new Error("Event is already live");
+  if (event.status == "rejected") throw new Error("Event is rejected");
 
   const wallet = await walletDb.findOne({ userId: event.hostId });
   const walletBalance = wallet.availableBalance.toString();
@@ -532,17 +519,13 @@ export const payAndPublishEvent = async (eventId, userId) => {
   if (!wallet) throw new Error("Wallet not found");
 
   const walletBalance = wallet.availableBalance.toString();
-
-  // Calculate fees
   const hours = (event.endDate - event.startDate) / (1000 * 60 * 60);
   let venueFee = 0;
-
   if (event.venueType !== "custom") {
     const venue = await venueDb.findById(event.venueId);
     if (!venue) throw new Error("Venue not found");
     venueFee = venue.costPerHour * hours;
   }
-
   const eventFee = hours * 4;
   const totalAmount = venueFee + eventFee;
 
@@ -553,13 +536,11 @@ export const payAndPublishEvent = async (eventId, userId) => {
   }
 
   try {
-    // Debit wallet
-    const debitResult = await debitWallet(event.hostId, totalAmount, "Event publishing fees");
+    const debitResult = await debitWallet(event.hostId, totalAmount, `Event publishing fees ${event._id}`);
 
     event.status = "live";
     event.publishedAt = new Date();
     await event.save();
-
     return {
       newBalance: walletBalance - totalAmount,
       transactionId: debitResult.transactionId,

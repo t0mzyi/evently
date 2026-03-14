@@ -17,18 +17,31 @@ export const resetPasswordGuard = (req, res, next) => {
 ``;
 
 export const isAuth = async (req, res, next) => {
-  if (req.session.user) {
-    const user = await userDb.findById(req.session.user);
-    if (!user.isBlocked) {
+  try {
+    if (req.session.user) {
+      const user = await userDb.findById(req.session.user);
+
+      if (!user) {
+        req.session.user = null;
+        return res.redirect("/signIn?status=error&message=Please%20login%20again");
+      }
+
+      if (user.isBlocked) {
+        req.session.user = null;
+        return res.redirect("/signIn?status=error&message=You%20have%20been%20blocked");
+      }
+
       return next();
     }
+    return res.redirect(`/signIn?status=error&message=${encodeURIComponent("Please login")}`);
+  } catch (error) {
+    console.error("isAuth error:", error);
+    return res.redirect("/signIn?status=error&message=Authentication%20error");
   }
-  return res.redirect(`/signIn?status=error&message=${encodeURIComponent("Please login")}`);
-  next();
 };
 
 export const ifAuth = (req, res, next) => {
-  if (req.session && req.session.user) {
+  if (req.session.user) {
     return res.redirect("/");
   }
   return next();

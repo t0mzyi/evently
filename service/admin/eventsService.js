@@ -1,4 +1,5 @@
 import eventsDb from "../../model/eventsDb.js";
+import transactionDb from "../../model/transactionsDb.js";
 import userDb from "../../model/userDb.js";
 import venueDb from "../../model/venueDb.js";
 
@@ -62,6 +63,7 @@ export const singleEvent = async (eventId) => {
     .findById(eventId)
     .populate("categoryId", "name")
     .populate("hostId", "firstName lastName avatarUrl emailAddress");
+
   let venueDetails = {};
   if (event.venueType == "iconic") {
     venueDetails = await venueDb.findById(event.venueId);
@@ -90,7 +92,12 @@ export const statusChanger = async (eventId, eventStatus, reason) => {
   if (reason) {
     updatedEvent = await eventsDb.findByIdAndUpdate(eventId, { status: eventStatus, rejectionReason: reason });
   } else {
-    updatedEvent = await eventsDb.findByIdAndUpdate(eventId, { status: eventStatus });
+    let alreadyPaidHost = await transactionDb.find({ description: `Event publishing fees ${eventId}` });
+    if (alreadyPaidHost) {
+      updatedEvent = await eventsDb.findByIdAndUpdate(eventId, { status: "live", rejectionReason: "" });
+    } else {
+      updatedEvent = await eventsDb.findByIdAndUpdate(eventId, { status: eventStatus, rejectionReason: "" });
+    }
   }
   if (!updatedEvent) throw new Error("Invalid eventId : updation failed");
 };

@@ -95,7 +95,14 @@ export const showSingleEvent = async (req, res) => {
   try {
     let eventId = req.params.eventId;
 
+    const eventcheck = await eventsDb.findById(eventId);
+
+    if (eventcheck.hostId.toString() == req.session.user) {
+      return res.redirect(`/viewEventHost/${eventId}`);
+    }
+
     const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
+    console.log("hey");
     const ticket = { lowestPrice, totalTickets, ticketsLeft };
     const schedule = formatDate(event.startDate);
     let allReviews = await reviewDb
@@ -143,7 +150,8 @@ export const showSingleEvent = async (req, res) => {
     });
   } catch (error) {
     console.error("showSingleEvent error:", error);
-    res.status(500).render("errors/500", { message: "Failed to load event details" });
+    res.status(400);
+    res.redirect(`/events?status=error&message=Event unavialable or doesnt exits`);
   }
 };
 

@@ -7,7 +7,7 @@ export const showWallet = async (req, res) => {
   platformWallet.balance = platformWallet.availableBalance.toString();
   platformWallet.te = platformWallet.totalEarnings.toString();
 
-  const transactions = await transactionDb.find({ walletId: platformWallet._id });
+  const transactions = await transactionDb.find({ walletId: platformWallet._id }).sort({ createdAt: -1 });
   console.log(transactions);
   res.render("admin/admin-wallet", { wallet: platformWallet, transactions });
 };

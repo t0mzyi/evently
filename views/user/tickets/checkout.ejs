@@ -7,7 +7,6 @@
   <title>Checkout — Evently</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- ✅ RAZORPAY SDK -->
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,39 +52,68 @@
       border-color: #3395FF;
     }
 
-    .timer-hidden {
-      display: none !important;
+    .coupon-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(28, 42, 58, 0.15);
+    }
+
+    .coupon-card.selected {
+      border-color: #ED8842;
+      background-color: #fff7ed;
+    }
+
+    .coupon-card.expired {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .coupon-card.invalid {
+      opacity: 0.5;
+      pointer-events: none;
+      background-color: #f5f5f5;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-slide-up {
+      animation: slide-up 0.5s ease-out forwards;
     }
   </style>
 </head>
 
 <body class="bg-[#EAE0CF] min-h-screen font-sans overflow-x-hidden relative">
-  <div id="backContainer" class="hidden max-w-3xl mx-auto pt-6 px-6">
-    <button onclick="confirmExit()" class="flex items-center gap-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A] font-bold text-sm transition-colors">
-      Cancel Booking & Return
-    </button>
+
+  <!-- Bottom Timer Bar -->
+  <div id="booking-timer" class="fixed bottom-0 left-0 right-0 w-full z-[90] bg-[#1C2A3A] text-white text-center py-2 font-bold text-sm shadow-md transition-transform duration-300">
+    Complete your booking before time runs out! <span id="timer-display-bottom" class="font-mono text-[#ED8842] text-base ml-1">00:00</span>
   </div>
-  <div id="booking-timer" class="fixed bottom-0 left-0 right-0 w-full z-[60] bg-[#1C2A3A] text-white text-center py-2 font-bold text-sm shadow-md transition-transform duration-300">
-    Time left to complete booking: <span id="timer-display" class="font-mono text-[#ED8842] text-base ml-1">00:00</span>
-  </div>
+
   <%- include('../../partials/navbar') %>
-  <main class="pt-32 pb-16 px-6 max-w-3xl mx-auto">
+
+  <main class="pt-32 pb-24 px-6 max-w-3xl mx-auto">
     <div class="flex items-center justify-center mb-12 animate-slide-up">
       <div class="flex items-center w-full max-w-lg relative">
         <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-[#1C2A3A]/10 rounded-full -z-10"></div>
         <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[#1C2A3A] rounded-full -z-10 transition-all duration-500" id="progress-bar" style="width: 33%"></div>
         <div class="flex justify-between w-full">
-          <!-- Step 1 -->
           <div class="flex flex-col items-center gap-2">
             <div class="w-10 h-10 rounded-full bg-[#1C2A3A] text-white flex items-center justify-center font-bold shadow-lg transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-1">1</div>
             <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A] transition-colors duration-300" id="step-label-1">Billing Details</span>
           </div>
-          <!-- Step 2 -->
           <div class="flex flex-col items-center gap-2">
             <div class="w-10 h-10 rounded-full bg-white text-[#1C2A3A]/40 flex items-center justify-center font-bold shadow-sm transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-2">2</div>
             <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A]/40 transition-colors duration-300" id="step-label-2">Summary</span>
           </div>
-          <!-- Step 3 -->
           <div class="flex flex-col items-center gap-2">
             <div class="w-10 h-10 rounded-full bg-white text-[#1C2A3A]/40 flex items-center justify-center font-bold shadow-sm transition-all duration-300 ring-4 ring-[#EAE0CF]" id="step-indicator-3">3</div>
             <span class="text-xs font-bold uppercase tracking-wider text-[#1C2A3A]/40 transition-colors duration-300" id="step-label-3">Confirm</span>
@@ -93,28 +121,34 @@
         </div>
       </div>
     </div>
+
     <div class="bg-white/60 backdrop-blur-xl rounded-[2.5rem] p-8 md:p-12 border border-white/40 shadow-xl animate-slide-up" style="animation-delay: 0.1s;">
+
       <!-- STEP 1: Attendee Info -->
       <div id="step-1" class="step-content">
         <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Billing Information</h2>
-
+        <p class="text-[#1C2A3A]/60 mb-6">Enter your details to proceed with the booking.</p>
         <div class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div><label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">First Name</label><input type="text" id="firstName" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="e.g. John"></div>
             <div><label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Last Name</label><input type="text" id="lastName" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="e.g. Doe"></div>
           </div>
-          <div><label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Phone Number</label><input type="tel" id="phoneNumber" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="+1 (555) 000-0000"></div>
+          <div><label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Phone Number</label><input type="tel" id="phoneNumber" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="+91 98765 43210"></div>
         </div>
-        <div class="mt-10 flex justify-end">
+        <div class="mt-10 flex justify-between">
+          <!-- ✅ CANCEL BUTTON ADDED -->
+          <button onclick="confirmExit()" class="text-red-600 hover:text-red-700 font-bold text-sm transition-colors px-6 py-4 border border-red-200 rounded-xl hover:bg-red-50">Cancel Order</button>
           <button onclick="nextStep(1)" class="bg-[#1C2A3A] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 flex items-center gap-2">Next Step<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
             </svg></button>
         </div>
       </div>
+
       <!-- STEP 2: Order Summary -->
       <div id="step-2" class="step-content hidden opacity-0 translate-x-10 transition-all duration-300">
         <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Order Summary</h2>
-        <p class="text-[#1C2A3A]/60 mb-8">Review your order and add coupons.</p>
+        <p class="text-[#1C2A3A]/60 mb-8">Review your order and apply coupons.</p>
+
         <div class="bg-white/40 rounded-2xl p-6 border border-[#1C2A3A]/5 mb-8">
           <div class="flex justify-between items-start mb-4 pb-4 border-b border-[#1C2A3A]/10">
             <div>
@@ -125,26 +159,40 @@
           </div>
           <div class="space-y-2">
             <div class="flex justify-between text-sm"><span class="text-[#1C2A3A]/60">Subtotal</span><span class="font-medium text-[#1C2A3A]">₹<span id="subtotal"><%= order.pricing.subTotal %></span></span></div>
-            <div class="flex justify-between text-sm"><span class="text-[#1C2A3A]/60">Service Fee</span><span class="font-medium text-[#1C2A3A]">₹<span id="service-fee"><%= order.pricing.serviceFee %></span></span></div>
-            <div id="coupon-row" class="hidden flex justify-between text-sm text-green-600 font-medium"><span>Discount</span><span>-₹<span id="discount-amount">0.00</span></span></div>
+            <div id="discount-row" class="hidden flex justify-between text-sm text-green-600 font-medium"><span>Discount</span><span>-₹<span id="discount-amount">0.00</span></span></div>
+            <div class="flex justify-between text-sm"><span class="text-[#1C2A3A]/60">Service Fee (2.5%)</span><span class="font-medium text-[#1C2A3A]">₹<span id="service-fee"><%= order.pricing.serviceFee %></span></span></div>
             <div class="flex justify-between text-xl font-heading font-bold pt-4 mt-2 border-t border-[#1C2A3A]/10"><span class="text-[#1C2A3A]">Total</span><span class="text-[#1C2A3A]">₹<span id="total"><%= order.pricing.totalAmount %></span></span></div>
           </div>
         </div>
+
+        <!-- Coupon Section -->
         <div class="mb-8">
-          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Have a Coupon?</label>
-          <div class="flex gap-2">
-            <input type="text" id="couponCode" class="flex-1 bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all uppercase placeholder-[#1C2A3A]/30" placeholder="CODE123">
-            <button onclick="applyCoupon()" class="bg-[#1C2A3A]/10 text-[#1C2A3A] font-bold px-6 rounded-xl hover:bg-[#1C2A3A] hover:text-white transition-colors">Apply</button>
-          </div>
-          <p id="coupon-msg" class="hidden text-xs font-bold mt-2 ml-1"></p>
+          <label class="block text-xs font-bold uppercase tracking-widest text-[#1C2A3A]/50 mb-2 ml-1">Have a Coupon?<br> NOTE:Tickets brought using coupons cant be partially canceled</label>
+          <button onclick="openCouponsModal()" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium hover:bg-[#1C2A3A]/5 transition-all flex items-center justify-between group">
+            <span class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-[#1C2A3A]/40 group-hover:text-[#1C2A3A] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+              Show Available Coupons
+            </span>
+            <span class="text-xs text-[#1C2A3A]/40 group-hover:text-[#1C2A3A] transition-colors">Click to browse</span>
+          </button>
+          <p id="applied-coupon-msg" class="hidden text-xs font-bold mt-2 ml-1 text-green-600"></p>
+          <button id="remove-coupon-btn" onclick="removeAppliedCoupon()" class="hidden mt-2 text-xs text-red-600 font-bold hover:underline ml-1">Remove Coupon</button>
         </div>
-        <div class="flex justify-between">
+
+        <div class="mt-10 flex justify-between">
           <button onclick="prevStep(2)" class="text-[#1C2A3A]/60 font-bold text-sm hover:text-[#1C2A3A] transition-colors px-4 py-4">Back</button>
-          <button onclick="nextStep(2)" class="bg-[#1C2A3A] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 flex items-center gap-2">Next Step<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg></button>
+          <div class="flex gap-3">
+            <!-- ✅ CANCEL BUTTON ADDED -->
+            <button onclick="confirmExit()" class="text-red-600 hover:text-red-700 font-bold text-sm transition-colors px-6 py-4 border border-red-200 rounded-xl hover:bg-red-50">Cancel Order</button>
+            <button onclick="nextStep(2)" class="bg-[#1C2A3A] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#2C3E50] transition-all hover:-translate-y-0.5 flex items-center gap-2">Next Step<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+              </svg></button>
+          </div>
         </div>
       </div>
+
       <!-- STEP 3: Confirm & Pay -->
       <div id="step-3" class="step-content hidden opacity-0 translate-x-10 transition-all duration-300">
         <h2 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Final Confirmation</h2>
@@ -154,20 +202,24 @@
           <input type="email" id="email" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-5 py-4 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all placeholder-[#1C2A3A]/30" placeholder="john.doe@example.com">
           <p class="text-xs text-[#1C2A3A]/40 mt-2 ml-1">Your tickets and receipt will be sent here.</p>
         </div>
-        <div class="flex justify-between">
+        <div class="mt-10 flex justify-between">
           <button onclick="prevStep(3)" class="text-[#1C2A3A]/60 font-bold text-sm hover:text-[#1C2A3A] transition-colors px-4 py-4">Back</button>
-          <button onclick="showPaymentModal()" class="bg-[#ED8842] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 flex items-center gap-2">Confirm & Pay ₹<span id="btn-total"><%= order.pricing.totalAmount %></span></button>
+          <div class="flex gap-3">
+            <!-- ✅ CANCEL BUTTON ADDED -->
+            <button onclick="confirmExit()" class="text-red-600 hover:text-red-700 font-bold text-sm transition-colors px-6 py-4 border border-red-200 rounded-xl hover:bg-red-50">Cancel Order</button>
+            <button onclick="showPaymentModal()" class="bg-[#ED8842] text-white rounded-xl px-8 py-4 font-bold text-sm shadow-lg hover:bg-[#d67631] transition-all hover:-translate-y-0.5 flex items-center gap-2">Confirm & Pay ₹<span id="btn-total"><%= order.pricing.totalAmount %></span></button>
+          </div>
         </div>
       </div>
     </div>
   </main>
+
   <!-- Payment Modal -->
-  <div id="paymentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-6 opacity-0 transition-opacity duration-300">
+  <div id="paymentModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-6 opacity-0 transition-opacity duration-300">
     <div class="bg-white rounded-[2rem] max-w-md w-full p-8 shadow-2xl scale-95 transition-transform duration-300" id="paymentContent">
       <h3 class="text-2xl font-heading font-medium text-[#1C2A3A] mb-2">Select Payment Method</h3>
       <p class="text-[#1C2A3A]/60 mb-8">Choose how you'd like to pay for your tickets.</p>
       <div class="space-y-4">
-        <!-- Wallet Option -->
         <button onclick="selectPaymentMethod('wallet')" class="payment-method w-full flex items-center justify-between p-5 rounded-xl border border-[#1C2A3A]/10 transition-all group">
           <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-[#1C2A3A]/10 flex items-center justify-center text-[#1C2A3A]">
@@ -175,16 +227,12 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
               </svg>
             </div>
-            <div class="text-left">
-              <span class="block font-bold text-[#1C2A3A]">My Wallet</span>
-              <span class="block text-xs text-[#1C2A3A]/50">Balance: ₹<%= walletBalance %></span>
-            </div>
+            <div class="text-left"><span class="block font-bold text-[#1C2A3A]">My Wallet</span><span class="block text-xs text-[#1C2A3A]/50">Balance: ₹<%= walletBalance %></span></div>
           </div>
           <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
             <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
           </div>
         </button>
-        <!-- Razorpay Option -->
         <button onclick="selectPaymentMethod('razorpay')" class="payment-method razorpay w-full flex items-center justify-between p-5 rounded-xl border border-[#1C2A3A]/10 transition-all group">
           <div class="flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-[#3395FF]/10 flex items-center justify-center text-[#3395FF]">
@@ -192,10 +240,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
               </svg>
             </div>
-            <div class="text-left">
-              <span class="block font-bold text-[#1C2A3A]">Credit/Debit Card / UPI</span>
-              <span class="block text-xs text-[#1C2A3A]/50">Razorpay Secure Payment</span>
-            </div>
+            <div class="text-left"><span class="block font-bold text-[#1C2A3A]">Credit/Debit Card / UPI</span><span class="block text-xs text-[#1C2A3A]/50">Razorpay Secure Payment</span></div>
           </div>
           <div class="radio-indicator w-5 h-5 rounded-full border-2 border-[#1C2A3A]/20 flex items-center justify-center">
             <div class="w-2 h-2 rounded-full bg-transparent transition-all"></div>
@@ -206,35 +251,99 @@
       <button onclick="closePaymentModal()" class="w-full mt-4 text-[#1C2A3A]/40 font-bold text-sm hover:text-[#1C2A3A] transition-colors py-2">Cancel</button>
     </div>
   </div>
+
+  <!-- Coupons Modal -->
+  <div id="couponsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[95] hidden flex items-center justify-center p-6 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-[2rem] max-w-lg w-full p-6 shadow-2xl scale-95 transition-transform duration-300 max-h-[80vh] overflow-hidden flex flex-col">
+      <div class="flex items-center justify-between mb-4 pb-4 border-b border-[#1C2A3A]/10">
+        <h3 class="text-xl font-heading font-medium text-[#1C2A3A]">Available Coupons</h3>
+        <button onclick="closeCouponsModal()" class="text-[#1C2A3A]/40 hover:text-[#1C2A3A] transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="couponsList" class="space-y-3 overflow-y-auto flex-1 pr-2">
+        <div class="text-center py-8 text-[#1C2A3A]/40">Loading coupons...</div>
+      </div>
+      <div class="mt-4 pt-4 border-t border-[#1C2A3A]/10 text-xs text-[#1C2A3A]/40">
+        <p>• Service fee (2.5%) is calculated after discount</p>
+        <p>• Coupons are subject to availability and terms</p>
+        <p>• Max purchase limit applies if specified</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const ORDER_EXPIRES_AT = new Date(<%- JSON.stringify(order.expiresAt) %>);
+    const eventId = '<%= order.eventId %>';
     let currentStep = 1;
     const orderData = <%- JSON.stringify(order) %>;
-    const userId = orderData.userId;
     const orderId = orderData._id;
     let selectedPaymentMethod = null;
+    let isPaymentCompleted = false;
+    let isExiting = false;
+
+    const originalPricing = {
+      subtotal: <%= order.pricing.subTotal %>,
+      serviceFee: <%= order.pricing.serviceFee %>,
+      total: <%= order.pricing.totalAmount %>
+    };
+
     let bookingData = {
       orderId: orderData._id,
       eventId: orderData.eventId || '',
       ticketName: orderData.selectedTicket.name,
       quantity: orderData.selectedTicket.quantity,
-      subtotal: orderData.pricing.subTotal,
-      serviceFee: orderData.pricing.serviceFee,
-      total: orderData.pricing.totalAmount,
-      discount: orderData.pricing.discountAmount || 0,
-      coupon: '',
+      subtotal: originalPricing.subtotal,
+      serviceFee: originalPricing.serviceFee,
+      total: originalPricing.total,
+      discount: 0,
+      discountAmount: 0,
+      coupon: null,
       attendee: {},
       email: ''
     };
+
+    let availableCoupons = [];
+    let timerInterval = null;
+
     document.addEventListener('DOMContentLoaded', () => {
       populateSummary();
       startTimer();
+      setupNavigationGuard();
     });
 
+    function setupNavigationGuard() {
+      window.history.pushState({
+        page: 'checkout'
+      }, null, window.location.href);
+
+      window.addEventListener('popstate', function(e) {
+        if (!isPaymentCompleted && !isExiting) {
+          confirmExit();
+        }
+      });
+
+      window.addEventListener('beforeunload', function(e) {
+        if (!isPaymentCompleted && !isExiting) {
+          e.preventDefault();
+          e.returnValue = 'Your booking will be cancelled if you leave this page.';
+          return e.returnValue;
+        }
+      });
+
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.exit-link') || e.target.closest('#navbar-logo')) {
+          e.preventDefault();
+          confirmExit();
+        }
+      });
+    }
+
     function startTimer() {
-      const display = document.getElementById('timer-display');
+      const displayBottom = document.getElementById('timer-display-bottom');
       const timerContainer = document.getElementById('booking-timer');
-      document.getElementById('backContainer').classList.remove('hidden');
 
       function updateTimer() {
         const now = new Date();
@@ -246,73 +355,116 @@
         }
         const minutes = Math.floor(diff / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
-        display.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        if (displayBottom) displayBottom.textContent = timeString;
+
         if (diff < 60000) {
           timerContainer.classList.remove('bg-[#1C2A3A]');
           timerContainer.classList.add('bg-red-600');
-          display.classList.remove('text-[#ED8842]');
-          display.classList.add('text-white');
+          if (displayBottom) {
+            displayBottom.classList.remove('text-[#ED8842]');
+            displayBottom.classList.add('text-white');
+          }
         } else {
           timerContainer.classList.add('bg-[#1C2A3A]');
           timerContainer.classList.remove('bg-red-600');
-          display.classList.add('text-[#ED8842]');
-          display.classList.remove('text-white');
+          if (displayBottom) {
+            displayBottom.classList.add('text-[#ED8842]');
+            displayBottom.classList.remove('text-white');
+          }
         }
       }
-      const timerInterval = setInterval(updateTimer, 1000);
+      timerInterval = setInterval(updateTimer, 1000);
       updateTimer();
     }
+
     async function handleTimeExpired() {
+      await unreserveTickets();
+      isPaymentCompleted = true;
       Swal.fire({
         title: 'Booking Time Expired!',
         text: 'Your booking time has expired. Please restart the booking process.',
         icon: 'error',
         confirmButtonText: 'Restart Booking',
         customClass: {
-          confirmButton: 'swal2-confirm'
+          confirmButton: 'swal2-confirm bg-[#1C2A3A]'
         },
-        timer: 10000,
-        timerProgressBar: true
+        allowOutsideClick: false,
+        allowEscapeKey: false
       }).then(() => {
         window.location.href = `/events/${orderData.eventId}`;
       });
     }
 
-    function confirmExit() {
-      Swal.fire({
-        title: 'Cancel Booking?',
-        text: "Your reserved tickets will be released.",
+    // ✅ FIXED: Unreserve tickets function
+    async function unreserveTickets() {
+      if (isExiting) return;
+      isExiting = true;
+
+      try {
+        const response = await fetch(`/ticket/unreserve/${orderId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          keepalive: true
+        });
+        console.log('Unreserve response:', response.ok);
+        return response.ok;
+      } catch (err) {
+        console.error('Failed to unreserve tickets:', err);
+        return false;
+      }
+    }
+
+    // ✅ FIXED: Confirm exit with modal AND redirect
+    async function confirmExit() {
+      if (isExiting) return;
+
+      const result = await Swal.fire({
+        title: 'Cancel Order?',
+        html: '<p class="text-[#1C2A3A]/60">Your reserved tickets will be released and you\'ll need to start over.</p>',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, release tickets',
-        cancelButtonText: 'Stay on checkout',
+        confirmButtonText: 'Yes, cancel order',
+        cancelButtonText: 'Continue Booking',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#1C2A3A',
+        reverseButtons: true,
         customClass: {
-          confirmButton: 'swal2-confirm'
-        }
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await fetch(`/ticket/unreserve/${orderId}`, {
-              method: 'POST'
-            });
-            window.location.href = `/events/${orderData.eventId}`;
-          } catch (err) {
-            window.location.href = '/';
-          }
-        }
+          confirmButton: 'swal2-confirm bg-red-600 hover:bg-red-700',
+          cancelButton: 'swal2-cancel bg-[#1C2A3A] hover:bg-[#2C3E50]'
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: true
       });
-    }
-    window.history.pushState(null, null, window.location.href);
-    window.addEventListener('popstate', (e) => {
-      window.history.pushState(null, null, window.location.href);
-      confirmExit();
-    });
-    document.addEventListener('click', (e) => {
-      if (e.target.closest('.exit-link') || e.target.closest('#navbar-logo')) {
-        e.preventDefault();
-        confirmExit();
+
+      if (result.isConfirmed) {
+        // Show loading while unreserving
+        Swal.fire({
+          title: 'Cancelling...',
+          text: 'Releasing your reserved tickets',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => Swal.showLoading()
+        });
+
+        const success = await unreserveTickets();
+
+        Swal.close();
+
+        // ✅ FIXED: Redirect after successful unreserve
+        if (success) {
+          isPaymentCompleted = true;
+          window.location.href = `/events/${orderData.eventId}`;
+        } else {
+          // Even if unreserve fails, still redirect
+          isPaymentCompleted = true;
+          window.location.href = `/events/${orderData.eventId}`;
+        }
       }
-    });
+    }
 
     function populateSummary() {
       document.getElementById('summary-total').textContent = bookingData.total.toFixed(2);
@@ -320,6 +472,60 @@
       document.getElementById('service-fee').textContent = bookingData.serviceFee.toFixed(2);
       document.getElementById('total').textContent = bookingData.total.toFixed(2);
       document.getElementById('btn-total').textContent = bookingData.total.toFixed(2);
+    }
+
+    function calculatePricing(subtotal, discountAmount) {
+      const discountedSubtotal = Math.max(0, subtotal - discountAmount);
+      const serviceFee = Math.round(discountedSubtotal * 0.025 * 100) / 100;
+      const total = Math.round((discountedSubtotal + serviceFee) * 100) / 100;
+      return {
+        discountedSubtotal,
+        serviceFee,
+        total
+      };
+    }
+
+    function updateDisplayWithDiscount(discountAmount, couponCode) {
+      const pricing = calculatePricing(originalPricing.subtotal, discountAmount);
+
+      bookingData.discountAmount = discountAmount;
+      bookingData.serviceFee = pricing.serviceFee;
+      bookingData.total = pricing.total;
+      bookingData.coupon = couponCode;
+
+      document.getElementById('discount-amount').textContent = discountAmount.toFixed(2);
+      document.getElementById('service-fee').textContent = pricing.serviceFee.toFixed(2);
+      document.getElementById('total').textContent = pricing.total.toFixed(2);
+      document.getElementById('btn-total').textContent = pricing.total.toFixed(2);
+
+      document.getElementById('discount-row').classList.remove('hidden');
+
+      const msg = document.getElementById('applied-coupon-msg');
+      msg.textContent = `✓ ${couponCode} applied! Saved ₹${discountAmount.toFixed(2)}`;
+      msg.classList.remove('hidden');
+
+      document.getElementById('remove-coupon-btn').classList.remove('hidden');
+    }
+
+    function removeAppliedCoupon() {
+      bookingData.discountAmount = 0;
+      bookingData.serviceFee = originalPricing.serviceFee;
+      bookingData.total = originalPricing.total;
+      bookingData.coupon = null;
+
+      document.getElementById('discount-row').classList.add('hidden');
+      document.getElementById('applied-coupon-msg').classList.add('hidden');
+      document.getElementById('remove-coupon-btn').classList.add('hidden');
+
+      populateSummary();
+
+      Swal.fire({
+        title: 'Coupon Removed',
+        text: 'Discount has been removed from your order.',
+        icon: 'info',
+        timer: 1500,
+        showConfirmButton: false
+      });
     }
 
     function validateStep1() {
@@ -344,7 +550,7 @@
           icon: 'warning',
           confirmButtonText: 'OK',
           customClass: {
-            confirmButton: 'swal2-confirm'
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
           }
         });
         return;
@@ -407,50 +613,170 @@
       }
     }
 
-    function applyCoupon() {
-      const code = document.getElementById('couponCode').value.trim().toUpperCase();
-      const msg = document.getElementById('coupon-msg');
-      const row = document.getElementById('coupon-row');
-      if (code === 'DISCOUNT10') {
-        const discount = 10.00;
-        bookingData.discount = discount;
-        bookingData.total = (bookingData.subtotal + bookingData.serviceFee) - discount;
-        updateTotalDisplay(discount);
-        row.classList.remove('hidden');
-        msg.textContent = 'Coupon Applied!';
-        msg.className = 'text-xs font-bold mt-2 ml-1 text-green-600';
-        msg.classList.remove('hidden');
-      } else if (code === 'FREESHIP') {
-        const discount = bookingData.serviceFee;
-        bookingData.discount = discount;
-        bookingData.total = bookingData.subtotal;
-        updateTotalDisplay(discount);
-        row.classList.remove('hidden');
-        msg.textContent = 'Service Fee Waived!';
-        msg.className = 'text-xs font-bold mt-2 ml-1 text-green-600';
-        msg.classList.remove('hidden');
-      } else {
-        Swal.fire({
-          title: 'Invalid Coupon',
-          text: 'The coupon code you entered is not valid.',
-          icon: 'error',
-          confirmButtonText: 'OK',
-          customClass: {
-            confirmButton: 'swal2-confirm'
-          }
-        });
-        msg.textContent = 'Invalid Coupon Code';
-        msg.className = 'text-xs font-bold mt-2 ml-1 text-red-500';
-        msg.classList.remove('hidden');
-        row.classList.add('hidden');
+    async function openCouponsModal() {
+      const modal = document.getElementById('couponsModal');
+      const content = modal.querySelector('.bg-white');
+      const list = document.getElementById('couponsList');
+
+      modal.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        content.classList.replace('scale-95', 'scale-100');
+      });
+
+      try {
+        const response = await fetch(`/coupons/${eventId}`);
+        if (!response.ok) throw new Error('Failed to fetch coupons');
+        const coupons = await response.json();
+        availableCoupons = coupons;
+        renderCouponsList(coupons);
+      } catch (error) {
+        console.error('Error fetching coupons:', error);
+        list.innerHTML = `<div class="text-center py-8 text-red-500">Failed to load coupons. Please try again.</div>`;
       }
     }
 
-    function updateTotalDisplay(discount) {
-      document.getElementById('discount-amount').textContent = discount.toFixed(2);
-      document.getElementById('total').textContent = bookingData.total.toFixed(2);
-      document.getElementById('btn-total').textContent = bookingData.total.toFixed(2);
-      document.getElementById('payButton').innerHTML = `Pay ₹${bookingData.total.toFixed(2)}`;
+    function closeCouponsModal() {
+      const modal = document.getElementById('couponsModal');
+      const content = modal.querySelector('.bg-white');
+      modal.classList.add('opacity-0');
+      content.classList.remove('scale-100');
+      content.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    function renderCouponsList(coupons) {
+      const list = document.getElementById('couponsList');
+      const now = new Date();
+      const subtotal = originalPricing.subtotal;
+
+      const validCoupons = coupons.filter(c => {
+        if (c.isActive === false) return false;
+        if (new Date(c.expiryDate) <= now) return false;
+        if (c.minPurchase && subtotal < c.minPurchase) return false;
+        if (c.maxPurchase && c.maxPurchase > 0 && subtotal > c.maxPurchase) return false;
+        if (c.usageLimit && c.usedCount >= c.usageLimit) return false;
+        return true;
+      });
+
+      const invalidCoupons = coupons.filter(c => {
+        if (c.isActive === false) return false;
+        if (new Date(c.expiryDate) <= now) return false;
+        if (c.usageLimit && c.usedCount >= c.usageLimit) return false;
+        if ((c.minPurchase && subtotal < c.minPurchase) ||
+          (c.maxPurchase && c.maxPurchase > 0 && subtotal > c.maxPurchase)) return true;
+        return false;
+      });
+
+      if (validCoupons.length === 0 && invalidCoupons.length === 0) {
+        list.innerHTML = `<div class="text-center py-8 text-[#1C2A3A]/40">No coupons available for this order.</div>`;
+        return;
+      }
+
+      let html = '';
+
+      if (validCoupons.length > 0) {
+        html += validCoupons.map(coupon => {
+          const discountDisplay = coupon.discountType === 'PERCENTAGE' ?
+            `${coupon.discountValue}% off${coupon.maxDiscountAmount ? ' (max ₹' + coupon.maxDiscountAmount + ')' : ''}` :
+            `₹${coupon.discountValue} off`;
+          const minPurchaseText = coupon.minPurchase > 0 ? `• Min. ₹${coupon.minPurchase}` : '';
+          const maxPurchaseText = coupon.maxPurchase && coupon.maxPurchase > 0 ? `• Max. ₹${coupon.maxPurchase}` : '';
+          const usedText = coupon.usageLimit ? `• ${coupon.usedCount}/${coupon.usageLimit} used` : '';
+          const isApplied = bookingData.coupon === coupon.code;
+
+          return `
+            <button onclick="applyCouponFromModal('${coupon.code}', ${coupon.discountValue}, '${coupon.discountType}'${coupon.maxDiscountAmount ? `, ${coupon.maxDiscountAmount}` : ''})" 
+                    class="coupon-card w-full text-left p-4 rounded-xl border border-[#1C2A3A]/10 transition-all ${isApplied ? 'selected' : ''} hover:bg-[#1C2A3A]/5">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-mono font-bold text-[#1C2A3A]">${coupon.code}</span>
+                    <span class="px-2 py-0.5 rounded text-xs font-bold ${coupon.type === 'HOST' ? 'bg-[#ED8842]/20 text-[#ED8842]' : 'bg-blue-100 text-blue-700'}">${coupon.type}</span>
+                  </div>
+                  <p class="text-sm text-[#1C2A3A]/70">${discountDisplay}</p>
+                  <p class="text-xs text-[#1C2A3A]/50 mt-1">${minPurchaseText} ${maxPurchaseText} ${usedText}</p>
+                  <p class="text-xs text-[#1C2A3A]/40 mt-1">Expires: ${new Date(coupon.expiryDate).toLocaleDateString()}</p>
+                </div>
+                ${isApplied ? '<span class="text-green-600 font-bold text-sm">Applied</span>' : '<span class="text-[#ED8842] font-bold text-sm">Apply</span>'}
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      if (invalidCoupons.length > 0) {
+        html += `<div class="text-xs font-bold text-[#1C2A3A]/40 mt-4 mb-2">Not applicable to current order</div>`;
+        html += invalidCoupons.map(coupon => {
+          const discountDisplay = coupon.discountType === 'PERCENTAGE' ?
+            `${coupon.discountValue}% off${coupon.maxDiscountAmount ? ' (max ₹' + coupon.maxDiscountAmount + ')' : ''}` :
+            `₹${coupon.discountValue} off`;
+          const minPurchaseText = coupon.minPurchase > 0 ? `Min. ₹${coupon.minPurchase}` : '';
+          const maxPurchaseText = coupon.maxPurchase && coupon.maxPurchase > 0 ? `Max. ₹${coupon.maxPurchase}` : '';
+          const reason = coupon.minPurchase && subtotal < coupon.minPurchase ?
+            `(need ₹${(coupon.minPurchase - subtotal).toFixed(2)} more)` :
+            `(order exceeds ₹${coupon.maxPurchase} limit)`;
+
+          return `
+            <div class="coupon-card invalid w-full text-left p-4 rounded-xl border border-[#1C2A3A]/5 bg-[#1C2A3A]/5">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-mono font-bold text-[#1C2A3A]/50">${coupon.code}</span>
+                    <span class="px-2 py-0.5 rounded text-xs font-bold ${coupon.type === 'HOST' ? 'bg-[#ED8842]/20 text-[#ED8842]' : 'bg-blue-100 text-blue-700'}">${coupon.type}</span>
+                  </div>
+                  <p class="text-sm text-[#1C2A3A]/50">${discountDisplay}</p>
+                  <p class="text-xs text-red-500 mt-1">${minPurchaseText} ${maxPurchaseText} ${reason}</p>
+                </div>
+                <span class="text-[#1C2A3A]/30 font-bold text-sm">Unavailable</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      list.innerHTML = html;
+    }
+
+    function applyCouponFromModal(code, discountValue, discountType, maxDiscountAmount = null) {
+      let discountAmount = 0;
+
+      if (discountType === 'PERCENTAGE') {
+        discountAmount = (originalPricing.subtotal * discountValue) / 100;
+        if (maxDiscountAmount && discountAmount > maxDiscountAmount) {
+          discountAmount = maxDiscountAmount;
+        }
+      } else {
+        discountAmount = Math.min(discountValue, originalPricing.subtotal);
+      }
+
+      discountAmount = Math.round(discountAmount * 100) / 100;
+
+      if (discountAmount >= originalPricing.subtotal) {
+        Swal.fire({
+          title: 'Invalid Discount',
+          text: 'This coupon cannot be applied to your current order.',
+          icon: 'warning',
+          confirmButtonText: 'OK',
+          customClass: {
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
+          }
+        });
+        return;
+      }
+
+      updateDisplayWithDiscount(discountAmount, code);
+      closeCouponsModal();
+
+      Swal.fire({
+        title: 'Coupon Applied!',
+        text: `You saved ₹${discountAmount.toFixed(2)}`,
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      });
     }
 
     function showPaymentModal() {
@@ -461,13 +787,12 @@
           icon: 'warning',
           confirmButtonText: 'OK',
           customClass: {
-            confirmButton: 'swal2-confirm'
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
           }
         });
         return;
       }
       bookingData.email = document.getElementById('email').value.trim();
-      bookingData.coupon = document.getElementById('couponCode').value.trim().toUpperCase();
       const modal = document.getElementById('paymentModal');
       const content = document.getElementById('paymentContent');
       modal.classList.remove('hidden');
@@ -503,6 +828,7 @@
       selectedPaymentMethod = method;
       document.getElementById('payButton').classList.remove('hidden');
     }
+
     async function processPayment() {
       if (!selectedPaymentMethod) {
         Swal.fire({
@@ -511,7 +837,7 @@
           icon: 'warning',
           confirmButtonText: 'OK',
           customClass: {
-            confirmButton: 'swal2-confirm'
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
           }
         });
         return;
@@ -524,7 +850,7 @@
           icon: 'error',
           confirmButtonText: 'Choose Another Method',
           customClass: {
-            confirmButton: 'swal2-confirm'
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
           }
         });
         return;
@@ -603,7 +929,7 @@
               icon: 'error',
               confirmButtonText: 'Retry',
               customClass: {
-                confirmButton: 'swal2-confirm'
+                confirmButton: 'swal2-confirm bg-[#1C2A3A]'
               }
             });
           });
@@ -631,27 +957,37 @@
           icon: 'error',
           confirmButtonText: 'Retry',
           customClass: {
-            confirmButton: 'swal2-confirm'
+            confirmButton: 'swal2-confirm bg-[#1C2A3A]'
           }
         });
       }
     }
 
     function finishSuccess() {
+      isPaymentCompleted = true;
+      isExiting = true;
       Swal.close();
       Swal.fire({
         title: 'Payment Successful!',
-        html: `<p>Your booking is confirmed!</p>
-           <p>Tickets sent to ${bookingData.email}</p>`,
+        html: `<p>Your booking is confirmed!</p><p>Tickets sent to ${bookingData.email}</p>`,
         icon: 'success',
         confirmButtonText: 'View Confirmation',
         customClass: {
-          confirmButton: 'swal2-confirm'
-        }
+          confirmButton: 'swal2-confirm bg-[#1C2A3A]'
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false
       }).then(() => {
         window.location.href = '/dashboard/myBookings';
       });
     }
+
+    document.getElementById('couponsModal').addEventListener('click', (e) => {
+      if (e.target.id === 'couponsModal') closeCouponsModal();
+    });
+    document.getElementById('paymentModal').addEventListener('click', (e) => {
+      if (e.target.id === 'paymentModal') closePaymentModal();
+    });
   </script>
 </body>
 

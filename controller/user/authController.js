@@ -40,9 +40,7 @@ export const emailChanger = async (req, res) => {
     const { emailAddress } = req.body;
 
     if (!emailAddress) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email is required" });
+      return res.status(400).json({ success: false, message: "Email is required" });
     }
     req.session.newEmail = emailAddress;
     req.session.otpRequested = true;
@@ -128,8 +126,7 @@ export const otpHandler = async (req, res) => {
     const { otp } = req.body;
     const { tempUserData, forgotPassEmail, newEmail } = req.session;
 
-    const targetEmail =
-      tempUserData?.emailAddress || forgotPassEmail || newEmail;
+    const targetEmail = tempUserData?.emailAddress || forgotPassEmail || newEmail;
     if (!targetEmail) {
       return res.status(400).json({
         success: false,
@@ -148,9 +145,7 @@ export const otpHandler = async (req, res) => {
       return res.status(200).json({ success: true, redirectUrl: "/foryou" });
     } else if (forgotPassEmail) {
       req.session.canResetPassword = true;
-      return res
-        .status(200)
-        .json({ success: true, redirectUrl: "/reset-password" });
+      return res.status(200).json({ success: true, redirectUrl: "/reset-password" });
     } else if (newEmail) {
       await updateEmail(req.session.newEmail, req.session.user);
       req.session.newEmail = null;
@@ -159,9 +154,7 @@ export const otpHandler = async (req, res) => {
         redirectUrl: "/dashboard?status=success&message= email update done",
       });
     }
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid session state" });
+    return res.status(400).json({ success: false, message: "Invalid session state" });
   } catch (err) {
     console.log(`err in otpHandler`, err.message);
     return res.status(400).json({
@@ -207,18 +200,13 @@ export const signUpPost = async (req, res) => {
     });
   } catch (error) {
     console.log(`err in signUpPost`, error.message);
-    return res
-      .status(500)
-      .json({ success: false, message: error.message || "Server error" });
+    return res.status(500).json({ success: false, message: error.message || "Server error" });
   }
 };
 
 export const resentOtp = async (req, res) => {
   try {
-    const email =
-      req.session.tempUserData?.emailAddress ||
-      req.session.forgotPassEmail ||
-      req.session.newEmail;
+    const email = req.session.tempUserData?.emailAddress || req.session.forgotPassEmail || req.session.newEmail;
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -238,17 +226,8 @@ export const resentOtp = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
-    req.session.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        return res.redirect("/dashboard?status=error&message=Logout failed");
-      }
-
-      res.clearCookie("connect.sid");
-      return res.redirect(
-        "/signIn?status=success&message=Successfully logged out"
-      );
-    });
+    req.session.user = null;
+    res.redirect("/signIn");
   } catch (err) {
     console.error("Error in logout:", err);
     return res.status(500).json({
@@ -257,3 +236,11 @@ export const logout = async (req, res) => {
     });
   }
 };
+
+
+const pagination = (currentPage) => {
+  const limit = 5
+  const totalDocuments = 10
+  return await db.events.find({}).limit(limit).skip(totalPages - (currentPage * limit))
+
+}

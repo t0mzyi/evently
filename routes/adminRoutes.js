@@ -21,6 +21,15 @@ import {
   updateCategory,
 } from "../controller/admin/categoryController.js";
 import { showWallet } from "../controller/admin/walletController.js";
+import { showSalesReport, downloadReportCSV, downloadReportPDF } from "../controller/admin/reportsController.js";
+import {
+  createCoupon,
+  deleteCoupon,
+  getCouponStats,
+  renderManageCoupons,
+  toggleCouponActive,
+  updateCoupon,
+} from "../controller/admin/couponsController.js";
 
 const router = express.Router();
 
@@ -60,5 +69,17 @@ router.patch("/users/:userId/:action", isAdmin, toggleBlockUser);
 router.get("/dashboard", isAdmin, getDash);
 router.get("/wallet", isAdmin, showWallet);
 router.get("/logout", logout);
+
+router.get("/reports/sales", isAdmin, showSalesReport);
+router.get("/reports/export/csv", isAdmin, downloadReportCSV);
+router.get("/reports/export/pdf", isAdmin, downloadReportPDF);
+
+//coupons
+router.get("/coupons", renderManageCoupons);
+router.get("/coupons/stats", getCouponStats);
+router.post("/coupons", createCoupon);
+router.put("/coupons/:couponId", updateCoupon);
+router.patch("/coupons/:couponId/toggle", toggleCouponActive);
+router.delete("/coupons/:couponId", deleteCoupon);
 
 export default router;

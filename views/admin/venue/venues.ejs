@@ -23,6 +23,30 @@
             heading: ["Fraunces", "serif"],
             sans: ["Inter", "sans-serif"],
           },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': {
+                opacity: '0'
+              },
+              '100%': {
+                opacity: '1'
+              }
+            },
+            slideUp: {
+              '0%': {
+                opacity: '0',
+                transform: 'translateY(10px)'
+              },
+              '100%': {
+                opacity: '1',
+                transform: 'translateY(0)'
+              }
+            }
+          }
         },
       },
     };
@@ -30,6 +54,32 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    .venue-card {
+      transition: all 0.3s ease;
+    }
+
+    .venue-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px -8px rgba(28, 42, 58, 0.18);
+    }
+
+    .status-badge {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.7;
+      }
+    }
+  </style>
 </head>
 
 <body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen">
@@ -37,8 +87,8 @@
   <%- include('../../partials/adminNavbar', {activePage : 'venues'}) %>
 
   <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
-    <!-- Header  -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8 animate-fade-in">
       <div>
         <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">
           Venue Management
@@ -55,37 +105,63 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-white/60 backdrop-blur-xl rounded-xl p-4 border border-white/40">
-        <p class="text-2xl font-heading font-bold text-[#1C2A3A]">
-          <%= venuesData.totalVenues %>
-        </p>
-        <p class="text-xs text-[#1C2A3A]/60 uppercase tracking-wider">
-          Total Venues
-        </p>
+    <!-- Stats Summary -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 animate-slide-up">
+      <div class="bg-white/60 backdrop-blur-xl rounded-xl p-5 border border-white/40 shadow-sm venue-card">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-[#1C2A3A]/10 flex items-center justify-center">
+            <svg class="w-5 h-5 text-[#1C2A3A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-[#1C2A3A]/50 uppercase tracking-wider">Total Venues</span>
+        </div>
+        <p class="text-3xl font-heading font-bold text-[#1C2A3A]"><%= venuesData.totalVenues || 0 %></p>
+        <p class="text-[10px] text-[#1C2A3A]/40 mt-1">Across all locations</p>
       </div>
-      <div class="bg-green-500/10 backdrop-blur-xl rounded-xl p-4 border border-green-500/20">
-        <p class="text-2xl font-heading font-bold text-green-700"><%= venuesData.activeVenues %></p>
-        <p class="text-xs text-green-700/80 uppercase tracking-wider">
-          Available Now
-        </p>
+
+      <div class="bg-green-500/10 backdrop-blur-xl rounded-xl p-5 border border-green-500/20 shadow-sm venue-card">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-green-700/70 uppercase tracking-wider">Active</span>
+        </div>
+        <p class="text-3xl font-heading font-bold text-green-700"><%= venuesData.activeVenues || 0 %></p>
+        <p class="text-[10px] text-green-600/60 mt-1">Available for booking</p>
       </div>
-      <div class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-4 border border-blue-500/20">
-        <p class="text-2xl font-heading font-bold text-blue-700">45</p>
-        <p class="text-xs text-blue-700/80 uppercase tracking-wider">
-          Upcoming Events
-        </p>
+
+      <div class="bg-blue-500/10 backdrop-blur-xl rounded-xl p-5 border border-blue-500/20 shadow-sm venue-card">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-blue-700/70 uppercase tracking-wider">Booked</span>
+        </div>
+        <p class="text-3xl font-heading font-bold text-blue-700"><%= venuesData.bookedVenues || 0 %></p>
+        <p class="text-[10px] text-blue-600/60 mt-1">Currently reserved</p>
       </div>
-      <div class="bg-purple-500/10 backdrop-blur-xl rounded-xl p-4 border border-purple-500/20">
-        <p class="text-2xl font-heading font-bold text-purple-700">98%</p>
-        <p class="text-xs text-purple-700/80 uppercase tracking-wider">
-          Avg. Rating
-        </p>
+
+      <div class="bg-orange-500/10 backdrop-blur-xl rounded-xl p-5 border border-orange-500/20 shadow-sm venue-card">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
+            <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <span class="text-[10px] font-bold text-orange-700/70 uppercase tracking-wider">Avg Capacity</span>
+        </div>
+        <p class="text-3xl font-heading font-bold text-orange-700"><%= venuesData.avgCapacity || 0 %></p>
+        <p class="text-[10px] text-orange-600/60 mt-1">Guests per venue</p>
       </div>
     </div>
 
-    <div class="bg-white/40 backdrop-blur-md rounded-2xl p-4 mb-8 border border-white/20">
+    <!-- Filters -->
+    <div class="bg-white/40 backdrop-blur-md rounded-2xl p-4 mb-8 border border-white/20 animate-slide-up" style="animation-delay: 0.2s">
       <form action="/admin/venues" method="GET" class="flex flex-col md:flex-row items-center gap-6">
         <input type="hidden" name="p" value="1">
 
@@ -101,7 +177,7 @@
               <option value="Outdoor" <%= venuesData.selectedType === 'Outdoor' ? 'selected' : '' %>>Outdoor</option>
               <option value="Rooftop" <%= venuesData.selectedType === 'Rooftop' ? 'selected' : '' %>>Roof Top</option>
               <option value="Stadium" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Stadium</option>
-              <option value="Other" <%= venuesData.selectedType === 'Stadium' ? 'selected' : '' %>>Other</option>
+              <option value="Other" <%= venuesData.selectedType === 'Other' ? 'selected' : '' %>>Other</option>
             </select>
             <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[#1C2A3A]/40">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,64 +203,51 @@
       </form>
     </div>
 
-
     <!-- Venues Table -->
-    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden">
+    <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] border border-white/40 shadow-sm overflow-hidden animate-slide-up" style="animation-delay: 0.3s">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead class="bg-[#1C2A3A]/5 border-b border-[#1C2A3A]/10">
             <tr>
-              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Venue Name
-              </th>
-              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Location
-              </th>
-              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Capacity
-              </th>
-              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Events Hosted
-              </th>
-              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Status
-              </th>
-              <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">
-                Actions
-              </th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Venue</th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Type</th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Capacity</th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Location</th>
+              <th class="px-6 py-4 text-left text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Status</th>
+              <th class="px-6 py-4 text-right text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-[#1C2A3A]/5">
-            <% for(let i=0;i<venuesData.venues.length ;i++){ %>
-            <tr class="hover:bg-white/50 transition-colors">
+            <% for(let i=0; i<venuesData.venues.length; i++) { 
+              const venue = venuesData.venues[i];
+            %>
+            <tr class="hover:bg-white/50 transition-colors venue-card">
               <td class="px-6 py-4">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden">
-                    <img src="<%= venuesData.venues[i].image_url[0] %>" class="w-full h-full object-cover" />
+                  <div class="w-12 h-12 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0">
+                    <img src="<%= venue.image_url[0] %>" class="w-full h-full object-cover" />
                   </div>
                   <div>
-                    <p class="font-medium text-[#1C2A3A]"><%= venuesData.venues[i].name %></p>
-                    <p class="text-xs text-[#1C2A3A]/60"><%= venuesData.venues[i].type %></p>
+                    <p class="font-medium text-[#1C2A3A]"><%= venue.name %></p>
+                    <p class="text-xs text-[#1C2A3A]/60"><%= venue.address %></p>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4 text-sm text-[#1C2A3A]"><%= venuesData.venues[i].type %></td>
-              <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venuesData.venues[i].capacity %></td>
               <td class="px-6 py-4">
-                <span class="text-[#1C2A3A] text-sm font-medium">no did</span>
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#1C2A3A]/10 text-[#1C2A3A]"><%= venue.type %></span>
               </td>
+              <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venue.capacity.toLocaleString() %></td>
+              <td class="px-6 py-4 text-sm text-[#1C2A3A]/60"><%= venue.city || 'N/A' %></td>
               <td class="px-6 py-4">
-                <% if(venuesData.venues[i].isActive){ %>
-                <span class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-xs font-bold uppercase tracking-wider">Active</span>
-                <% }else{ %>
-                <span class="px-3 py-1 bg-orange-500/10 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">Maintainace</span>
+                <% if(venue.isActive) { %>
+                <span class="px-3 py-1 bg-green-500/10 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider status-badge">Active</span>
+                <% } else { %>
+                <span class="px-3 py-1 bg-orange-500/10 text-orange-700 rounded-full text-[10px] font-bold uppercase tracking-wider">Maintenance</span>
                 <% } %>
               </td>
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
-                  <button class="px-4 py-2 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-xs font-bold hover:bg-[#1C2A3A]/20 transition-colors">
-                    <a href="/admin/venues/<%= venuesData.venues[i]._id %>/edit">Edit</a>
-                  </button>
+                  <a href="/admin/venues/<%= venue._id %>/edit" class="px-3 py-1.5 bg-[#1C2A3A]/10 text-[#1C2A3A] rounded-lg text-[10px] font-bold hover:bg-[#1C2A3A]/20 transition-colors">Edit</a>
                 </div>
               </td>
             </tr>
@@ -193,35 +256,54 @@
         </table>
       </div>
 
-      <!-- Pagination -->
-      <% if (venuesData.totalVenues > 0) { %>
-      <% const q = `&n=${venuesData.searchQuery}&t=${venuesData.selectedType}&s=${venuesData.selectedSort}`; %>
+      <!-- ✅ UPDATED PAGINATION (Events Style) -->
+      <% if (venuesData.totalVenues > 0 && venuesData.totalPages > 1) { %>
       <div class="max-w-7xl mx-auto px-6 py-4 border-t border-[#1C2A3A]/10 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">Showing <strong><%= venuesData.venues.length %></strong> of <strong><%= venuesData.totalVenues %></strong> venues</p>
+        <p class="text-sm text-[#1C2A3A]/60 order-2 sm:order-1">
+          Showing <strong><%= venuesData.venues.length %></strong> of <strong><%= venuesData.totalVenues %></strong> venues
+        </p>
 
-        <% if (venuesData.totalPages > 1) { %>
         <div class="flex items-center gap-1 order-1 sm:order-2">
-          <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&laquo;</a><% } %>
+          <% const q = `&n=${venuesData.searchQuery ? encodeURIComponent(venuesData.searchQuery) : ''}&t=${venuesData.selectedType && venuesData.selectedType !== 'all' ? encodeURIComponent(venuesData.selectedType) : ''}&s=${venuesData.selectedSort && venuesData.selectedSort !== 'name-asc' ? encodeURIComponent(venuesData.selectedSort) : ''}`; %>
 
-          <% if (venuesData.currentPage > 2) { %>
+          <!-- Previous -->
+          <% if (venuesData.currentPage > 1) { %>
+          <a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A]">&laquo;</a>
+          <% } %>
+
+          <!-- Page 1 -->
+          <% if (venuesData.currentPage !== 1) { %>
           <a href="/admin/venues?p=1<%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]">1</a>
-
+          <% } else { %>
+          <span class="px-3 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold">1</span>
           <% } %>
 
-          <% if (venuesData.currentPage > 1) { %><a href="/admin/venues?p=<%= venuesData.currentPage - 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage - 1 %></a><% } %>
-          <span class="px-4 py-2 bg-[#1Cshl2A3A] text-white rounded-lg text-sm font-bold shadow-md"><%= venuesData.currentPage %></span>
-          <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.currentPage + 1 %></a><% } %>
+          <!-- Middle pages -->
+          <% for (let i = Math.max(2, venuesData.currentPage - 1); i <= Math.min(venuesData.totalPages - 1, venuesData.currentPage + 1); i++) { %>
+          <% if (i === venuesData.currentPage) { %>
+          <span class="px-3 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold"><%= i %></span>
+          <% } else { %>
+          <a href="/admin/venues?p=<%= i %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= i %></a>
+          <% } %>
+          <% } %>
 
-          <% if (venuesData.currentPage < venuesData.totalPages - 1) { %>
+          <!-- Last page -->
+          <% if (venuesData.totalPages > 1 && venuesData.currentPage !== venuesData.totalPages) { %>
+          <% if (venuesData.totalPages > 3 && venuesData.currentPage < venuesData.totalPages - 1) { %>
+          <span class="px-2 py-2 text-[#1C2A3A]/40">...</span>
+          <% } %>
           <a href="/admin/venues?p=<%= venuesData.totalPages %><%= q %>" class="px-3 py-2 rounded-lg text-sm font-medium hover:bg-white text-[#1C2A3A]"><%= venuesData.totalPages %></a>
+          <% } else if (venuesData.totalPages > 1) { %>
+          <span class="px-3 py-2 bg-[#1C2A3A] text-white rounded-lg text-sm font-bold"><%= venuesData.totalPages %></span>
           <% } %>
 
-          <% if (venuesData.currentPage < venuesData.totalPages) { %><a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60">&raquo;</a><% } %>
+          <!-- Next -->
+          <% if (venuesData.currentPage < venuesData.totalPages) { %>
+          <a href="/admin/venues?p=<%= venuesData.currentPage + 1 %><%= q %>" class="px-2 py-2 text-[#1C2A3A]/60 hover:text-[#1C2A3A]">&raquo;</a>
+          <% } %>
         </div>
-        <% } %>
       </div>
       <% } %>
-    </div>
     </div>
   </main>
 </body>

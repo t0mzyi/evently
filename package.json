@@ -14,8 +14,10 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
     "express": "^5.2.1",
     "express-session": "^1.18.2",
+    "json2csv": "^6.0.0-alpha.2",
     "mongoose": "^9.1.1",
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
@@ -24,6 +26,8 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "path": "^0.12.7",
+    "pdfkit": "^0.17.2",
+    "pdfkit-table": "^0.1.99",
     "razorpay": "^2.9.6"
   }
 }

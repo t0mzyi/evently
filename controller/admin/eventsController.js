@@ -46,7 +46,7 @@ export const showSingleEvent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const { event, venueDetails } = await singleEvent(eventId);
-
+    console.log("hey");
     const date = formatDate(event.createdAt);
     const start = formatDate(event.startDate);
     const end = formatDate(event.endDate);
@@ -67,9 +67,10 @@ export const showSingleEvent = async (req, res) => {
 
     console.log(hostEarnings, "host", totalEarnings);
     const ticket = { total, available, sold };
-    console.log(event);
+    // console.log(event);
     res.render("admin/events/viewEvents", { event, totalEarnings, hostEarnings, venueDetails, ticket, attendees });
   } catch (error) {
+    res.redirect(`/events?status=error&&message=Event is Unavailable or Blocked`);
     console.log("error", error);
   }
 };

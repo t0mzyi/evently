@@ -149,6 +149,11 @@
           <textarea name="description" id="description" rows="4" placeholder="Describe the venue..." class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all mb-1"></textarea>
           <p class="error-text hidden">Description cannot be empty</p>
         </div>
+        <div class="pt-4 border-t border-[#1C2A3A]/5">
+          <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-3">Rate Per Hour</label>
+          <input type="number" name="ratePerHour" id="ratePerHour" placeholder="₹10" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] placeholder-[#1C2A3A]/30 focus:outline-none focus:bg-white focus:border-[#1C2A3A]/20 transition-all" />
+          <p class="error-text hidden">Rate per hour cannot be empty</p>
+        </div>
 
         <div class="pt-4 border-t border-[#1C2A3A]/5">
           <div class="flex justify-between items-end mb-3">
@@ -325,6 +330,8 @@
           "description",
           document.getElementById("description").value.trim() !== ""
         );
+        const rateVal = document.getElementById("ratePerHour").value;
+        check("ratePerHour", rateVal !== "" && parseFloat(rateVal) >= 0);
         const amenityRows = document.querySelectorAll(".amenity-row");
         const amenityErr = document.getElementById("amenity-error");
         let amenitiesValid = true;

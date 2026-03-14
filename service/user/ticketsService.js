@@ -7,11 +7,13 @@ import { formatDate } from "../../utils/dateTimeFormator.js";
 import ticketDb from "../../model/ticketDb.js";
 import { generateBookingId } from "../../utils/ticketIdGenerator.js";
 import { addMoneyWallet, debitWallet, refundWallet } from "./walletService.js";
-import { creditAdminWallet } from "../admin/walletService.js";
+import { creditAdminWallet, debitAdminWallet } from "../admin/walletService.js";
+import couponDb from "../../model/couponsDb.js";
 
 export const ticketBookingRender = async (eventId) => {
   const event = await eventsDb.findById(eventId);
   if (!event) throw new Error("No event such exists");
+  if (event.status != "live") throw new Error("Event blocked");
   event.sDate = formatDate(event.startDate);
   event.eDate = formatDate(event.endDate);
   return event;
@@ -100,7 +102,46 @@ export const finalizeOrder = async (orderDetails) => {
   if (dateNow > order.expiresAt || order.status == "FAILED") {
     throw new Error("Order expired");
   }
-  const totalAmountToPay = order.pricing.totalAmount;
+  let discountAmount = 0;
+  let appliedCouponCode = null;
+  let validatedCoupon = null;
+
+  if (coupon && coupon.trim() !== "") {
+    validatedCoupon = await couponDb.findOne({
+      code: coupon.toUpperCase().trim(),
+      isActive: true,
+      expiryDate: { $gt: new Date() },
+      $or: [{ eventId: null }, { eventId: order.eventId }],
+      minPurchase: { $lte: order.pricing.subTotal },
+      $expr: {
+        $or: [{ $eq: ["$usageLimit", null] }, { $lt: ["$usedCount", "$usageLimit"] }],
+      },
+    });
+    if (validatedCoupon) {
+      if (validatedCoupon.discountType === "PERCENTAGE") {
+        discountAmount = (order.pricing.subTotal * validatedCoupon.discountValue) / 100;
+
+        if (validatedCoupon.maxDiscountAmount && validatedCoupon.maxDiscountAmount > 0) {
+          discountAmount = Math.min(discountAmount, validatedCoupon.maxDiscountAmount);
+        }
+      } else {
+        discountAmount = Math.min(validatedCoupon.discountValue, order.pricing.subTotal);
+      }
+      discountAmount = Math.round(discountAmount * 100) / 100;
+      appliedCouponCode = validatedCoupon.code;
+    }
+  }
+
+  const discountedSubtotal = Math.max(0, order.pricing.subTotal - discountAmount);
+  const serviceFee = Math.round(discountedSubtotal * 0.025 * 100) / 100;
+  const calculatedTotal = Math.round((discountedSubtotal + serviceFee) * 100) / 100;
+
+  order.pricing.discountAmount = discountAmount;
+  order.pricing.couponCode = appliedCouponCode;
+  order.pricing.serviceFee = serviceFee;
+  order.pricing.totalAmount = calculatedTotal;
+
+  const totalAmountToPay = calculatedTotal;
   let walletId = null;
   if (paymentMethod === "wallet") {
     const walletUpdate = await walletDb.findOneAndUpdate(
@@ -155,13 +196,40 @@ export const finalizeOrder = async (orderDetails) => {
       paymentMethod: "Razorpay",
     });
   }
+  if (validatedCoupon) {
+    await couponDb.findByIdAndUpdate(validatedCoupon._id, { $inc: { usedCount: 1 } });
+  }
   try {
     await generateTickets(order);
     const event = await eventsDb.findById(order.eventId);
+
     if (event && event.hostId) {
-      const hostEarnings = order.pricing.subTotal;
-      await addMoneyWallet(event.hostId, hostEarnings, `Revenue from Ticket Sales (Order #${order._id})`, order);
-      await creditAdminWallet(order.pricing.serviceFee, `Service Fee of order ${order._id}`);
+      let hostEarnings = order.pricing.subTotal;
+      if (validatedCoupon) {
+        if (validatedCoupon.type == "HOST") {
+          hostEarnings = order.pricing.subTotal - discountAmount;
+        } else if (validatedCoupon.type == "ADMIN") {
+          hostEarnings = order.pricing.subTotal;
+          await debitAdminWallet(
+            discountAmount,
+            `Platform Coupon Discount: ${appliedCouponCode} for Order #${order._id}`,
+          );
+        }
+      }
+      if (hostEarnings > 0) {
+        await addMoneyWallet(
+          event.hostId,
+          hostEarnings,
+          `Revenue from Ticket Sales (Order #${order._id})${appliedCouponCode ? ` [${appliedCouponCode}]` : ""}`,
+          order,
+        );
+      }
+      if (order.pricing.serviceFee > 0) {
+        await creditAdminWallet(
+          order.pricing.serviceFee,
+          `Service Fee for Order #${order._id}${appliedCouponCode ? ` [${appliedCouponCode}]` : ""}`,
+        );
+      }
     }
   } catch (error) {
     console.error("Error on generateTIckets.", error);
@@ -261,59 +329,129 @@ export const cancelTickets = async (orderId, userId) => {
 
 export const ticketCancelAndRefunder = async (body) => {
   const order = await orderDb.findById(body.orderId).populate("eventId", "title hostId");
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
   const hasAccess = order.userId.toString() === body.userId.toString();
-  if (!hasAccess) throw new Error("Unauthorised");
+  if (!hasAccess) {
+    throw new Error("Unauthorized");
+  }
+
+  if (order.status === "REFUNDED" || order.status === "FAILED") {
+    throw new Error("Order already refunded or failed");
+  }
+
   const ticketsCount = body.cancelTicketsIds.length;
-  const pricePerTicket = (order.pricing.subTotal - order.pricing.discountAmount) / order.selectedTicket.quantity;
-  const totalRefundAmount = pricePerTicket * ticketsCount;
+  const totalTickets = order.selectedTicket.quantity;
+
+  let usedCoupon = null;
+  if (order.pricing.couponCode) {
+    usedCoupon = await couponDb.findOne({ code: order.pricing.couponCode });
+  }
+
+  if (usedCoupon && ticketsCount < totalTickets) {
+    throw new Error("Tickets purchased using coupons cannot be canceled partially. Either cancel all tickets.");
+  }
+
+  const discountAmount = order.pricing.discountAmount || 0;
+  const discountedSubtotal = order.pricing.subTotal - discountAmount;
+
+  const pricePerTicketUser = discountedSubtotal / totalTickets;
+  const totalRefundAmount = Math.round(pricePerTicketUser * ticketsCount * 100) / 100;
+
+  let hostEarningsPerTicket = order.pricing.subTotal / totalTickets;
+  if (usedCoupon && usedCoupon.type === "HOST") {
+    hostEarningsPerTicket = discountedSubtotal / totalTickets;
+  }
+  const hostReversalAmount = Math.round(hostEarningsPerTicket * ticketsCount * 100) / 100;
+
+  const adminDiscountedRefund =
+    usedCoupon && usedCoupon.type === "ADMIN"
+      ? Math.round((discountAmount / totalTickets) * ticketsCount * 100) / 100
+      : 0;
+
+  const cancelledTicketIds = [];
   for (const ticketId of body.cancelTicketsIds) {
     const ticket = await ticketDb.findOne({
       _id: ticketId,
       orderId: body.orderId,
       status: "VALID",
     });
+
     if (ticket) {
       ticket.status = "CANCELLED";
       await ticket.save();
-      console.log(`Ticket ${ticketId} status updated to CANCELLED`);
+      cancelledTicketIds.push(ticketId);
+
       await eventsDb.findOneAndUpdate(
-        { _id: order.eventId._id, "ticketTypes._id": order.selectedTicket.ticketTypeId },
+        { _id: order.eventId, "ticketTypes._id": order.selectedTicket.ticketTypeId },
         { $inc: { "ticketTypes.$.quantityAvailable": 1 } },
       );
+      console.log(`Ticket ${ticketId} cancelled. Inventory restored.`);
     } else {
-      console.log(`Warning: Ticket ${ticketId} not found or already cancelled.`);
+      console.log(`Warning: Ticket ${ticketId} not found or already cancelled`);
     }
   }
+
+  if (cancelledTicketIds.length === 0) {
+    throw new Error("No valid tickets found to cancel");
+  }
+
   const updatedOrder = await orderDb.findByIdAndUpdate(
     body.orderId,
     {
       $inc: {
-        cancelledTicketsCount: ticketsCount,
+        cancelledTicketsCount: cancelledTicketIds.length,
         refundedAmount: totalRefundAmount,
       },
     },
     { new: true },
   );
-  if (updatedOrder.cancelledTicketsCount >= order.selectedTicket.quantity) {
+
+  if (updatedOrder.cancelledTicketsCount >= totalTickets) {
     updatedOrder.status = "REFUNDED";
     await updatedOrder.save();
+  }
+
+  if (usedCoupon && cancelledTicketIds.length === totalTickets) {
+    await couponDb.findByIdAndUpdate(usedCoupon._id, {
+      $inc: { usedCount: -1 },
+    });
+    console.log(`Coupon ${usedCoupon.code} usedCount decremented by 1`);
   }
   await addMoneyWallet(
     order.userId,
     totalRefundAmount,
-    `Refund for ${ticketsCount} cancelled ticket(s) from Order #${order._id}`,
+    `Refund for ${cancelledTicketIds.length} cancelled ticket(s) from Order #${order._id}`,
     order,
   );
-  console.log(`Money refunded for cancellation ${totalRefundAmount}`);
-  await debitWallet(
-    order.eventId.hostId,
-    totalRefundAmount,
-    `Reversal for cancelled tickets - Order #${order._id}`,
-    order,
-  );
+
+  if (hostReversalAmount > 0 && order.eventId?.hostId) {
+    await debitWallet(
+      order.eventId.hostId,
+      hostReversalAmount,
+      `Reversal for ${cancelledTicketIds.length} cancelled tickets - Order #${order._id}`,
+      order,
+    );
+    console.log(`Host debited ₹${hostReversalAmount}`);
+  }
+
+  if (adminDiscountedRefund > 0) {
+    await creditAdminWallet(
+      adminDiscountedRefund,
+      `Coupon discount reversal (${usedCoupon.code}) for ${cancelledTicketIds.length} cancelled tickets - Order #${order._id}`,
+    );
+    console.log(`Admin credited ₹${adminDiscountedRefund} (discount portion)`);
+  }
+
+  console.log(`Cancellation successful for Order #${order._id}`);
+
   return {
     success: true,
     refundAmount: totalRefundAmount,
+    cancelledTickets: cancelledTicketIds.length,
     isFullyRefunded: updatedOrder.status === "REFUNDED",
   };
 };

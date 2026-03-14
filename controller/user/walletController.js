@@ -1,3 +1,4 @@
+import transactionDb from "../../model/transactionsDb.js";
 import walletDb from "../../model/walletDb.js";
 import {
   addMoneyOrder,
@@ -81,9 +82,32 @@ export const verifyPayment = async (req, res) => {
 export const cancelPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
-    await updateTransactionStatus(orderId, "FAILED");
+    const updated = await transactionDb.findOneAndUpdate(
+      {
+        razorpayOrderId: orderId,
+        status: "PENDING",
+      },
+      {
+        status: "FAILED",
+      },
+      { new: true },
+    );
+    if (!updated) {
+      const existing = await transactionDb.findOne({ razorpayOrderId: orderId });
+      if (existing?.status === "COMPLETED") {
+        return res.status(400).json({
+          success: false,
+          message: "Payment already completed",
+        });
+      }
+    }
+
     res.status(200).json({ success: true });
   } catch (error) {
-    res.status(500).json({ success: false });
+    console.error("Error in cancelPayment:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Failed to cancel payment",
+    });
   }
 };

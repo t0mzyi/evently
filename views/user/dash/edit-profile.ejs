@@ -134,6 +134,7 @@
               <input type="text" name="lastName" value="<%= user.lastName %>" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
             </div>
 
+            <% if(!user.googleId) { %>
             <div class="md:col-span-2">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Email Address</label>
               <div class="flex h-[48px]">
@@ -143,48 +144,49 @@
                 </button>
               </div>
             </div>
+            <%}%>
 
             <div class="md:col-span-2">
               <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Security</label>
               <div class="flex h-[48px]">
                 <% if (user.password) { %>
-                <div class="flex-grow bg-[#1C2A3A]/5 border border-[#1C2A3A]/10 rounded-l-xl px-4 py-3 text-[#1C2A3A]/50 font-medium border-r-0 flex items-center">
-                  ••••••••••••
-                </div>
-                <a href="/forgot-password" onclick="this.innerHTML='Sending OTP...'; this.style.pointerEvents='none'; this.style.opacity='0.7';" class="bg-[#1C2A3A] hover:bg-[#2C3E50] text-white px-6 rounded-r-xl transition-colors border border-[#1C2A3A] text-[10px] font-bold uppercase tracking-widest flex items-center">
-                  Reset Password
-                </a>
-                <% } else { %>
-                <div class="flex-grow bg-amber-50 border border-amber-200 rounded-l-xl px-4 py-3 text-amber-800 text-[10px] font-medium border-r-0 flex items-center leading-tight">
-                  Logged in via Google. Add a password to enable email login.
-                </div>
-                <a href="/forgot-password" onclick="this.innerHTML='Sending OTP...'; this.style.pointerEvents='none'; this.style.opacity='0.7';" class="bg-[#ED8842] hover:bg-[#d67332] text-white px-6 rounded-r-xl transition-colors border border-[#ED8842] text-[10px] font-bold uppercase tracking-widest flex items-center whitespace-nowrap">
-                  Add Password
-                </a>
-                <% } %>
-              </div>
+            <div class="flex-grow bg-[#1C2A3A]/5 border border-[#1C2A3A]/10 rounded-l-xl px-4 py-3 text-[#1C2A3A]/50 font-medium border-r-0 flex items-center">
+              ••••••••••••
             </div>
-
-            <div class="md:col-span-2">
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Bio</label>
-              <textarea name="bio" rows="4" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all resize-none"><%= user.bio %></textarea>
+            <a href="/forgot-password" onclick="this.innerHTML='Sending OTP...'; this.style.pointerEvents='none'; this.style.opacity='0.7';" class="bg-[#1C2A3A] hover:bg-[#2C3E50] text-white px-6 rounded-r-xl transition-colors border border-[#1C2A3A] text-[10px] font-bold uppercase tracking-widest flex items-center">
+              Reset Password
+            </a>
+            <% } else { %>
+            <div class="flex-grow bg-amber-50 border border-amber-200 rounded-l-xl px-4 py-3 text-amber-800 text-[10px] font-medium border-r-0 flex items-center leading-tight">
+              Logged in via Google. Add a password to enable email login.
             </div>
-            <div class="md:col-span-2">
-              <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Age</label>
-              <input type="text" name="age" value="<%= user.age %>" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
-            </div>
+            <a href="/forgot-password" onclick="this.innerHTML='Sending OTP...'; this.style.pointerEvents='none'; this.style.opacity='0.7';" class="bg-[#ED8842] hover:bg-[#d67332] text-white px-6 rounded-r-xl transition-colors border border-[#ED8842] text-[10px] font-bold uppercase tracking-widest flex items-center whitespace-nowrap">
+              Add Password
+            </a>
+            <% } %>
           </div>
-
-          <div class="flex items-center justify-end gap-4 pt-6 border-t border-[#1C2A3A]/10">
-            <a href="/dashboard" class="px-6 py-3 rounded-xl text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-colors">Cancel</a>
-            <button id="saveChangesBtn" type="submit" class="px-8 py-3 rounded-xl bg-[#ED8842] text-white text-sm font-bold shadow-lg hover:bg-[#d67332] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              Save Changes
-            </button>
-          </div>
-          <div id="errorMsgBox" class="hidden mt-3 text-red-400 text-center text-[10px] tracking-widest uppercase font-semibold">
-          </div>
-        </form>
       </div>
+
+      <div class="md:col-span-2">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Bio</label>
+        <textarea name="bio" rows="4" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all resize-none"><%= user.bio %></textarea>
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/40 mb-2">Age</label>
+        <input type="text" name="age" value="<%= user.age %>" class="w-full bg-white/50 border border-[#1C2A3A]/10 rounded-xl px-4 py-3 text-[#1C2A3A] font-medium focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 transition-all">
+      </div>
+    </div>
+
+    <div class="flex items-center justify-end gap-4 pt-6 border-t border-[#1C2A3A]/10">
+      <a href="/dashboard" class="px-6 py-3 rounded-xl text-sm font-bold text-[#1C2A3A] hover:bg-[#F9F7F5] transition-colors">Cancel</a>
+      <button id="saveChangesBtn" type="submit" class="px-8 py-3 rounded-xl bg-[#ED8842] text-white text-sm font-bold shadow-lg hover:bg-[#d67332] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+        Save Changes
+      </button>
+    </div>
+    <div id="errorMsgBox" class="hidden mt-3 text-red-400 text-center text-[10px] tracking-widest uppercase font-semibold">
+    </div>
+    </form>
+    </div>
     </div>
   </main>
 

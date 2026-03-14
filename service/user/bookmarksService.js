@@ -4,7 +4,7 @@ import eventsDb from "../../model/eventsDb.js";
 export const userBookmarks = async (id) => {
   const bookmarks = await bookmarksDb.find({ userId: id });
   const eventIds = bookmarks.map((bm) => bm.eventId.toString());
-  const events = await eventsDb.find({ _id: { $in: eventIds } }).populate("categoryId", "name");
+  const events = await eventsDb.find({ _id: { $in: eventIds }, status: "live" }).populate("categoryId", "name");
   return { eventIds, events };
 };
 

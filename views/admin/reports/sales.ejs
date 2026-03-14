@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Sales Report — Evently</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            heading: ['Fraunces', 'serif'],
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-[#EAE0CF] text-[#1C2A3A] min-h-screen font-sans">
+  <%- include('../../partials/adminNavbar', {activePage: 'reports'}) %>
+  <main class="pt-32 pb-16 px-6 max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-end gap-6 mb-10">
+      <div>
+        <h1 class="text-4xl font-heading font-medium tracking-tight mb-2">Transaction Sales Report</h1>
+        <p class="text-[#1C2A3A]/60">Detailed view of all ticket purchases with buyer & coupon information</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="download('excel')" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-700 transition">
+          📊 Download Excel
+        </button>
+        <button onclick="download('pdf')" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-700 transition">
+          📄 Download PDF
+        </button>
+      </div>
+    </div>
+    <form id="reportForm" class="flex flex-wrap gap-3 bg-white p-4 rounded-3xl shadow-sm border border-black/5 mb-8">
+      <input type="date" name="startDate" value="<%= filters.startDate %>" class="bg-gray-50 rounded-xl px-4 py-2 text-sm">
+      <span class="self-center">to</span>
+      <input type="date" name="endDate" value="<%= filters.endDate %>" class="bg-gray-50 rounded-xl px-4 py-2 text-sm">
+      <button type="submit" class="bg-[#1C2A3A] text-white px-6 py-2 rounded-xl text-sm font-bold">Generate</button>
+    </form>
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-10">
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2">Total Revenue</p>
+        <h2 class="text-2xl font-heading">₹<%= salesData.totalRevenue?.toLocaleString() || '0' %></h2>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2">Platform Fees</p>
+        <h2 class="text-2xl font-heading text-emerald-600">₹<%= salesData.totalFees?.toLocaleString() || '0' %></h2>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2">Total Discounts</p>
+        <h2 class="text-2xl font-heading text-orange-600">₹<%= salesData.totalDiscount?.toLocaleString() || '0' %></h2>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2">Tickets Sold</p>
+        <h2 class="text-2xl font-heading"><%= salesData.tickets || 0 %></h2>
+      </div>
+      <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-black/5">
+        <p class="text-[10px] font-bold uppercase tracking-widest text-black/40 mb-2">Total Orders</p>
+        <h2 class="text-2xl font-heading"><%= salesData.orders || 0 %></h2>
+      </div>
+    </div>
+    <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-black/5 mb-8 overflow-x-auto">
+      <h3 class="text-xl font-heading mb-6">All Transactions</h3>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b-2 border-[#1C2A3A]/10">
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Order ID</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Buyer</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Event</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Ticket</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Subtotal</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Discount</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Coupon</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Fee</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Total</th>
+            <th class="text-left py-4 px-4 text-[10px] font-bold uppercase tracking-widest text-[#1C2A3A]/60">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (transactionDetails && transactionDetails.length > 0) { %>
+          <% transactionDetails.forEach(tx => { %>
+          <tr class="border-b border-[#1C2A3A]/5 hover:bg-gray-50">
+            <td class="py-4 px-4 font-mono text-xs"><%= tx.orderId.toString().slice(-8) %></td>
+            <td class="py-4 px-4">
+              <div class="font-medium"><%= tx.buyerName %></div>
+              <div class="text-xs text-gray-500"><%= tx.buyerEmail %></div>
+            </td>
+            <td class="py-4 px-4"><%= tx.eventName %></td>
+            <td class="py-4 px-4"><%= tx.ticketName %> ×<%= tx.quantity %></td>
+            <td class="py-4 px-4">₹<%= tx.subtotal.toFixed(2) %></td>
+            <td class="py-4 px-4 text-red-600">-₹<%= tx.discountAmount.toFixed(2) %></td>
+            <td class="py-4 px-4">
+              <% if (tx.couponCode !== 'None') { %>
+              <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-bold"><%= tx.couponCode %></span>
+              <span class="text-xs text-gray-500">(<%= tx.couponType %>)</span>
+              <% } else { %>
+              <span class="text-gray-400">None</span>
+              <% } %>
+            </td>
+            <td class="py-4 px-4 text-emerald-600">₹<%= tx.serviceFee.toFixed(2) %></td>
+            <td class="py-4 px-4 font-bold">₹<%= tx.totalAmount.toFixed(2) %></td>
+            <td class="py-4 px-4 text-xs text-gray-500"><%= new Date(tx.purchasedAt).toLocaleDateString() %></td>
+          </tr>
+          <% }) %>
+          <% } else { %>
+          <tr>
+            <td colspan="10" class="py-12 text-center text-gray-500">No transactions found for this period</td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+  <script>
+    async function download(format) {
+      try {
+        const form = document.getElementById('reportForm');
+        const params = new FormData(form);
+        const endpoint = format === 'excel' ?
+          '/admin/reports/export/csv' :
+          '/admin/reports/export/pdf';
+
+        const queryString = new URLSearchParams({
+          startDate: params.get('startDate'),
+          endDate: params.get('endDate')
+        }).toString();
+
+        const originalText = event.target.innerText;
+        event.target.innerText = 'Generating...';
+        event.target.disabled = true;
+
+        window.location.href = `${endpoint}?${queryString}`;
+        setTimeout(() => {
+          event.target.innerText = originalText;
+          event.target.disabled = false;
+        }, 3000);
+
+      } catch (err) {
+        console.error('Download failed:', err);
+        alert('Failed to generate report. Please try again.');
+      }
+    }
+  </script>
+</body>
+
+</html>

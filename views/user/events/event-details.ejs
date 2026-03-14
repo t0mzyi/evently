@@ -183,6 +183,50 @@
     .bookmark-btn-detail:active {
       transform: scale(0.95);
     }
+
+    /* ✅ Lightbox Styles */
+    #imageLightbox {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    #lightboxImage {
+      transition: transform 0.3s ease;
+      cursor: grab;
+    }
+
+    #lightboxImage:active {
+      cursor: grabbing;
+    }
+
+    #thumbnailStrip img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    #thumbnailStrip img.active {
+      opacity: 1;
+      border-color: #ED8842;
+      transform: scale(1.1);
+    }
+
+    #thumbnailStrip img:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+
+    .gallery-image-container {
+      cursor: pointer;
+    }
+
+    .gallery-image-container:hover .magnify-image {
+      transform: scale(1.05);
+    }
   </style>
 </head>
 
@@ -234,13 +278,20 @@
         <section class="bg-theme-surface/60 backdrop-blur-md rounded-[3rem] p-10 card-shadow border border-white/10 transition-all-300 hover:bg-theme-surface/70">
           <div class="flex items-center justify-between mb-8">
             <h2 class="text-3xl font-semibold text-theme-dark text-left">Atmosphere</h2>
+            <span class="text-sm text-apple-secondary"><%= event.galleryImages.length %> photos</span>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <% for(let i=0;i<event.galleryImages.length;i++){%>
-            <div class="magnify-container w-full h-48 rounded-3xl overflow-hidden transition-all-300 hover:shadow-lg transform hover:-translate-y-1">
-              <img src="<%= event.galleryImages[i] %>" class="magnify-image" alt="Gallery">
+            <div class="gallery-image-container magnify-container w-full h-48 rounded-3xl overflow-hidden transition-all-300 hover:shadow-lg transform hover:-translate-y-1" onclick="openLightbox(<%= i %>)" data-image-index="<%= i %>">
+              <img src="<%= event.galleryImages[i] %>" class="magnify-image" alt="Gallery Image <%= i + 1 %>" data-full-src="<%= event.galleryImages[i] %>">
               <div class="magnifier">
                 <div class="zoomed-image" style="background-image: url('<%= event.galleryImages[i]%>')"></div>
+              </div>
+              <!-- Overlay icon on hover -->
+              <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 transition-all-300 flex items-center justify-center z-20">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 3v3m0-3h3m-3 0H7"></path>
+                </svg>
               </div>
             </div>
             <%}%>
@@ -648,11 +699,58 @@ const isLowStock = percentage > 70;
       </div>
     </div>
   </div>
+  <!-- ✅ Image Lightbox Modal -->
+  <div id="imageLightbox" class="fixed inset-0 z-[200] hidden">
+    <div class="absolute inset-0 bg-[#1C2A3A]/95 backdrop-blur-md" onclick="closeLightbox()"></div>
+
+    <!-- Close Button -->
+    <button onclick="closeLightbox()" class="absolute top-6 right-6 z-[210] w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all-300 flex items-center justify-center">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+
+    <!-- Previous Button -->
+    <button onclick="previousImage()" class="absolute left-6 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 hover:scale-110 transition-all-300 flex items-center justify-center">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    </button>
+
+    <!-- Next Button -->
+    <button onclick="nextImage()" class="absolute right-6 top-1/2 -translate-y-1/2 z-[210] w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 hover:scale-110 transition-all-300 flex items-center justify-center">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+
+    <!-- Image Container -->
+    <div class="absolute inset-0 flex items-center justify-center p-20">
+      <div class="relative max-w-5xl max-h-full">
+        <img id="lightboxImage" src="" alt="Gallery Image" class="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl animate-fade-in">
+
+        <!-- Image Counter -->
+        <div class="absolute -bottom-12 left-1/2 -translate-x-1/2 text-white text-sm font-semibold">
+          <span id="imageCounter">1</span> / <span id="imageTotal">5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thumbnail Strip -->
+    <div class="absolute bottom-0 left-0 right-0 p-6 flex justify-center gap-3 overflow-x-auto">
+      <div id="thumbnailStrip" class="flex gap-3"></div>
+    </div>
+  </div>
   <!-- ✅ Review System JavaScript -->
   <script>
     // ===== REVIEW SYSTEM =====
     let selectedRating = 0;
     let reviewToDelete = null;
+
+    // ===== LIGHTBOX GALLERY SYSTEM =====
+    let currentImageIndex = 0;
+    let galleryImages = [];
+
     // ✅ Helper: Build avatar HTML
     function getAvatarHTML(avatarUrl, userName) {
       const userIcon = `<svg class="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>`;
@@ -665,6 +763,7 @@ const isLowStock = percentage > 70;
         return `<div class="w-10 h-10 rounded-full bg-[#ED8842] flex items-center justify-center">${userIcon}</div>`;
       }
     }
+
     // ✅ Custom Toast Notification
     const urlParams = new URLSearchParams(window.location.search);
 
@@ -699,6 +798,7 @@ const isLowStock = percentage > 70;
         }
       }
     }
+
     // ✅ FIXED: Update stars with proper logic
     function updateStars(rating, isHover = false) {
       const stars = document.querySelectorAll('.star-btn');
@@ -711,6 +811,7 @@ const isLowStock = percentage > 70;
         }
       });
     }
+
     // ✅ FIXED: Initialize star listeners AFTER modal is shown
     function initStarListeners() {
       const stars = document.querySelectorAll('.star-btn');
@@ -731,6 +832,7 @@ const isLowStock = percentage > 70;
         updateStars(selectedRating);
       });
     }
+
     // ✅ FIXED: Open modal and init stars
     function openAddReviewModal() {
       selectedRating = 0;
@@ -747,6 +849,7 @@ const isLowStock = percentage > 70;
       document.getElementById('addReviewModal').classList.add('hidden');
       document.body.style.overflow = '';
     }
+
     // ✅ Submit Review
     async function submitReview(event) {
       const rating = document.getElementById('reviewRating').value;
@@ -814,6 +917,7 @@ const isLowStock = percentage > 70;
       errorDiv.textContent = message;
       errorDiv.classList.remove('hidden');
     }
+
     // ✅ Delete Review Functions
     function deleteReview(reviewId, buttonEl) {
       reviewToDelete = {
@@ -829,6 +933,7 @@ const isLowStock = percentage > 70;
       document.body.style.overflow = '';
       reviewToDelete = null;
     }
+
     async function confirmDelete() {
       if (!reviewToDelete) return;
       const {
@@ -901,15 +1006,131 @@ ${avatarHTML}
 `;
       reviewsList.insertAdjacentHTML('afterbegin', reviewHTML);
     }
+
+    // ===== LIGHTBOX FUNCTIONS =====
+    // Initialize gallery images array
+    function initGalleryImages() {
+      const galleryContainers = document.querySelectorAll('.gallery-image-container');
+      galleryImages = Array.from(galleryContainers).map(container => {
+        const img = container.querySelector('img');
+        return img.dataset.fullSrc || img.src;
+      });
+      document.getElementById('imageTotal').textContent = galleryImages.length;
+    }
+
+    // Open Lightbox
+    function openLightbox(index) {
+      currentImageIndex = index;
+      const lightbox = document.getElementById('imageLightbox');
+      const lightboxImage = document.getElementById('lightboxImage');
+
+      lightboxImage.src = galleryImages[currentImageIndex];
+      updateCounter();
+      updateThumbnails();
+
+      lightbox.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close Lightbox
+    function closeLightbox() {
+      const lightbox = document.getElementById('imageLightbox');
+      lightbox.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    // Next Image
+    function nextImage() {
+      currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+      updateLightboxImage();
+    }
+
+    // Previous Image
+    function previousImage() {
+      currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+      updateLightboxImage();
+    }
+
+    // Update Lightbox Image
+    function updateLightboxImage() {
+      const lightboxImage = document.getElementById('lightboxImage');
+      lightboxImage.style.opacity = '0';
+
+      setTimeout(() => {
+        lightboxImage.src = galleryImages[currentImageIndex];
+        lightboxImage.onload = () => {
+          lightboxImage.style.opacity = '1';
+        };
+      }, 150);
+
+      updateCounter();
+      updateThumbnails();
+    }
+
+    // Update Counter
+    function updateCounter() {
+      document.getElementById('imageCounter').textContent = currentImageIndex + 1;
+    }
+
+    // Update Thumbnails
+    function updateThumbnails() {
+      const thumbnailStrip = document.getElementById('thumbnailStrip');
+      thumbnailStrip.innerHTML = '';
+
+      galleryImages.forEach((src, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = `Thumbnail ${index + 1}`;
+        thumb.className = index === currentImageIndex ? 'active' : '';
+        thumb.onclick = () => {
+          currentImageIndex = index;
+          updateLightboxImage();
+        };
+        thumbnailStrip.appendChild(thumb);
+      });
+
+      // Scroll active thumbnail into view
+      const activeThumb = thumbnailStrip.querySelector('img.active');
+      if (activeThumb) {
+        activeThumb.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'center'
+        });
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      const lightbox = document.getElementById('imageLightbox');
+      if (!lightbox || lightbox.classList.contains('hidden')) return;
+
+      if (e.key === 'Escape') {
+        closeLightbox();
+      } else if (e.key === 'ArrowRight') {
+        nextImage();
+      } else if (e.key === 'ArrowLeft') {
+        previousImage();
+      }
+    });
+
     // Close modals on Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeAddReviewModal();
         closeDeleteModal();
+        const lightbox = document.getElementById('imageLightbox');
+        if (lightbox && !lightbox.classList.contains('hidden')) {
+          closeLightbox();
+        }
       }
     });
+
     // ✅ Initialize toast check on page load
-    window.addEventListener('load', checkUrlParamsForToast);
+    window.addEventListener('load', function() {
+      checkUrlParamsForToast();
+      initGalleryImages();
+    });
   </script>
 </body>
 

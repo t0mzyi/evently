@@ -19,6 +19,7 @@ export const bookTicket = async (req, res) => {
     const event = await ticketBookingRender(eventId);
     res.render("user/tickets/book", { event });
   } catch (error) {
+    res.redirect("/events?status=error&message=Event unavailable");
     console.log("Error in ticketBooking", error);
   }
 };
@@ -65,6 +66,10 @@ export const handleUnreservingTicket = async (req, res) => {
   try {
     const orderId = req.params.orderId;
     await unReserveTicket(orderId);
+    res.status(200).json({
+      success: true,
+      message: "Tickets unreserved successfully",
+    });
   } catch (error) {
     console.log("Error in handlingUnreserveTicket", error);
   }

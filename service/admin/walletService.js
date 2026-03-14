@@ -22,3 +22,24 @@ export const creditAdminWallet = async (amount, desc) => {
     console.log("Error in creditAdminWallet", error);
   }
 };
+
+export const debitAdminWallet = async (amount, desc) => {
+  try {
+    const updateWallet = await walletDb.findByIdAndUpdate(
+      walletId,
+      { $inc: { availableBalance: -amount } },
+      { new: true },
+    );
+    if (updateWallet) {
+      await transactionDb.create({
+        walletId,
+        type: "debit",
+        amount: amount,
+        description: desc,
+        status: "COMPLETED",
+      });
+    }
+  } catch (error) {
+    console.log("Error in debitAdminWallet", error);
+  }
+};

@@ -40,7 +40,7 @@ const venueSchema = new mongoose.Schema(
     },
     costPerHour: {
       type: Number,
-      default: 4,
+      default: 0,
       // required: true,
     },
     isActive: {
