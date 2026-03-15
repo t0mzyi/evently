@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Evently — Discover & Experience</title>
-  <script src="https://cdn.tailwindcss.com  "></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script>
     tailwind.config = {
@@ -35,8 +35,8 @@
       }
     }
   </script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css  " />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js  "></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <style>
     .category-thumb {
       font-size: 24px;
@@ -49,15 +49,15 @@
 
     .swiper {
       width: 100%;
-      padding-top: 5px;
+      padding-top: 50px;
       padding-bottom: 50px;
     }
 
     .swiper-slide {
       background-position: center;
       background-size: cover;
-      width: 600px;
-      height: 400px;
+      width: 500px;
+      height: 350px;
       overflow: hidden;
       will-change: transform;
       transform: translateZ(0);
@@ -65,29 +65,42 @@
 
     @media (max-width: 768px) {
       .swiper-slide {
-        width: 300px;
-        height: 350px;
+        width: 280px;
+        height: 320px;
       }
     }
 
+    /* FIXED: Marquee container with proper height for 2 rows */
     .marquee-container {
       overflow: hidden;
       position: relative;
-      height: 80px;
+      height: 180px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+
+    .marquee-wrapper {
+      overflow: hidden;
+      width: 100%;
+      position: relative;
     }
 
     .marquee-content,
     .marquee-content-reverse {
-      display: inline-block;
-      animation: marquee 25s linear infinite;
-      padding-left: 20px;
+      display: inline-flex;
+      align-items: center;
       white-space: nowrap;
     }
 
+    .marquee-content {
+      animation: marquee 30s linear infinite;
+    }
+
     .marquee-content-reverse {
-      animation-direction: reverse;
+      animation: marquee-reverse 30s linear infinite;
     }
 
     @keyframes marquee {
@@ -100,29 +113,36 @@
       }
     }
 
+    @keyframes marquee-reverse {
+      0% {
+        transform: translateX(-50%);
+      }
+
+      100% {
+        transform: translateX(0);
+      }
+    }
+
     .category-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 12px 28px;
-      border-radius: 9999px;
-      margin: 0 16px;
-      text-decoration: none;
-      color: #1C2A3A;
-      font-weight: 500;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      background: rgba(255, 255, 255, 0.5);
       border: 1px solid rgba(28, 42, 58, 0.08);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 1px 5px rgba(28, 42, 58, 0.05);
+      color: rgba(28, 42, 58, 0.85);
+      /* Slightly faded text */
     }
 
     .category-pill:hover {
-      background: #ffffff;
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 10px 30px rgba(28, 42, 58, 0.08);
+      background: rgba(255, 255, 255, 0.8);
       border-color: rgba(28, 42, 58, 0.15);
+      color: #1C2A3A;
+    }
+
+    .category-thumb {
+      font-size: 20px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Hide scrollbar for marquee */
@@ -140,8 +160,54 @@
     .venues-section {
       overflow: hidden;
     }
+
+    /* How It Works Section Styles */
+    .step-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 2px solid rgba(28, 42, 58, 0.12);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-card:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(28, 42, 58, 0.12);
+      border-color: rgba(28, 42, 58, 0.25);
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #1C2A3A 0%, #2C3E50 100%);
+      color: white;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .step-connector {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      width: calc(100% - 48px);
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(28, 42, 58, 0.2), transparent);
+      transform: translateX(-50%);
+    }
+
+    @media (max-width: 768px) {
+      .step-connector {
+        display: none;
+      }
+    }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display  :wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body class="bg-apple-bg text-apple-text overflow-x-hidden">
@@ -161,31 +227,29 @@
       <div class="relative max-w-2xl mx-auto mb-10 group">
         <div class="absolute inset-0 bg-blue-500/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700">
         </div>
-        <input type="text" placeholder="Search events, categories, or artists..." class="w-full h-16 pl-14 pr-6 bg-white/60 backdrop-blur-xl border border-white/40 rounded-full text-lg text-[#1C2A3A] placeholder:text-[#1C2A3A]/40 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/10 focus:bg-white/80 transition-all font-sans shadow-lg shadow-[#1C2A3A]/5 hover:shadow-xl hover:shadow-[#1C2A3A]/10">
-        <svg class="absolute left-5 top-5 w-6 h-6 text-[#1C2A3A]/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <input type="text" placeholder="Search events, categories, or artists..." class="w-full h-16 pl-14 pr-6 bg-white/80 backdrop-blur-xl border-2 border-[#1C2A3A]/20 rounded-full text-lg text-[#1C2A3A] placeholder:text-[#1C2A3A]/50 focus:outline-none focus:ring-2 focus:ring-[#1C2A3A]/20 focus:bg-white focus:border-[#1C2A3A]/40 transition-all font-sans shadow-lg shadow-[#1C2A3A]/10 hover:shadow-xl hover:shadow-[#1C2A3A]/15">
+        <svg class="absolute left-5 top-5 w-6 h-6 text-[#1C2A3A]/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
       </div>
     </div>
 
-
-
     <!-- Trending Carousel -->
-    <div class="w-full relative z-10 px-4 md:px-10">
-      <div class="swiper mySwiper mb-20 !max-w-full">
+    <div class="w-full relative z-10 px-4 md:px-10 overflow-visible">
+      <div class="swiper mySwiper mb-20">
         <div class="swiper-wrapper">
           <% for(let i=0; i < featuredEvents.length; i++) { %>
           <a href="/events/<%= featuredEvents[i]._id %>" class="swiper-slide group relative cursor-pointer block rounded-2xl overflow-hidden shadow-2xl">
             <img src="<%= featuredEvents[i].galleryImages[0] %>" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Event">
             <div class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A] via-[#1C2A3A]/40 to-transparent flex flex-col justify-end p-8 md:p-10 opacity-90 group-hover:opacity-100 transition-opacity">
               <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <span class="inline-block px-3 py-1 mb-3 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest text-white border border-white/20">
+                <span class="inline-block px-3 py-1 mb-3 bg-white/30 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest text-white border border-white/30">
                   Featured
                 </span>
                 <h3 class="text-3xl md:text-5xl font-heading text-white tracking-tighter mb-3 drop-shadow-lg leading-none">
                   <%= featuredEvents[i].title %>
                 </h3>
-                <p class="text-white/80 text-sm md:text-base font-sans tracking-wide flex items-center gap-2">
+                <p class="text-white/90 text-sm md:text-base font-sans tracking-wide flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                     </path>
@@ -203,13 +267,13 @@
             <img src="<%= featuredEvents[i].galleryImages[0] %>" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Event">
             <div class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A] via-[#1C2A3A]/40 to-transparent flex flex-col justify-end p-8 md:p-10 opacity-90 group-hover:opacity-100 transition-opacity">
               <div class="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <span class="inline-block px-3 py-1 mb-3 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest text-white border border-white/20">
+                <span class="inline-block px-3 py-1 mb-3 bg-white/30 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest text-white border border-white/30">
                   Featured
                 </span>
                 <h3 class="text-3xl md:text-5xl font-heading text-white tracking-tighter mb-3 drop-shadow-lg leading-none">
                   <%= featuredEvents[i].title %>
                 </h3>
-                <p class="text-white/80 text-sm md:text-base font-sans tracking-wide flex items-center gap-2">
+                <p class="text-white/90 text-sm md:text-base font-sans tracking-wide flex items-center gap-2">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
                     </path>
@@ -227,43 +291,111 @@
   </header>
 
   <!-- Explore Categories -->
-  <section class="max-w-full w-full mb-32 relative z-10 overflow-hidden">
+  <section class="max-w-full w-full mb-32 relative z-10">
     <div class="flex items-center justify-between px-6 max-w-[90rem] mx-auto mb-16">
       <div>
         <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-2">Explore by
           category</h2>
-        <p class="text-[#1C2A3A]/60 text-lg font-sans">Discover tailored experiences across every genre
+        <p class="text-[#1C2A3A]/70 text-lg font-sans">Discover tailored experiences across every genre
         </p>
       </div>
-      <div class="hidden md:block h-px bg-[#1C2A3A]/10 w-32"></div>
+      <div class="hidden md:block h-px bg-[#1C2A3A]/20 w-32"></div>
     </div>
 
+    <!-- FIXED: Marquee with proper wrapper structure -->
     <div class="marquee-container no-scrollbar">
-      <div class="marquee-content" id="row1">
-        <% for(let i=0; i < allCategories.length; i++) { %>
-        <a href="/category/<%= allCategories[i]._id %>" class="category-pill">
-          <span class="category-thumb">
-            <%= allCategories[i].iconUrl %>
-          </span>
-          <span>
-            <%= allCategories[i].name %>
-          </span>
-        </a>
-        <% } %>
+      <!-- Row 1: Left to Right -->
+      <div class="marquee-wrapper">
+        <div class="marquee-content" id="row1">
+          <% for(let i=0; i < allCategories.length; i++) { %>
+          <a href="/category/<%= allCategories[i]._id %>" class="category-pill">
+            <span class="category-thumb">
+              <%= allCategories[i].iconUrl %>
+            </span>
+            <span>
+              <%= allCategories[i].name %>
+            </span>
+          </a>
+          <% } %>
+        </div>
       </div>
 
-      <div class="marquee-content-reverse" id="row2">
-        <% for(let i=allCategories.length - 1; i>= 0; i--) { %>
-        <a href="/category/<%= allCategories[i]._id %>" class="category-pill">
-          <span class="category-thumb">
-            <%= allCategories[i].iconUrl %>
-          </span>
-          <span>
-            <%= allCategories[i].name %>
-          </span>
-        </a>
-        <% } %>
+      <!-- Row 2: Right to Left -->
+      <div class="marquee-wrapper">
+        <div class="marquee-content-reverse" id="row2">
+          <% for(let i=0; i < allCategories.length; i++) { %>
+          <a href="/category/<%= allCategories[i]._id %>" class="category-pill">
+            <span class="category-thumb">
+              <%= allCategories[i].iconUrl %>
+            </span>
+            <span>
+              <%= allCategories[i].name %>
+            </span>
+          </a>
+          <% } %>
+        </div>
       </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="max-w-[90rem] mx-auto px-6 mb-32 relative z-10">
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-4">How Evently Works</h2>
+      <p class="text-[#1C2A3A]/70 text-lg font-sans max-w-2xl mx-auto">
+        Create unforgettable events and let others join your experience. Our platform makes event management simple and seamless.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+      <!-- Step 1 -->
+      <div class="step-card rounded-2xl p-8 transition-all duration-300 relative">
+        <div class="step-connector hidden lg:block"></div>
+        <div class="step-number mb-6">1</div>
+        <h3 class="text-xl font-heading text-[#1C2A3A] mb-3">Go to Dashboard</h3>
+        <p class="text-[#1C2A3A]/70 text-sm font-sans leading-relaxed">
+          Navigate to your profile and access the organizer dashboard to get started.
+        </p>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card rounded-2xl p-8 transition-all duration-300 relative">
+        <div class="step-connector hidden lg:block"></div>
+        <div class="step-number mb-6">2</div>
+        <h3 class="text-xl font-heading text-[#1C2A3A] mb-3">Create Event</h3>
+        <p class="text-[#1C2A3A]/70 text-sm font-sans leading-relaxed">
+          Fill in your event details, add images, set ticket prices, and submit for review.
+        </p>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card rounded-2xl p-8 transition-all duration-300 relative">
+        <div class="step-connector hidden lg:block"></div>
+        <div class="step-number mb-6">3</div>
+        <h3 class="text-xl font-heading text-[#1C2A3A] mb-3">Admin Approval</h3>
+        <p class="text-[#1C2A3A]/70 text-sm font-sans leading-relaxed">
+          Our team reviews your event to ensure quality and compliance with guidelines.
+        </p>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-card rounded-2xl p-8 transition-all duration-300 relative">
+        <div class="step-number mb-6">4</div>
+        <h3 class="text-xl font-heading text-[#1C2A3A] mb-3">Event is Live</h3>
+        <p class="text-[#1C2A3A]/70 text-sm font-sans leading-relaxed">
+          Once approved, your event goes live and attendees can discover and join!
+        </p>
+      </div>
+    </div>
+
+    <!-- CTA Button -->
+    <div class="text-center mt-12">
+      <a href="/dashboard" class="inline-flex items-center px-8 py-4 bg-[#1C2A3A] text-white rounded-full font-bold text-sm uppercase tracking-wider hover:bg-[#2C3E50] transition-all shadow-lg hover:shadow-xl hover:shadow-[#1C2A3A]/25">
+        Start Creating Events
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+        </svg>
+      </a>
     </div>
   </section>
 
@@ -275,15 +407,15 @@
         <div>
           <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-2">Upcoming
             events</h2>
-          <p class="text-[#1C2A3A]/60 text-lg font-sans">Curated experiences just for you</p>
+          <p class="text-[#1C2A3A]/70 text-lg font-sans">Curated experiences just for you</p>
         </div>
         <div class="flex space-x-3">
-          <button class="events-prev w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-sm">
+          <button class="events-prev w-12 h-12 rounded-full border-2 border-[#1C2A3A]/15 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-md">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
-          <button class="events-next w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-sm">
+          <button class="events-next w-12 h-12 rounded-full border-2 border-[#1C2A3A]/15 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-md">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -294,11 +426,11 @@
       <div class="swiper eventsSwiper !overflow-visible px-4 md:px-6">
         <div class="swiper-wrapper">
           <% for(let i=0; i < allEvents.length; i++) { %>
-          <a href="/events/<%= allEvents[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#1C2A3A]/5 transition-all duration-300 group block h-full flex flex-col">
+          <a href="/events/<%= allEvents[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border-2 border-[#1C2A3A]/8 transition-all duration-300 group block h-full flex flex-col">
             <div class="h-[240px] relative overflow-hidden">
               <img src="<%= allEvents[i].galleryImages[0] %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Event">
               <div class="absolute top-4 left-4">
-                <span class="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-[#1C2A3A] shadow-sm">
+                <span class="px-3 py-1 bg-white/95 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider text-[#1C2A3A] shadow-md border border-[#1C2A3A]/10">
                   <%= allEvents[i].categoryId.name %>
                 </span>
               </div>
@@ -323,10 +455,10 @@
                   <%= allEvents[i].title %>
                 </h3>
               </div>
-              <p class="text-[#1C2A3A]/60 text-sm leading-relaxed mb-6 font-sans line-clamp-2">
+              <p class="text-[#1C2A3A]/70 text-sm leading-relaxed mb-6 font-sans line-clamp-2">
                 <%= allEvents[i].description %>
               </p>
-              <div class="mt-auto pt-4 border-t border-[#1C2A3A]/5 flex items-center text-[#1C2A3A] text-sm font-medium">
+              <div class="mt-auto pt-4 border-t border-[#1C2A3A]/10 flex items-center text-[#1C2A3A] text-sm font-medium">
                 <span>Get Tickets</span>
                 <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -344,9 +476,9 @@
       <div class="flex justify-between items-end mb-12">
         <div>
           <h2 class="text-4xl md:text-5xl font-heading text-[#1C2A3A] tracking-tighter mb-2">Premier Venues</h2>
-          <p class="text-[#1C2A3A]/60 text-lg font-sans">Find the perfect space for your next event</p>
+          <p class="text-[#1C2A3A]/70 text-lg font-sans">Find the perfect space for your next event</p>
         </div>
-        <a href="/venues" class="px-6 py-3 bg-white border border-[#1C2A3A]/10 rounded-full text-sm font-bold text-[#1C2A3A] flex items-center space-x-2 hover:bg-[#1C2A3A] hover:text-white transition-all shadow-sm">
+        <a href="/venues" class="px-6 py-3 bg-white border-2 border-[#1C2A3A]/15 rounded-full text-sm font-bold text-[#1C2A3A] flex items-center space-x-2 hover:bg-[#1C2A3A] hover:text-white transition-all shadow-md">
           <span>View All Venues</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -358,7 +490,7 @@
         <div class="swiper venuesSwiper !overflow-visible px-4 md:px-6">
           <div class="swiper-wrapper">
             <% for(let i=0; i < allVenues.length; i++) { %>
-            <a href="/venue/<%= allVenues[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-[#1C2A3A]/5 transition-all duration-300 group block h-full flex flex-col">
+            <a href="/venue/<%= allVenues[i]._id %>" class="swiper-slide bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.15)] border-2 border-[#1C2A3A]/8 transition-all duration-300 group block h-full flex flex-col">
               <div class="h-[240px] relative overflow-hidden">
                 <img src="<%= allVenues[i].image_url[0] %>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="<%= allVenues[i].name %>">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#1C2A3A]/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
@@ -373,8 +505,8 @@
                 </div>
               </div>
               <div class="p-5 flex gap-2">
-                <span class="px-3 py-1 bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-lg text-xs font-bold text-[#1C2A3A] uppercase tracking-wider"><%= allVenues[i].type %></span>
-                <span class="px-3 py-1 bg-[#F9F7F5] border border-[#1C2A3A]/10 rounded-lg text-xs font-bold text-[#1C2A3A] uppercase tracking-wider"><%= allVenues[i].capacity %> Cap</span>
+                <span class="px-3 py-1 bg-[#F9F7F5] border-2 border-[#1C2A3A]/12 rounded-lg text-xs font-bold text-[#1C2A3A] uppercase tracking-wider"><%= allVenues[i].type %></span>
+                <span class="px-3 py-1 bg-[#F9F7F5] border-2 border-[#1C2A3A]/12 rounded-lg text-xs font-bold text-[#1C2A3A] uppercase tracking-wider"><%= allVenues[i].capacity %> Cap</span>
               </div>
             </a>
             <% } %>
@@ -383,12 +515,12 @@
 
         <!-- Venue navigation buttons -->
         <div class="flex justify-center space-x-3 mt-12">
-          <button class="venues-prev w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-sm">
+          <button class="venues-prev w-12 h-12 rounded-full border-2 border-[#1C2A3A]/15 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-md">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M15 19l-7-7 7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
-          <button class="venues-next w-12 h-12 rounded-full border border-[#1C2A3A]/10 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-sm">
+          <button class="venues-next w-12 h-12 rounded-full border-2 border-[#1C2A3A]/15 flex items-center justify-center bg-white hover:bg-[#1C2A3A] hover:text-white transition-all shadow-md">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
@@ -410,31 +542,39 @@
       grabCursor: true,
       centeredSlides: true,
       slidesPerView: "auto",
-      spaceBetween: 50,
+      spaceBetween: 30,
       loop: true,
+      speed: 800,
       autoplay: {
-        delay: 2500,
+        delay: 3000,
         disableOnInteraction: false,
+        pauseOnMouseEnter: true,
       },
       coverflowEffect: {
         rotate: 0,
         stretch: 0,
         depth: 100,
         modifier: 1,
-        slideShadows: true,
+        slideShadows: false,
       },
       pagination: {
         el: ".swiper-pagination",
         clickable: true,
       },
+      on: {
+        init: function() {
+          this.update();
+        }
+      }
     });
 
-    // Marquee setup
+    // Marquee setup - FIXED: Properly duplicate content for seamless loop
     function setupMarquee(id) {
       const el = document.getElementById(id);
       if (el) {
         const content = el.innerHTML;
-        el.innerHTML = content + content;
+        // Duplicate 3 times for smooth infinite scroll
+        el.innerHTML = content + content + content;
       }
     }
 
