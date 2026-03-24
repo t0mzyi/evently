@@ -5,7 +5,6 @@ import couponDb from "../../model/couponsDb.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit-table";
 
-// --- Helper: Build Date Filter ---
 const buildDateFilter = (filters) => {
   const { startDate, endDate } = filters;
 
@@ -14,15 +13,13 @@ const buildDateFilter = (filters) => {
 
   return {
     createdAt: { $gte: start, $lte: end },
-    status: "CONFIRMED", // Only count confirmed orders
+    status: "CONFIRMED",
   };
 };
 
-// --- 1. Get Sales Report Data ---
 export const getSalesReport = async (filters) => {
   const match = buildDateFilter(filters);
 
-  // Get summary statistics using aggregation
   const stats = await orderDb.aggregate([
     { $match: match },
     {
@@ -37,7 +34,6 @@ export const getSalesReport = async (filters) => {
     },
   ]);
 
-  // Get detailed transaction data with populated references
   const detailedOrders = await orderDb
     .find(match)
     .populate("eventId", "title hostId")
@@ -45,7 +41,6 @@ export const getSalesReport = async (filters) => {
     .sort({ createdAt: -1 })
     .lean();
 
-  // Enrich with coupon details
   const transactionDetails = await Promise.all(
     detailedOrders.map(async (order) => {
       let couponDetails = null;
@@ -85,12 +80,10 @@ export const getSalesReport = async (filters) => {
   };
 };
 
-// --- 2. Export to CSV (ExcelJS) ---
 export const exportReportToCSV = async (reportData) => {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Sales Report");
 
-  // Define columns
   sheet.columns = [
     { header: "Order ID", key: "orderId", width: 25 },
     { header: "Buyer Name", key: "buyerName", width: 20 },
@@ -109,7 +102,6 @@ export const exportReportToCSV = async (reportData) => {
     { header: "Status", key: "status", width: 15 },
   ];
 
-  // Add rows
   reportData.transactionDetails.forEach((tx) => {
     sheet.addRow({
       orderId: tx.orderId.toString(),
@@ -161,16 +153,37 @@ export const exportReportToPDF = async (reportData) => {
       };
       const transactions = Array.isArray(reportData?.transactionDetails) ? reportData.transactionDetails : [];
 
+      // Title
       doc.fontSize(20).font("Helvetica-Bold").text("Sales Performance Report", {
         align: "center",
         underline: true,
       });
       doc.moveDown(0.5);
+
+      // Date range info
+      const presetLabels = {
+        today: "Today",
+        yesterday: "Yesterday",
+        thisWeek: "This Week",
+        lastWeek: "Last Week",
+        thisMonth: "This Month",
+        lastMonth: "Last Month",
+        thisQuarter: "This Quarter",
+        lastQuarter: "Last Quarter",
+        thisYear: "This Year",
+        lastYear: "Last Year",
+        monthly: "Monthly",
+        yearly: "Yearly",
+        custom: "Custom Range",
+      };
+
+      const periodLabel = presetLabels[reportData.datePreset] || "Custom Range";
+
       doc
         .fontSize(9)
         .font("Helvetica")
         .text(
-          `Generated: ${new Date().toLocaleDateString()} | Period: ${reportData.startDate || "N/A"} to ${reportData.endDate || "N/A"}`,
+          `Generated: ${new Date().toLocaleDateString()} | Period: ${periodLabel} (${reportData.startDate || "N/A"} to ${reportData.endDate || "N/A"})`,
           { align: "center" },
         );
       doc.moveDown(1);

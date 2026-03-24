@@ -12,6 +12,7 @@ import {
 } from "../../service/user/authService.js";
 import bcrypt from "bcrypt";
 import { otpCreator } from "../../utils/otpGenerator.js";
+import userDb from "../../model/userDb.js";
 
 export const signUp = (req, res) => {
   res.render("user/auth", { mode: "register" });
@@ -168,7 +169,8 @@ export const signInPost = async (req, res) => {
   try {
     const user = await signInVerify(req.body);
     req.session.user = user._id;
-
+    const userDetails = await userDb.findById(req.session.user);
+    console.log("Somebody logged in", userDetails.firstName);
     return res.status(200).json({
       success: true,
       redirectUrl: "/foryou",

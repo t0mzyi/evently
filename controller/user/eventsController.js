@@ -102,7 +102,6 @@ export const showSingleEvent = async (req, res) => {
     }
 
     const { event, venue, lowestPrice, totalTickets, ticketsLeft } = await singleEventFinder(eventId);
-    console.log("hey");
     const ticket = { lowestPrice, totalTickets, ticketsLeft };
     const schedule = formatDate(event.startDate);
     let allReviews = await reviewDb

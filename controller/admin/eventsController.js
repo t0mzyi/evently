@@ -46,7 +46,6 @@ export const showSingleEvent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const { event, venueDetails } = await singleEvent(eventId);
-    console.log("hey");
     const date = formatDate(event.createdAt);
     const start = formatDate(event.startDate);
     const end = formatDate(event.endDate);
