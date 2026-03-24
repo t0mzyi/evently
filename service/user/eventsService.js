@@ -240,7 +240,7 @@ export const newEvent = async (body, files) => {
   if (diffInHours < 1) throw new Error("Event must be at least 1 hour long");
   if (diffInHours > 24) throw new Error("Events cannot be more than 24 hours long");
 
-  const galleryImages = files?.map((file) => `/uploads/events/${file.filename}`) || [];
+  const galleryImages = files?.map((file) => file.path) || [];
   if (galleryImages.length === 0) {
     throw new Error("Add at least one image");
   }
@@ -449,7 +449,7 @@ export const updateEventer = async (userId, eventId, body, uploadedFiles = []) =
   }
 
   if (uploadedFiles.length > 0) {
-    const newImagePaths = uploadedFiles.map((file) => `/uploads/events/${file.filename}`);
+    const newImagePaths = uploadedFiles.map((file) => file.path);
     allImagePaths.push(...newImagePaths);
   }
 

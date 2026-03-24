@@ -27,7 +27,7 @@ export const editProfile = async (req, res) => {
     const { firstName, lastName, bio, age } = req.body;
     const updateData = { firstName, lastName, bio, age };
     if (req.file) {
-      updateData.avatarUrl = `/uploads/avatars/${req.file.filename}`;
+      updateData.avatarUrl = req.file.path;
     }
     const updatedUser = await updateProfileService(updateData, userId);
 

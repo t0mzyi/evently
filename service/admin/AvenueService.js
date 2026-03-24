@@ -52,7 +52,7 @@ export const createVenue = async (venueData, files) => {
   if (!files || files.length === 0) {
     throw new Error("At least one image is required");
   }
-  const imagePaths = files.map((file) => `/uploads/venues/${file.filename}`);
+  const imagePaths = files.map((file) => file.path);
 
   const structuredAmenities = [];
   const { amenity_key, amenity_value } = venueData;
@@ -84,7 +84,7 @@ export const createVenue = async (venueData, files) => {
 
 export const updateVenueService = async (venueId, venueData, newFiles) => {
   const remainingImages = JSON.parse(venueData.remaining_images || "[]");
-  const newImagePaths = newFiles ? newFiles.map((file) => `/uploads/venues/${file.filename}`) : [];
+  const newImagePaths = newFiles ? newFiles.map((file) => file.path) : [];
   const finalImageArray = [...remainingImages, ...newImagePaths];
 
   if (finalImageArray.length === 0) {

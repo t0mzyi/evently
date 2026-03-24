@@ -100,7 +100,7 @@
       <div class="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 md:p-12 shadow-sm border border-white/40">
         <h1 class="text-3xl font-heading text-[#1C2A3A] mb-8">Edit Profile</h1>
 
-        <form id="profileForm" class="space-y-8">
+        <form id="profileForm" class="space-y-8" enctype="multipart/form-data">
           <div class="flex items-center gap-6">
             <div class="flex items-center gap-6">
               <div class="w-24 h-24 bg-[#1C2A3A] rounded-full relative overflow-hidden group shadow-lg">
@@ -193,51 +193,74 @@
   <script>
     const avatarInput = document.getElementById('avatarInput');
     const avatarPreview = document.getElementById('avatarPreview');
-    const errorBox = document.getElementById('errorMsgBox')
-    const saveBtn = document.getElementById('saveChangesBtn')
+    const errorBox = document.getElementById('errorMsgBox');
+    const saveBtn = document.getElementById('saveChangesBtn');
 
     avatarInput.addEventListener('change', async function() {
       const file = this.files[0];
+
+      // Clear previous errors
+      errorBox.classList.add('hidden');
+      errorBox.textContent = '';
+
       if (file) {
+        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+        if (file.size > maxSize) {
+          errorBox.classList.remove('hidden');
+          errorBox.textContent = `File too large! Maximum size is 2MB. Your file is ${(file.size / 1024 / 1024).toFixed(2)}MB`;
+          this.value = ''; // Clear the input
+          return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+          errorBox.classList.remove('hidden');
+          errorBox.textContent = 'Only image files are allowed (JPG, PNG, GIF, WebP)';
+          this.value = ''; // Clear the input
+          return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => avatarPreview.src = e.target.result;
         reader.readAsDataURL(file);
       }
-    })
+    });
 
-    const profileForm = document.getElementById('profileForm')
+    const profileForm = document.getElementById('profileForm');
 
     profileForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
+      e.preventDefault();
 
       saveBtn.disabled = true;
       saveBtn.textContent = "Saving...";
-      errorBox.classList.add('hidden')
+      errorBox.classList.add('hidden');
 
-      const formData = new FormData(profileForm)
+      const formData = new FormData(profileForm);
 
       try {
         const response = await fetch('/dashboard/editProfile', {
           method: "PATCH",
           body: formData
-        })
+        });
 
-        const result = await response.json()
+        const result = await response.json();
+
         if (response.ok && result.success) {
-          window.location.href = result.redirectUrl
+          window.location.href = result.redirectUrl;
         } else {
-          errorBox.classList.remove('hidden')
-          errorBox.textContent = result.message
-          saveBtn.disabled = false
-          saveBtn.textContent = "Save changes"
+          errorBox.classList.remove('hidden');
+          errorBox.textContent = result.message || 'Failed to update profile';
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save Changes";
         }
 
       } catch (err) {
-        console.log('err in editprofile page', err.message)
+        console.log('err in editprofile page', err.message);
+        errorBox.classList.remove('hidden');
+        errorBox.textContent = 'Network error. Please check your connection and try again.';
         saveBtn.disabled = false;
         saveBtn.textContent = "Save Changes";
       }
-    })
+    });
   </script>
 </body>
 
