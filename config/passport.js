@@ -7,7 +7,7 @@ passport.use(
     {
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: "https://jaideepdev.xyz/auth/google/callback",
+      callbackURL: "https://evently.jaideepdev.xyz/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
