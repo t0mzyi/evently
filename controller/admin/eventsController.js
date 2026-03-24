@@ -34,7 +34,7 @@ export const showEvents = async (req, res) => {
       totalPages: eventDetails.totalPages,
       currentPage: eventDetails.currentPage,
       searchQuery: eventDetails.searchQuery,
-      selectedType: eventDetails.selectedType, // This is the status filter
+      selectedType: eventDetails.selectedType,
       selectedSort: eventDetails.selectedSort,
     });
   } catch (error) {

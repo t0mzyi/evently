@@ -157,7 +157,7 @@ export const showSingleEvent = async (req, res) => {
 export const showCreateEvent = async (req, res) => {
   try {
     const { categories, venues } = await eventCreator();
-    res.render("user/events/create-Event", { categories, venues });
+    res.render("user/events/create-event", { categories, venues });
   } catch (error) {
     console.error("Error loading create event page:", error);
     res.status(500).send("Unable to load event creation form.");
